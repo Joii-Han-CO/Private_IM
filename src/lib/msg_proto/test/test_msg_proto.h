@@ -5,9 +5,6 @@
 namespace test {
 #pragma endregion
 
-  void test_C();
-  void test_CPP();
-
 #pragma region namespace
 }
 #pragma endregion

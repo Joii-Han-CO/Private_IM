@@ -42,7 +42,7 @@ include_directories(${_lib_name}
 set(_inc_file
   ${_stdafx}.h
   ${_incldue}/${_namepace}_${_lib_name}.h
-  ${_incldue}/${_namepace}_${_lib_name}.hpp)
+  ${_incldue}/base/time.hpp)
 source_group("include" FILES ${_inc_file})
 
 set(_cpp_file

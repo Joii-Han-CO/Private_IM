@@ -1,35 +1,25 @@
 ﻿#include "stdafx.h"
 #include "test_msg_proto.h"
 #include "im_msg_proto.h"
-#include "im_msg_proto.hpp"
+#include "base/time.hpp"
 #include <iostream>
 
 #pragma region namespace
 namespace test {
 #pragma endregion
 
-void TestText() {
-  auto msg_text = std::make_shared<im::msg_proto::CMsg_Text>();
-  msg_text->msg_type = im::msg_proto::EIMMsg_Type::Sending;
-  msg_text->text = L"Hello World";
+void TestTime() {
+  base::time::BaseTime t;
 
-  auto protobuf = im::msg_proto::CGenerateMsg_Text(msg_text);
-  if (protobuf.empty()) {
-    std::cout << "CGenerateMsg_Text Faild" << std::endl;
-    return;
-  }
+  // 获取当前时间
+  long tt_ms = 0;
+  auto tt = t.GetTimeT(&tt_ms);
 
-  auto ref_msg = im::msg_proto::CParseMsg_Text(protobuf);
-  if (ref_msg == nullptr) {
-    std::cout << "CGenerateMsg_Text Faild" << std::endl;
-    return;
-  }
+  base::time::BaseTime t2(tt, 0);
 
-  if (ref_msg->text != msg_text->text) {
-    std::cout << "The msg different" << std::endl;
-    return;
-  }
 
+
+  //
 }
 
 #pragma region namespace
@@ -38,7 +28,7 @@ void TestText() {
 
 int main() {
 
-  test::TestText();
+  test::TestTime();
 
   return 0;
 }
