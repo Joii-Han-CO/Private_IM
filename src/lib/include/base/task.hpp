@@ -13,7 +13,10 @@ namespace task {
 class Task {
 public:
   Task() {};
-  ~Task() {};
+  ~Task() {
+    if (thread_->joinable())
+      thread_->join();
+  };
 
 protected:
   void StartTask() {
