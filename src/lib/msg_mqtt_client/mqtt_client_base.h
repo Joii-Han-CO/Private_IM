@@ -21,7 +21,6 @@ enum class EMqttOnlineStatus {
 
 typedef std::function<void(EMqttOnlineStatus status)> FUNC_StatusChange;
 
-
 struct SMqttConnectInfo {
   std::string host;
   int port = 1883;
@@ -35,11 +34,11 @@ struct SMqttConnectInfo {
 class CMqttClientBase:
   public base::error::LastError,
   public base::log::Log,
-  public base::task::Task {
+  public virtual base::task::Task {
 
 public:
   CMqttClientBase(base::log::LogCallback func);
-  ~CMqttClientBase();
+  virtual ~CMqttClientBase();
 
   // 描述：连接\断开
   //  对外接口，异步执行
@@ -90,8 +89,8 @@ private:
   mosquitto * mqtt_;
   bool is_connected = false;
   int loop_timeout_ = 0;
-  base::async::SyncVal<bool> sync_disconnect_flag = false;
-  std::shared_ptr<base::async::Event> sync_disconnect_event = nullptr;
+  bool sync_disconnect_flag = false;
+  std::mutex sync_disconnect_lock_;
 
   // 订阅成功的列表，用于回调
   std::map<int, std::function<void()>> map_sub_;

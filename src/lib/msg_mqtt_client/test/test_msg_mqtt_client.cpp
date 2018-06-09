@@ -34,7 +34,10 @@ void MqttLog(const base::log::SBaseLog &l) {
   base::debug::OutputLogInfo(l);
 }
 
-void MqttMsg(const std::string &topic, const std::vector<char> data) {}
+void MqttMsg(const std::string &topic, const std::vector<char> &data) {
+  // 处理消息...
+  base::debug::OutPut("[Msg]--%s--size:%d", topic.c_str(), data.size());
+}
 
 #pragma endregion
 
@@ -99,11 +102,14 @@ bool Test_Sub() {
   // sync subscribe
   base::async::Event wait_sub;
 
-  if (gmsg_->Subscribe(g_topic_,
-                       [&wait_sub] () {
+  auto func_finished = [&wait_sub] () {
     wait_sub.Notify();
-  },
-                       [] (std::vector<char>) {}) == false) {
+  };
+  auto func_msg = [] (const std::vector<char> &data) {
+    return MqttMsg(g_topic_, data);
+  };
+
+  if (gmsg_->Subscribe(g_topic_, func_finished, func_msg) == false) {
 
     base::debug::OutPut(L"Subscribe failed, des:%S",
                         gmsg_->GetLastErr_Astd().c_str());

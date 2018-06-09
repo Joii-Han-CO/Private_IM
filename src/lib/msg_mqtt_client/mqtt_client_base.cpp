@@ -39,7 +39,9 @@ private:
 CMqttClientBase::CMqttClientBase(base::log::LogCallback func):
   base::log::Log(func) {}
 
-CMqttClientBase::~CMqttClientBase() {}
+CMqttClientBase::~CMqttClientBase() {
+  WaitTask();
+}
 
 // 连接
 bool CMqttClientBase::Connect(const SMqttConnectInfo &info) {
@@ -58,9 +60,9 @@ void CMqttClientBase::Disconnect() {
     PrintWarn("[Mqtt] not connected, mqtt_ == nullptr");
     return;
   }
-  sync_disconnect_event = std::make_shared<base::async::Event>();
-  sync_disconnect_flag.Set(true);
-  sync_disconnect_event->Wait();
+
+  std::unique_lock<std::mutex> lock(sync_disconnect_lock_);
+  sync_disconnect_flag = true;
 
   mosquitto_destroy(mqtt_);
   mqtt_ = nullptr;
@@ -213,8 +215,8 @@ bool CMqttClientBase::Mqtt_InitOpts(const SMqttConnectInfo &info) {
 void CMqttClientBase::Mqtt_MsgLoop() {
   int i_ref = 0;
   while (true) {
-    if (sync_disconnect_flag.Get()) {
-      sync_disconnect_event->Notify();
+    std::unique_lock<std::mutex> lock(sync_disconnect_lock_);
+    if (sync_disconnect_flag) {
       PrintInfo("[mqtt]--exit loop");
       break;
     }

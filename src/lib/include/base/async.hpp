@@ -16,7 +16,9 @@ public:
 
   void Wait() {
     std::unique_lock<std::mutex> lock(sync_);
-    cv_.wait(lock, [this] () {return flag_; });
+    cv_.wait(lock, [this] () {
+      return flag_;
+    });
   }
 
 private:
