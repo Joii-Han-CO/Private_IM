@@ -58,6 +58,9 @@ void CMqttClientBase::Disconnect() {
     PrintWarn("[Mqtt] not connected, mqtt_ == nullptr");
     return;
   }
+  sync_disconnect_event = std::make_shared<base::async::Event>();
+  sync_disconnect_flag.Set(true);
+  sync_disconnect_event->Wait();
 
   mosquitto_destroy(mqtt_);
   mqtt_ = nullptr;
@@ -70,16 +73,26 @@ void CMqttClientBase::Disconnect() {
 // 添加一个订阅
 bool CMqttClientBase::Subscribe(
   const std::string &topic,
-  const std::function<void(std::vector<char>)> &func) {
-  if (map_sub_.find(topic) != map_sub_.end()) {
+  const std::function<void()> &func_sub,
+  const std::function<void(std::vector<char>)> &func_msg) {
+
+  // 该函数挂上同步锁
+  std::unique_lock<std::mutex> sub_lock(sync_subscribe_);
+  if (map_msg_.find(topic) != map_msg_.end()) {
     SetLastErrAndLog("[Mqtt] subscribe %s failed, duplicate", topic.c_str());
     return false;
   }
-  map_sub_.insert(
+  map_msg_.insert(
     std::pair<std::string, std::function<void(const std::vector<char>&)>>(
-      topic, func));
+      topic, func_msg));
+  int count_id = 0;
 
-  auto ref = mosquitto_subscribe(mqtt_, nullptr, topic.c_str(), 1);
+  auto ref = mosquitto_subscribe(mqtt_, &count_id, topic.c_str(), 1);
+  map_sub_.insert(
+    std::pair<int, std::function<void()>>(
+      count_id, func_sub));
+  sync_sub_callback_.Notify();
+
   if (ref != MOSQ_ERR_SUCCESS) {
     SetLastErrAndLog("[Mqtt] subscribe %s failed, code: %d",
                      topic.c_str(), ref);
@@ -89,7 +102,13 @@ bool CMqttClientBase::Subscribe(
 }
 
 bool CMqttClientBase::Unsubscribe(const std::string & topic) {
-  return false;
+  auto ref = mosquitto_unsubscribe(mqtt_, nullptr, topic.c_str());
+  if (ref != MOSQ_ERR_SUCCESS) {
+    SetLastErrAndLog("[Mqtt] unsubscribe %s failed, code: %d",
+                     topic.c_str(), ref);
+    return false;
+  }
+  return true;
 }
 
 // 推送消息
@@ -183,6 +202,7 @@ bool CMqttClientBase::Mqtt_InitOpts(const SMqttConnectInfo &info) {
     return false;
   }
 
+  mosquitto_subscribe_callback_set(mqtt_, SSub_Cb);
   mosquitto_message_callback_set(mqtt_, SMsg_Cb);
   mosquitto_publish_callback_set(mqtt_, SPub_Cb);
 
@@ -191,10 +211,17 @@ bool CMqttClientBase::Mqtt_InitOpts(const SMqttConnectInfo &info) {
 
 // 消息循环
 void CMqttClientBase::Mqtt_MsgLoop() {
+  int i_ref = 0;
   while (true) {
-    int ref = mosquitto_loop(mqtt_, loop_timeout_, 1);
-    if (ref == 0) {
-
+    if (sync_disconnect_flag.Get()) {
+      sync_disconnect_event->Notify();
+      PrintInfo("[mqtt]--exit loop");
+      break;
+    }
+    i_ref = mosquitto_loop(mqtt_, loop_timeout_, 1);
+    if (i_ref != MOSQ_ERR_SUCCESS) {
+      PrintErro("mosquitto_loop is failed");
+      break;
     }
   }
 }
@@ -202,6 +229,29 @@ void CMqttClientBase::Mqtt_MsgLoop() {
 void CMqttClientBase::Mqtt_StatusChange(EMqttOnlineStatus status) {
   if (cb_status_change_)
     cb_status_change_(status);
+}
+
+#pragma region Callback
+
+// 订阅成功的回调
+void CMqttClientBase::SSub_Cb(mosquitto *mosq, void * obj, int mid,
+                              int qos_count, const int * granted_qos) {
+  if (obj == nullptr)
+    return;
+  CMqttClientBase *this_ = (CMqttClientBase*)obj;
+  if (mosq == nullptr || mosq != this_->mqtt_)
+    return;
+  this_->Sub_Cb(mid, qos_count, granted_qos);
+}
+void CMqttClientBase::Sub_Cb(int mid,
+                             int qos_count, const int * granted_qos) {
+  sync_sub_callback_.Wait();
+  auto it = map_sub_.find(mid);
+  if (it == map_sub_.end())
+    return;
+  if (it->second)
+    it->second();
+  map_sub_.erase(it);
 }
 
 // 消息循环的静态回调
@@ -237,8 +287,8 @@ void CMqttClientBase::Msg_Cb(const mosquitto_message *message) {
   data.resize(message->payloadlen);
   memcpy(data.data(), message->payload, data.size());
 
-  auto it = map_sub_.find(topic);
-  if (it == map_sub_.end()) {
+  auto it = map_msg_.find(topic);
+  if (it == map_msg_.end()) {
     PrintWarn(
       "[Mqtt] message failed, No corresponding callback found");
     return;
@@ -247,6 +297,7 @@ void CMqttClientBase::Msg_Cb(const mosquitto_message *message) {
     it->second(data);
 }
 
+// 消息发送的回调
 void CMqttClientBase::SPub_Cb(mosquitto *mosq, void *obj, int data) {
   if (obj == nullptr)
     return;
@@ -265,6 +316,8 @@ void CMqttClientBase::Pub_Cb(int data) {
     it->second();
   map_pub_.erase(data);
 }
+
+#pragma endregion
 
 #pragma region
 }

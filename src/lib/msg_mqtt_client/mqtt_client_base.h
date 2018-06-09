@@ -4,6 +4,7 @@
 #include "base/log.hpp"
 #include "base/error.hpp"
 #include "base/task.hpp"
+#include "base/async.hpp"
 
 #pragma region
 namespace im {
@@ -47,7 +48,8 @@ public:
 
   // 描述：添加一个订阅
   bool Subscribe(const std::string &topic,
-                 const std::function<void(std::vector<char>)> &func);
+                 const std::function<void()> &func_sub,
+                 const std::function<void(std::vector<char>)> &func_msg);
 
   // 描述：取消一个订阅
   bool Unsubscribe(const std::string &topic);
@@ -71,6 +73,10 @@ private:
   // mqtt状态变更
   void Mqtt_StatusChange(EMqttOnlineStatus status);
 
+  static void SSub_Cb(mosquitto *, void *obj, int mid,
+                      int qos_count, const int *granted_qos);
+  void Sub_Cb(int mid, int qos_count, const int *granted_qos);
+
   static void SMsg_Cb(mosquitto *mosq, void *obj,
                       const mosquitto_message *message);
   void Msg_Cb(const mosquitto_message *message);
@@ -79,17 +85,24 @@ private:
   void Pub_Cb(int data);
 
 private:
-  // 回调
   FUNC_StatusChange cb_status_change_ = nullptr;
-
 
   mosquitto * mqtt_;
   bool is_connected = false;
   int loop_timeout_ = 0;
+  base::async::SyncVal<bool> sync_disconnect_flag = false;
+  std::shared_ptr<base::async::Event> sync_disconnect_event = nullptr;
 
-  std::map<std::string, std::function<void(const std::vector<char>&)>> map_sub_;
+  // 订阅成功的列表，用于回调
+  std::map<int, std::function<void()>> map_sub_;
+  std::mutex sync_subscribe_;
+  base::async::Event sync_sub_callback_;
 
-  int publish_count_id_ = 0;
+  // 订阅对应主题下发的消息
+  std::map<std::string, std::function<void(const std::vector<char>&)>> map_msg_;
+
+  // 发送消息列表，用于回调
+  int publish_count_id_ = 0;    // 发送消息ID计数，防止重复
   std::map<int, std::function<void()>> map_pub_;
 };
 typedef std::shared_ptr<CMqttClientBase> pCMqttClientBase;

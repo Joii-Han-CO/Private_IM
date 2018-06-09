@@ -2,8 +2,9 @@
 #include "test_msg_mqtt_client.h"
 #include "base/character_conversion.hpp"
 #include "base/string_operation.hpp"
-
 #include "base/debug.hpp"
+#include "base/async.hpp"
+
 #include "mqtt_client_base.h"
 
 #include <iostream>
@@ -18,9 +19,14 @@ namespace test {
 
 #pragma region Dev
 
-std::string g_topic_ = "test_1";
+#pragma region global val
 
-im::pCMqttClientBase gmsg;
+im::pCMqttClientBase gmsg_;
+std::map<std::string, std::string> g_args_;
+std::string g_topic_ = "t1";
+bool g_is_init_ = false, g_is_sub_ = false;
+
+#pragma endregion
 
 #pragma region Callback
 
@@ -28,26 +34,28 @@ void MqttLog(const base::log::SBaseLog &l) {
   base::debug::OutputLogInfo(l);
 }
 
+void MqttMsg(const std::string &topic, const std::vector<char> data) {}
+
 #pragma endregion
 
 #pragma region I/R
 
-// 连接...
+// sync connect
 bool Test_Init() {
   base::debug::OutPut("Begin...");
-  gmsg = std::make_shared<im::CMqttClientBase>(MqttLog);
+  gmsg_ = std::make_shared<im::CMqttClientBase>(MqttLog);
 
-  // 同步连接
+  // sync connect
   std::condition_variable wait_conncet;
   std::mutex wait_conncet_mutex;
   bool wait_conncet_flag = false;
 
-  // 初始化连接参数
+  // init args
   im::SMqttConnectInfo connect_info;
   connect_info.host = "127.0.0.1";
   connect_info.port = 1883;
 
-  // 回调
+  // status callback
   connect_info.cb_status_change =
     [&wait_conncet, &wait_conncet_flag] (im::EMqttOnlineStatus status) {
     base::debug::OutPut(
@@ -59,43 +67,67 @@ bool Test_Init() {
     }
   };
 
-  if (gmsg->Connect(connect_info) == false) {
+  // connect
+  if (gmsg_->Connect(connect_info) == false) {
     base::debug::OutPut(L"Connect failed, des:%S",
-                        gmsg->GetLastErr_Astd().c_str());
+                        gmsg_->GetLastErr_Astd().c_str());
     return false;
   }
 
+  // wait connect finished
   std::unique_lock<std::mutex> lock(wait_conncet_mutex);
   wait_conncet.wait(lock,
                     [&wait_conncet_flag] () {return wait_conncet_flag; });
 
   base::debug::OutPut("Connect finished");
+  g_is_init_ = true;
   return true;
 }
 
 void Test_Release() {
-  gmsg->Disconnect();
+  g_is_init_ = false;
+  gmsg_->Disconnect();
+  gmsg_ = nullptr;
   base::debug::OutPut("Disconnect finished");
 }
 
-bool Test_Sub(int argc, char* argv[]) {
-  auto args = base::ArgsToMap(argc, argv);
-  auto arg_topic = args["t"];
+bool Test_Sub() {
+  auto arg_topic = g_args_["t"];
   if (!arg_topic.empty())
     g_topic_ = arg_topic;
 
-  gmsg->Subscribe(g_topic_, [] (std::vector<char>) {});
+  // sync subscribe
+  base::async::Event wait_sub;
 
+  if (gmsg_->Subscribe(g_topic_,
+                       [&wait_sub] () {
+    wait_sub.Notify();
+  },
+                       [] (std::vector<char>) {}) == false) {
+
+    base::debug::OutPut(L"Subscribe failed, des:%S",
+                        gmsg_->GetLastErr_Astd().c_str());
+    return false;
+  }
+
+  wait_sub.Wait();
+  base::debug::OutPut(L"Subcribe init success");
+  g_is_sub_ = true;
   return true;
 }
 
 bool Test_UnSub() {
-  gmsg->Unsubscribe(g_topic_);
+  g_is_sub_ = false;
+  if (gmsg_->Unsubscribe(g_topic_) == false) {
+    base::debug::OutPut(L"Unsubscribe failed, des:%S",
+                        gmsg_->GetLastErr_Astd().c_str());
+    return false;
+  }
+  base::debug::OutPut(L"Unsubcribe init success");
   return true;
 }
 
 #pragma endregion
-
 
 void Test_SendMsg() {
   base::debug::OutPut("Loop");
@@ -104,26 +136,36 @@ void Test_SendMsg() {
     std::cin >> cmd >> data;
     if (cmd == "q")
       break;
-    if (gmsg->Publish(cmd, std::vector<char>(data.begin(), data.end()),
-                      [] () {
+    if (gmsg_->Publish(cmd, std::vector<char>(data.begin(), data.end()),
+                       [] () {
       base::debug::OutPut(L"Publish success");
     })
         == false) {
       base::debug::OutPut(L"Publish failed, des:%S",
-                          gmsg->GetLastErr_Astd().c_str());
+                          gmsg_->GetLastErr_Astd().c_str());
     }
   }
 }
 
-void RunDev() {
+void RunDev(int argc, char* argv[]) {
+  g_args_ = base::ArgsToMap(argc, argv);
+  base::debug::OutPut("Begin Test");
+
   if (Test_Init() == false)
-    return;
+    goto DEV_MQTT_END;
+
+  if (Test_Sub() == false)
+    goto DEV_MQTT_END;
 
   // 测试消息
   Test_SendMsg();
 
-  // 断开连接
-  Test_Release();
+DEV_MQTT_END:
+  if (g_is_sub_)
+    Test_UnSub();
+  if (g_is_init_)
+    Test_Release();
+  base::debug::WaitEnterGoon("End, wait press enter to exit...");
 }
 
 #pragma endregion
@@ -137,9 +179,9 @@ void PrintDes() {
   printf("+----------------------------------------------------------+\n");
   printf("+    c----connect <host> <port>    defualt 127.0.0.1 1883  +\n");
   printf("+    d----disconnect                                       +\n");
-  printf("+    s----subscribe <topci>    defualt t1                  +\n");
+  printf("+    s----subscribe <topic>    defualt t1                  +\n");
   printf("+    u----unsubscribe                                      +\n");
-  printf("+    m----message <topci> <date>    defualt t2 hello       +\n");
+  printf("+    m----message <topic> <date>    defualt t2 hello       +\n");
   printf("+    t----test <loop time>    100                          +\n");
   printf("+    q----quit                                             +\n");
   printf("+----------------------------------------------------------+\n");
@@ -155,7 +197,7 @@ bool CmdDisonnect(const std::string&, const std::string&) {
   return true;
 }
 
-bool CmdSubscribe(const std::string &topci, const std::string&) {
+bool CmdSubscribe(const std::string &topic, const std::string&) {
   base::debug::OutPut("CmdSubscribe");
   return true;
 }
@@ -165,7 +207,7 @@ bool CmdUnsubscribe(const std::string&, const std::string&) {
   return true;
 }
 
-bool CmdMessage(const std::string &topci, const std::string &msg) {
+bool CmdMessage(const std::string &topic, const std::string &msg) {
   base::debug::OutPut("CmdMessage");
   return true;
 }
@@ -235,7 +277,7 @@ int main(int argc, char* argv[]) {
     test::RunCmd();
   }
   else if (std::string(argv[1]) == "dev") {
-    test::RunDev();
+    test::RunDev(argc, argv);
   }
 
   base::debug::WaitEnterGoon("End press enter exit...");
