@@ -38,6 +38,11 @@ inline void OutputLogInfo(const base::log::SBaseLog &l) {
          str_type.c_str(), str_func.c_str(), l.line, str_log.c_str());
 }
 
+inline void WaitEnterGoon(const char *d) {
+  OutPut(d);
+  getchar();
+}
+
 #pragma endregion
 
 #pragma region namespace
