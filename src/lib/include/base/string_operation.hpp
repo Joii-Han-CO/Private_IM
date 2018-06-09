@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "character_conversion.hpp"
 #include <map>
 #include <string>
@@ -7,7 +7,7 @@
 namespace base {
 #pragma endregion
 
-#pragma region ½âÎö²ÎÊı
+#pragma region è§£æå‚æ•°
 
 #define cus_string \
   std::basic_string<cus_char, std::char_traits<cus_char>, \
@@ -113,7 +113,7 @@ inline std::map<cus_string, cus_string> ArgsToMap(cus_string cmd) {
 
 #pragma endregion
 
-#pragma region ×Ö·û´®´¦Àí
+#pragma region å­—ç¬¦ä¸²å¤„ç†
 
 inline size_t GetStrLen(const char *s) { return strlen(s); }
 inline size_t GetStrLen(const wchar_t *s) { return wcslen(s); }
