@@ -13,10 +13,7 @@ namespace task {
 class Task {
 public:
   Task() {};
-  ~Task() {
-    if (thread_->joinable())
-      thread_->join();
-  };
+  virtual ~Task() {};
 
 protected:
   void StartTask() {
@@ -27,6 +24,10 @@ protected:
     break_ = true;
     con_v_.notify_all();
   };
+  void WaitTask() {
+    if (thread_->joinable())
+      thread_->join();
+  }
 
   void AddTask(std::function<void(void)>&& task) {
     std::lock_guard<std::mutex> lock(lock_);
