@@ -1,0 +1,6 @@
+paho.mqtt.c
+  cmake -G "Visual Studio 15 2017" ./../ -DPAHO_WITH_SSL=TRUE -DPAHO_BUILD_STATIC=TRUE -DPAHO_ENABLE_TESTING=FALSE -DOPENSSL_SEARCH_PATH="F:/code/openssl-1.0.2k" -DOPENSSL_INCLUDE_DIR="F:\code\openssl-1.0.2k\inc32" -DOPENSSL_LIB=F:\code\openssl-1.0.2k\out32\libeay32.lib -DOPENSSLCRYPTO_LIB=F:\code\openssl-1.0.2k\out32\ssleay32.lib
+    MD 改成 MT
+    编译并处理编译错误
+paho.mqtt.cpp
+  cmake -G "Visual Studio 15 2017" ./../ -DPAHO_WITH_SSL=TRUE -DPAHO_MQTT_C_PATH=E:\code\im\3rd_lib\paho.mqtt.c -DPAHO_MQTT_C_LIB=E:\code\im\3rd_lib\paho.mqtt.c\o_win\src\Release\paho-mqtt3a-static.lib

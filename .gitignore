@@ -1,0 +1,10 @@
+﻿# VSCode 排除项目
+*/.vscode
+/.vscode
+/3rd_lib/
+
+**/__pycache__
+
+/o_**/
+
+**/.vs/

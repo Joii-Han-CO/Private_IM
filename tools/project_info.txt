@@ -1,0 +1,2 @@
+sln_name:im_private
+namespace:im

@@ -1,0 +1,10 @@
+[
+  {
+    "name":"paho.mqtt.cpp",
+    "url":"https://github.com/eclipse/paho.mqtt.cpp.git"
+  },
+  {
+    "name":"openssl",
+    "url":""
+  }
+]
