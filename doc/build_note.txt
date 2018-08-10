@@ -4,3 +4,9 @@ paho.mqtt.c
     ±‡“Î≤¢¥¶¿Ì±‡“Î¥ÌŒÛ
 paho.mqtt.cpp
   cmake -G "Visual Studio 15 2017" ./../ -DPAHO_WITH_SSL=TRUE -DPAHO_MQTT_C_PATH=E:\code\im\3rd_lib\paho.mqtt.c -DPAHO_MQTT_C_LIB=E:\code\im\3rd_lib\paho.mqtt.c\o_win\src\Release\paho-mqtt3a-static.lib
+  
+openssl-1.0.2o
+paho.mqtt.c
+paho.mqtt.cpp
+protobuf
+zlib-1.2.11
