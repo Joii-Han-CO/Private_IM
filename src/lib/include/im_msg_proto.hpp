@@ -13,16 +13,27 @@ namespace msg_proto {
 struct CMsg_Base {
   EIMMsg_Type msg_type;   //消息类型
 
-  INLINE void CCopy(IMMsg_Base &base_msg) {
-    msg_type = base_msg.msg_type;
+  INLINE void ToCPP(IN IMMsg_Base &msg) {
+    msg_type = msg.msg_type;
   }
-  INLINE void CCopyOut(IMMsg_Base &base_msg) {
-    base_msg.msg_type = msg_type;
+  INLINE void ToC(OUT IMMsg_Base &msg) {
+    msg.msg_type = msg_type;
   }
 };
 
 struct CMsg_Text: public CMsg_Base {
   std::wstring text;
+
+  INLINE void ToCPP(IN IMMsg_Text &msg) {
+    if (msg.text)
+      text = msg.text;
+    CMsg_Base::ToCPP(msg.base);
+  }
+  INLINE void ToC(OUT IMMsg_Text &msg) {
+    if (text.empty() == false)
+      msg.text = text.c_str();
+    CMsg_Base::ToC(msg.base);
+  }
 };
 typedef std::shared_ptr<CMsg_Text> pCMsg_Text;
 
@@ -38,9 +49,9 @@ INLINE pCMsg_Text CParseMsg_Text(std::vector<char> protobuf) {
   }
 
   auto ref = std::make_shared<CMsg_Text>();
-  ref->CCopy(out_msg.base);
-  if (out_msg.text)
-    ref->text = out_msg.text;
+  ref->ToCPP(out_msg);
+  FreeMsgText(&out_msg);
+
   return ref;
 };
 
@@ -50,9 +61,7 @@ INLINE std::vector<char> CGenerateMsg_Text(pCMsg_Text msg) {
 
   IMMsg_ProtoBuf protobuf;
   IMMsg_Text tmp_msg;
-  msg->CCopyOut(tmp_msg.base);
-
-  tmp_msg.text = msg->text.c_str();
+  msg->ToC(tmp_msg);
 
   if (GenerateMsg_Text(protobuf, tmp_msg) == false)
     return std::vector<char>();
@@ -62,6 +71,9 @@ INLINE std::vector<char> CGenerateMsg_Text(pCMsg_Text msg) {
   std::vector<char> ref;
   ref.resize(protobuf.size);
   memcpy_s(ref.data(), ref.size(), protobuf.buf, protobuf.size);
+
+  FreeProtoBuf(&protobuf);
+
   return ref;
 }
 
