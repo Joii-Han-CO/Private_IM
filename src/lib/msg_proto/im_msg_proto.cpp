@@ -6,6 +6,8 @@ namespace im {
 namespace msg_proto {
 #pragma endregion
 
+#pragma region Free
+
 void FreeProtoBuf(IN IMMsg_ProtoBuf *buf) {
   if (buf != nullptr &&
       buf->buf != nullptr && buf->size != 0)
@@ -19,6 +21,8 @@ void FreeMsgText(IN IMMsg_Text * buf) {
     delete[] buf->text;
   buf->text = nullptr;
 }
+
+#pragma endregion
 
 bool ParseMsg_Text(IN IMMsg_ProtoBuf &buf, OUT IMMsg_Text &msg) {
   return true;
