@@ -130,5 +130,11 @@ Add_Definitions(-D_UNICODE)
 
 # 项目依赖
 target_link_libraries(${_lib_name}_test ${_lib_name})
+target_link_libraries(${_lib_name}_test 
+  "D:/Code/lib/protobuf/o_win/Debug/gmock.lib"
+  "D:/Code/lib/protobuf/o_win/Debug/gmock_main.lib"
+  "D:/Code/lib/protobuf/o_win/Debug/libprotobufd.lib"
+  "D:/Code/lib/protobuf/o_win/Debug/libprotobuf-lited.lib"
+  "D:/Code/lib/protobuf/o_win/Debug/libprotocd.lib")
 
 cotire(${_lib_name} ${_lib_name}_test)

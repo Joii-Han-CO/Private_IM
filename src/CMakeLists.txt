@@ -16,7 +16,7 @@ set(_namepace "im")
 
 # 工程属性
 if (CMAKE_SYSTEM_NAME MATCHES "Windows")
-  #add_compile_options("/MTd")
+  add_compile_options("/MTd")
   add_compile_options("/WX")
 else()
   add_compile_options(-std=c++11)
