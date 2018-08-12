@@ -1,10 +1,16 @@
 ﻿# VSCode 排除项目
 */.vscode
 /.vscode
-/3rd_lib/
 
-**/__pycache__
+# VS 临时目录
+**/.vs/
 
+# CMake输出目录
 /o_**/
 
-**/.vs/
+# 3rd
+/3rd_lib/
+
+# Proto class
+/src/lib/msg_proto/proto_class
+

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+message Proto_Base {
+  enum EProto_Type {
+    None = 0;
+    Sending = 1;
+    Send_OK = 2;
+    Receiving = 3;
+    Receive_OK = 4;
+  };
+  EProto_Type msg_type = 1;
+}
+
+message Proto_Text {
+  Proto_Base base = 1;
+  string text = 2;
+}

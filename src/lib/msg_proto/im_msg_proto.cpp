@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "im_msg_proto.h"
+#include "proto_class/msg.pb.h"
 
 #pragma region namespace
 namespace im {

@@ -2,6 +2,16 @@
 cmake_minimum_required (VERSION 3.0)
 
 ################################################################
+#编译Proto
+if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+  execute_process(COMMAND
+    "${PROJECT_SOURCE_DIR}/../3rd_lib/tools/protoc"
+    "-I=${PROJECT_SOURCE_DIR}/lib/msg_proto/protobuf"
+    "--cpp_out=${PROJECT_SOURCE_DIR}/lib/msg_proto/proto_class"
+    "${PROJECT_SOURCE_DIR}/lib/msg_proto/protobuf/msg.proto")
+endif()
+
+################################################################
 # Lib
 
 # 工程名
@@ -25,7 +35,8 @@ set(_stdafx ${PROJECT_SOURCE_DIR}/stdafx)
 include_directories(${_lib_name}
                     ${_incldue}
                     ${PROJECT_SOURCE_DIR}
-                    ${_include_dirs})
+                    ${_include_dirs}
+                    ${INC_Protobuf})
 
 # 创建目录
 set(_inc_file
@@ -39,8 +50,13 @@ set(_cpp_file
   ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp)
 source_group("source" FILES ${_cpp_file})
 
+set(_proto_file
+  ${PROJECT_SOURCE_DIR}/proto_class/msg.pb.h
+  ${PROJECT_SOURCE_DIR}/proto_class/msg.pb.cc)
+source_group("proto" FILES ${_proto_file})
+
 add_library(${_lib_name} ${_prj_lib_type}
-            ${_inc_file} ${_cpp_file})
+            ${_inc_file} ${_cpp_file} ${_proto_file})
 target_link_libraries(${_lib_name} LINK_PUBLIC ${_lib_dirs})
 
 # 设置环境变量
