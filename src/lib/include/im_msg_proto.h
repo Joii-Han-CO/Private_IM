@@ -27,7 +27,6 @@ extern "C" {
 
   // 基础类型，所有消息共有
   struct IMMsg_Base {
-    long long time = 0;   // 消息时间
     EIMMsg_Type msg_type;   //消息类型
 
   };
