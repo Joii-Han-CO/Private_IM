@@ -25,7 +25,10 @@ void TestText() {
     return;
   }
 
-
+  if (ref_msg->text != msg_text->text) {
+    std::cout << "The msg different" << std::endl;
+    return;
+  }
 
 }
 
@@ -34,6 +37,8 @@ void TestText() {
 #pragma endregion
 
 int main() {
+
+  test::TestText();
 
   return 0;
 }
