@@ -14,3 +14,5 @@
 # Proto class
 /src/lib/msg_proto/proto_class
 
+# python 临时文件
+**/__pycache__/**
