@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 3.0)
 #编译Proto
 if (CMAKE_SYSTEM_NAME MATCHES "Windows")
   execute_process(COMMAND
-    "${PROJECT_SOURCE_DIR}/../3rd_lib/tools/protoc"
+    "${THRD_LIB_PATH}/protobuf/o_win/Release/protoc"
     "-I=${PROJECT_SOURCE_DIR}/lib/msg_proto/protobuf"
     "--cpp_out=${PROJECT_SOURCE_DIR}/lib/msg_proto/proto_class"
     "${PROJECT_SOURCE_DIR}/lib/msg_proto/protobuf/msg.proto")
@@ -130,11 +130,21 @@ Add_Definitions(-D_UNICODE)
 
 # 项目依赖
 target_link_libraries(${_lib_name}_test ${_lib_name})
-target_link_libraries(${_lib_name}_test 
-  "D:/Code/lib/protobuf/o_win/Debug/gmock.lib"
-  "D:/Code/lib/protobuf/o_win/Debug/gmock_main.lib"
-  "D:/Code/lib/protobuf/o_win/Debug/libprotobufd.lib"
-  "D:/Code/lib/protobuf/o_win/Debug/libprotobuf-lited.lib"
-  "D:/Code/lib/protobuf/o_win/Debug/libprotocd.lib")
+
+if(CMAKE_BUILD_TYPE MATCHES "Release")
+  target_link_libraries(${_lib_name}_test 
+    "D:/Code/lib/protobuf/o_win/Release/gmock.lib"
+    "D:/Code/lib/protobuf/o_win/Release/gmock_main.lib"
+    "D:/Code/lib/protobuf/o_win/Release/libprotobufd.lib"
+    "D:/Code/lib/protobuf/o_win/Release/libprotobuf-lited.lib"
+    "D:/Code/lib/protobuf/o_win/Release/libprotocd.lib")
+elseif(CMAKE_BUILD_TYPE MATCHES "Release")
+  target_link_libraries(${_lib_name}_test 
+    "D:/Code/lib/protobuf/o_win/Debug/gmock.lib"
+    "D:/Code/lib/protobuf/o_win/Debug/gmock_main.lib"
+    "D:/Code/lib/protobuf/o_win/Debug/libprotobufd.lib"
+    "D:/Code/lib/protobuf/o_win/Debug/libprotobuf-lited.lib"
+    "D:/Code/lib/protobuf/o_win/Debug/libprotocd.lib")
+endif()
 
 cotire(${_lib_name} ${_lib_name}_test)
