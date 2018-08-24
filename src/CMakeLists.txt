@@ -40,3 +40,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # 各个项目
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/msg_proto/)
+
+# msg_mqtt_client
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/msg_mqtt_client/)
