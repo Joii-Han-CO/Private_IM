@@ -10,7 +10,7 @@ namespace base {
 #pragma region Format
 
 template<typename ... T1>
-std::string FormatStr(const char *sz, T1 ... args) {
+inline std::string FormatStr(const char *sz, T1 ... args) {
   if (sz == nullptr || sz[0] == '\0')
     return "";
   std::string rf;
@@ -24,12 +24,12 @@ std::string FormatStr(const char *sz, T1 ... args) {
 
 #define LOG_BASE_IS_SAME(T) std::is_same<T1, T>::value
 
-void CountAgrsSizeC(int &size, std::string arg) {
+inline void CountAgrsSizeC(int &size, std::string arg) {
   size += arg.size();
 };
 
 template<typename ... T1>
-std::wstring FormatStr(const wchar_t *sz, T1 ... args) {
+inline std::wstring FormatStr(const wchar_t *sz, T1 ... args) {
   if (sz == nullptr || sz[0] == '\0')
     return L"";
   std::wstring rf;

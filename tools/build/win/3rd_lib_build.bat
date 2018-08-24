@@ -31,9 +31,11 @@ devenv.com "Eclipse Paho C.sln" /Build Release
 
 
 ::Mqtt CPP
+:: CMake会输出MD版本的库，可能需要自己手动改成MT
 cd /d %im_lib_src%/paho.mqtt.cpp
 git checkout v1.0.0
-mkdir %im_output_name% && cd %im_output_name%
+mkdir %im_output_name%
+cd %im_output_name%
 cmake -G "Visual Studio 15 2017" ./../ -DPAHO_WITH_SSL=TRUE -DPAHO_MQTT_C_PATH=%im_lib_src%/paho.mqtt.c -DPAHO_MQTT_C_LIB=%im_lib_src%/paho.mqtt.c/%im_output_name%/src/Release/paho-mqtt3as.lib
 devenv.com "paho-mqtt-cpp.sln" /Build Debug
 devenv.com "paho-mqtt-cpp.sln" /Build Release

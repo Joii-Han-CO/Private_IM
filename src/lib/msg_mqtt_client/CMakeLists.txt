@@ -3,10 +3,16 @@ cmake_minimum_required (VERSION 3.0)
 
 ################################################################
 # Lib
-
 # 工程名
 set(_lib_name "msg_mqtt_client")
 project(${_lib_name})
+
+set(CMAKE_CXX_FLAGS_DEBUG_INIT "/D_DEBUG /MTd /Zi /Ob0 /Od /RTC1")
+set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT     "/MT /O1 /Ob1 /D NDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE_INIT        "/MT /O2 /Ob2 /D NDEBUG sdfsefsefs")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "/MT /Zi /O2 /Ob1 /D NDEBUG")
+
+
 
 set(_lib_folder "lib")
 
@@ -25,7 +31,9 @@ set(_stdafx ${PROJECT_SOURCE_DIR}/stdafx)
 include_directories(${_lib_name}
                     ${_incldue}
                     ${PROJECT_SOURCE_DIR}
-                    ${_include_dirs})
+                    ${_include_dirs}
+                    ${THRD_LIB_PATH}/paho.mqtt.cpp/src
+                    ${THRD_LIB_PATH}/paho.mqtt.c/src)
 
 # 创建目录
 set(_inc_file
@@ -39,8 +47,13 @@ set(_cpp_file
   ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp)
 source_group("source" FILES ${_cpp_file})
 
+set(_mqtt_client
+  ${PROJECT_SOURCE_DIR}/mqtt_client.h
+  ${PROJECT_SOURCE_DIR}/mqtt_client.cpp)
+source_group("mqtt_client" FILES ${_mqtt_client})
+
 add_library(${_lib_name} ${_prj_lib_type}
-            ${_inc_file} ${_cpp_file})
+            ${_inc_file} ${_cpp_file} ${_mqtt_client})
 target_link_libraries(${_lib_name} LINK_PUBLIC ${_lib_dirs})
 
 # 设置环境变量
@@ -114,5 +127,18 @@ Add_Definitions(-D_UNICODE)
 
 # 项目依赖
 target_link_libraries(${_lib_name}_test ${_lib_name})
+
+target_link_libraries(${_lib_name}_test debug 
+  "${THRD_LIB_PATH}/paho.mqtt.cpp/o_win/src/Debug/paho-mqttpp3.lib")
+
+target_link_libraries(${_lib_name}_test optimized 
+  "${THRD_LIB_PATH}/paho.mqtt.cpp/o_win/src/Release/paho-mqttpp3.lib")
+
+target_link_libraries(${_lib_name}_test 
+  "${THRD_LIB_PATH}/paho.mqtt.c/o_win/src/Release/paho-mqtt3a.lib")
+target_link_libraries(${_lib_name}_test 
+  "${THRD_LIB_PATH}/openssl-1.0.2o/out32/libeay32.lib")
+target_link_libraries(${_lib_name}_test 
+  "${THRD_LIB_PATH}/openssl-1.0.2o/out32/ssleay32.lib")
 
 cotire(${_lib_name} ${_lib_name}_test)

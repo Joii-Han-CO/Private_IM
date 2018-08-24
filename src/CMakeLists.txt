@@ -7,6 +7,12 @@ include(cotire)
 
 find_package(Boost)
 
+# Win下设置静态执行库
+set(CMAKE_USER_MAKE_RULES_OVERRIDE
+  ${CMAKE_CURRENT_SOURCE_DIR}/CMake/c_flag_overrides.cmake)
+set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX
+  ${CMAKE_CURRENT_SOURCE_DIR}/CMake/cxx_flag_overrides.cmake)
+
 # 整体工程名
 set(_sln_name "pim")
 project (${_sln_name})
@@ -16,7 +22,6 @@ set(_namepace "im")
 
 # 工程属性
 if (CMAKE_SYSTEM_NAME MATCHES "Windows")
-  add_compile_options("/MTd")
   add_compile_options("/WX")
 else()
   add_compile_options(-std=c++11)
