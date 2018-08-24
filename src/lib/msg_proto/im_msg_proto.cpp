@@ -37,7 +37,7 @@ bool ParseMsg_Text(IN IMMsg_ProtoBuf &buf, OUT IMMsg_Text &msg) {
 bool GenerateMsg_Text(OUT IMMsg_ProtoBuf &buf, IN IMMsg_Text &msg) {
   Proto_Text tmp_msg;
   tmp_msg.set_text(base::Utf16ToUtf8(msg.text));
-  tmp_msg.base_->set_msg_type();
+  //tmp_msg.base_->set_msg_type();
 
   return true;
 }

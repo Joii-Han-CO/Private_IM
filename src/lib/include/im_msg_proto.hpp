@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "im_type_def.h"
+#include "base/type_def.h"
 #include "im_msg_proto.h"
 #include <memory>
 #include <vector>
