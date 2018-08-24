@@ -1,9 +1,12 @@
 ﻿#pragma once
+#include <map>
 #include <locale>
 #include <string>
 #include <array>
 #include <vector>
 #include <codecvt>
+
+#include "type_def.h"
 
 #pragma region namespace
 namespace base {
@@ -20,9 +23,10 @@ inline void Exception_Throw() {
 #endif
 }
 
+// win32
 #define GBK_LOCALE_NAME ".936"
 
-// 描述：  utf8-->utf16
+// des：  utf8-->utf16
 inline bool Utf8ToUtf16(const std::string& utf8Text,
                         std::wstring& unicodeText) {
   bool ref = false;
@@ -56,7 +60,7 @@ inline std::wstring Utf8ToUtf16(const std::string& utf8Text) {
   return std::wstring();
 }
 
-// 描述：  utf16-->utf8
+// des：  utf16-->utf8
 inline bool Utf16ToUtf8(const std::wstring& unicodeText,
                         std::string& utf8Text) {
   bool ref = false;
@@ -96,7 +100,7 @@ public:
   ~codecvt_gbk() {};
 };
 
-// 描述：  gb2312-->utf16
+// des：  gb2312-->utf16
 inline bool GB2312ToUtf16(const std::string& multiText,
                           std::wstring& unicodeText) {
 #ifndef WIN32
@@ -140,7 +144,7 @@ inline std::wstring GB2312ToUtf16(const std::string& multiText) {
   return std::wstring();
 }
 
-// 描述：  utf16-->gb2312
+// des：  utf16-->gb2312
 inline bool Utf16ToGB2312(const std::wstring& unicodeText,
                           std::string& multiText) {
 #ifndef WIN32
@@ -179,6 +183,59 @@ inline std::string Utf16ToGB2312(const std::wstring& unicodeText) {
     Exception_Throw();
   }
   return std::string();
+};
+
+#pragma endregion
+
+#pragma region 解析参数
+
+#define cus_string \
+  std::basic_string<cus_char, std::char_traits<cus_char>, \
+    std:: allocator<cus_char>>
+
+template<typename cus_char>
+inline std::vector<cus_string> ArgsToVec(int argc, cus_char* argv[]) {
+  std::vector<cus_string> vec_ref;
+  if (argc == 0 || argv == nullptr || argv[0] == nullptr)
+    return vec_ref;
+  for (int i = 1; i < argc; i++) {
+    if (argv[i])
+      vec_ref.push_back(cus_string(argv[i]));
+  }
+  return vec_ref;
+};
+
+template<typename _cus_string>
+inline bool IsArgsCmd(_cus_string &d) {
+  if (d.size() <= 1)
+    return false;
+  if (d[0] == '-' || d[0] == '\\' || d[0] == '/') {
+    return true;
+  }
+  else
+    return false;
+}
+
+template<typename cus_char>
+inline std::map<cus_string, cus_string> ArgsToMap(int argc,
+                                                  cus_char* argv[]) {
+  auto v = ArgsToVec(argc, argv);
+  std::map<cus_string, cus_string> m;
+  size_t s = v.size();
+  for (size_t i = 0; i < s; i++) {
+    if (IsArgsCmd(v[i]) == false)
+      continue;
+    cus_string key, val;
+    if (i + 1 < s) {
+      if (IsArgsCmd(v[i + 1]) == false)
+        val = v[i + 1];
+    }
+    m.insert(std::pair<cus_string, cus_string>(v[i].substr(1, v.size() - 1),
+                                               val));
+    i++;
+  }
+
+  return m;
 };
 
 #pragma endregion
