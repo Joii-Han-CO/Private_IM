@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "test_msg_mqtt_client.h"
+#include "base/character_conversion.hpp"
 #include "im_msg_mqtt_client.h"
 #include "im_msg_mqtt_client.hpp"
 
@@ -14,7 +15,7 @@ namespace test {
 #pragma endregion
 
 // log
-void test_mqtt_log(base::SBaseLog log) {
+void TestMqtt_Log(base::SBaseLog log) {
   std::wstring t = base::Log::FormatTypeW(log.type);
   std::wstring func;
   if (log.func)
@@ -34,24 +35,27 @@ void test_mqtt_log(base::SBaseLog log) {
 #endif
 }
 
-void test_mqtt_faild(std::wstring des) {
+void TestMqtt_Faild(std::wstring des) {
   std::wcout << L"MqttFaild:" << des.c_str() << std::endl;
 }
 
-void TestMQTT_Connected() {
+void TestMqtt_Connected() {
 
 }
 
-void test_mqtt_client(int argc, char* argv[]) {
-  auto a = base::ArgsToMap(argc, argv);
+void TestMqtt_Client(int argc, char* argv[]) {
+  auto args = base::ArgsToMap(argc, argv);
+
+  GetArgsVal(host, "host", "tcp://127.0.0.1:1883");
+  GetArgsVal(topic, "t", "test_01");
 
   im::SMqttClientInitArgs init_args;
-  init_args.host = "tcp://127.0.0.1:1883";
-  init_args.topic = "test_01";
+  init_args.host = args_host.c_str();
+  init_args.topic = args_topic.c_str();
 
-  init_args.func_log = test_mqtt_log;
-  init_args.func_faild = test_mqtt_faild;
-  init_args.func_connected = TestMQTT_Connected;
+  init_args.func_log = TestMqtt_Log;
+  init_args.func_faild = TestMqtt_Faild;
+  init_args.func_connected = TestMqtt_Connected;
 
   im::IMMqttClient mqt(init_args);
 
@@ -94,7 +98,7 @@ void test_mqtt_client(int argc, char* argv[]) {
 
 int main(int argc, char* argv[]) {
 
-  test::test_mqtt_client(argc, argv);
+  test::TestMqtt_Client(argc, argv);
   system("pause");
   return 0;
   return 0;

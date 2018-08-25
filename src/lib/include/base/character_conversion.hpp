@@ -230,13 +230,18 @@ inline std::map<cus_string, cus_string> ArgsToMap(int argc,
       if (IsArgsCmd(v[i + 1]) == false)
         val = v[i + 1];
     }
-    m.insert(std::pair<cus_string, cus_string>(v[i].substr(1, v.size() - 1),
+    m.insert(std::pair<cus_string, cus_string>(v[i].substr(1, v.size()),
                                                val));
     i++;
   }
 
   return m;
 };
+
+#define  GetArgsVal(Key, Key_Name, Def_Val) \
+  std::string args_##Key = Def_Val; \
+  if (args.find(Key_Name) != args.end()) \
+    args_##Key = args[Key_Name];
 
 #pragma endregion
 
