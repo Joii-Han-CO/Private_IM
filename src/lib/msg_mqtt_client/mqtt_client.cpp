@@ -56,8 +56,8 @@ bool IMMqttClient::Disconnect() {
   return true;
 }
 
-bool IMMqttClient::SendMsg(std::string &topci, std::string &msg) {
-  mqtt::message_ptr pubmsg = mqtt::make_message(topci, msg);
+bool IMMqttClient::SendMsg(std::string &topic, std::string &msg) {
+  mqtt::message_ptr pubmsg = mqtt::make_message(topic, msg);
   pubmsg->set_qos(1);
   cli_->publish(pubmsg);
 

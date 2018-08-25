@@ -37,7 +37,7 @@ public:
   // 断开与服务器的连接
   bool Disconnect();
 
-  bool SendMsg(std::string &topci, std::string &msg);
+  bool SendMsg(std::string &topic, std::string &msg);
 
 protected:
   typedef std::function<void(const mqtt::token*)> ActionListenerFunc;
