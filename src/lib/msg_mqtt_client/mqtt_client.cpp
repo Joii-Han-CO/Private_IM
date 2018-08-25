@@ -111,6 +111,7 @@ void IMMqttClient::connection_lost(const std::string& cause) {
 
 void IMMqttClient::message_arrived(mqtt::const_message_ptr msg) {
   PrintInfo("message arrived");
+  std::cout << "Message" << std::endl;
 }
 
 void IMMqttClient::delivery_complete(mqtt::delivery_token_ptr tok) {

@@ -205,6 +205,32 @@ inline std::vector<cus_string> ArgsToVec(int argc, cus_char* argv[]) {
   return vec_ref;
 };
 
+template<typename cus_char>
+inline std::vector<cus_string> ArgsToVec(cus_string cmd) {
+  std::vector<cus_string> vec_ref;
+
+  size_t s = cmd.size();
+  bool is_word = false;
+  size_t begin_pos = 0;
+  size_t i = 0;
+  for (; i < s; i++) {
+    if (is_word == true)
+      continue;
+    if (cmd[i] == '\"')
+      is_word = !is_word;
+    else if (cmd[i] == ' ') {
+      auto val = cmd.substr(begin_pos, i = begin_pos);
+      if (!val.empty())
+        vec_ref.push_back(val);
+      begin_pos = i + 1;
+    }
+  }
+  if (begin_pos != i && begin_pos != i + 1) {
+    vec_ref.push_back(cmd.substr(begin_pos, i = begin_pos));
+  }
+  return vec_ref;
+};
+
 template<typename _cus_string>
 inline bool IsArgsCmd(_cus_string &d) {
   if (d.size() <= 1)
@@ -237,6 +263,28 @@ inline std::map<cus_string, cus_string> ArgsToMap(int argc,
 
   return m;
 };
+
+template<typename cus_char>
+inline std::map<cus_string, cus_string> ArgsToMap(cus_string cmd) {
+  auto v = ArgsToVec(cmd);
+  std::map<cus_string, cus_string> m;
+  size_t s = v.size();
+  for (size_t i = 0; i < s; i++) {
+    if (IsArgsCmd(v[i]) == false)
+      continue;
+    cus_string key, val;
+    if (i + 1 < s) {
+      if (IsArgsCmd(v[i + 1]) == false)
+        val = v[i + 1];
+    }
+    m.insert(std::pair<cus_string, cus_string>(v[i].substr(1, v.size()),
+                                               val));
+    i++;
+  }
+
+  return m;
+};
+
 
 #define  GetArgsVal(Key, Key_Name, Def_Val) \
   std::string args_##Key = Def_Val; \

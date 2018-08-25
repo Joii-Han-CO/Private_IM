@@ -40,7 +40,7 @@ void TestMqtt_Faild(std::wstring des) {
 }
 
 void TestMqtt_Connected() {
-
+  std::cout << "Connected" << std::endl;
 }
 
 void TestMqtt_Client(int argc, char* argv[]) {
@@ -77,10 +77,11 @@ void TestMqtt_Client(int argc, char* argv[]) {
     if (cmd == "q")
       break;
     else if (cmd == "m") {
-      std::string d;
-      std::cin >> d;
-      std::string ss = "123";
-      mqt.SendMsg(ss, d);
+      std::string tmp_topci;
+      std::string tmp_data;
+      std::cin >> tmp_topci >> tmp_data;
+
+      mqt.SendMsg(tmp_topci, tmp_data);
     }
 
     system("cls");
