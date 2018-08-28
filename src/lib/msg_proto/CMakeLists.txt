@@ -36,7 +36,7 @@ include_directories(${_lib_name}
                     ${_incldue}
                     ${PROJECT_SOURCE_DIR}
                     ${_include_dirs}
-                    ${THRD_LIB_PATH}/protobuf/src)
+                    ${THRD_LIB_PATH}/protobuf/include)
 
 # 创建目录
 set(_inc_file
@@ -133,17 +133,17 @@ target_link_libraries(${_lib_name}_test ${_lib_name})
 
 # D|R下不同的库
 target_link_libraries(${_lib_name}_test debug 
-  "${THRD_LIB_PATH}/protobuf/o_win/Debug/libprotobufd.lib")
+  "${THRD_LIB_PATH}/protobuf/Debug/libprotobufd.lib")
 target_link_libraries(${_lib_name}_test debug 
-  "${THRD_LIB_PATH}/protobuf/o_win/Debug/libprotobuf-lited.lib")
+  "${THRD_LIB_PATH}/protobuf/Debug/libprotobuf-lited.lib")
 target_link_libraries(${_lib_name}_test debug 
-  "${THRD_LIB_PATH}/protobuf/o_win/Debug/libprotocd.lib")
+  "${THRD_LIB_PATH}/protobuf/Debug/libprotocd.lib")
 
 target_link_libraries(${_lib_name}_test optimized 
-  "${THRD_LIB_PATH}/protobuf/o_win/Release/libprotobuf.lib")
+  "${THRD_LIB_PATH}/protobuf/Release/libprotobuf.lib")
 target_link_libraries(${_lib_name}_test optimized 
-  "${THRD_LIB_PATH}/protobuf/o_win/Release/libprotobuf-lite.lib")
+  "${THRD_LIB_PATH}/protobuf/Release/libprotobuf-lite.lib")
 target_link_libraries(${_lib_name}_test optimized 
-  "${THRD_LIB_PATH}/protobuf/o_win/Release/libprotoc.lib")
+  "${THRD_LIB_PATH}/protobuf/Release/libprotoc.lib")
 
 cotire(${_lib_name} ${_lib_name}_test)
