@@ -47,8 +47,8 @@ set(_cpp_file
 source_group("source" FILES ${_cpp_file})
 
 set(_mqtt_client
-  ${PROJECT_SOURCE_DIR}/mqtt_client.h
-  ${PROJECT_SOURCE_DIR}/mqtt_client.cpp)
+  ${PROJECT_SOURCE_DIR}/mqtt_client_base.h
+  ${PROJECT_SOURCE_DIR}/mqtt_client_base.cpp)
 source_group("mqtt_client" FILES ${_mqtt_client})
 
 add_library(${_lib_name} ${_prj_lib_type}
