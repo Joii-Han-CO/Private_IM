@@ -1,14 +1,15 @@
 #pragma once
-#include "mqtt/client.h"
+//#include "mqtt/client.h"
 #include "base/type_def.h"
 #include "base/error.hpp"
 #include "base/log.hpp"
 
+#include "mosquitto.h"
 
 #pragma region
 namespace im {
 #pragma endregion
-
+/*
 const std::string CLIENT_ID("sync_subcribe_cpp");
 
 struct SMqttClientInitArgs {
@@ -92,7 +93,7 @@ private:
   int nretry_ = 0;  // 断线重试次数
   const int max_nretry_ = 5;
 };
-
+*/
 #pragma region
 }
 #pragma endregion

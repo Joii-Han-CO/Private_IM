@@ -4,7 +4,7 @@
 #pragma region
 namespace im {
 #pragma endregion
-
+/*
 IMMqttClient::IMMqttClient(IN SMqttClientInitArgs &args):
   base::Log(args.func_log),
   host_(args.host),
@@ -167,7 +167,7 @@ void IMMqttClient::Reconnect() {
       func_faild_(L"Reconnect faild");
   }
 }
-
+*/
 #pragma endregion
 
 #pragma region

@@ -32,8 +32,7 @@ include_directories(${_lib_name}
                     ${_incldue}
                     ${PROJECT_SOURCE_DIR}
                     ${_include_dirs}
-                    ${THRD_LIB_PATH}/paho.mqtt.cpp/src
-                    ${THRD_LIB_PATH}/paho.mqtt.c/src)
+                    ${THRD_LIB_PATH}/mosquitto/include)
 
 # 创建目录
 set(_inc_file
@@ -128,17 +127,9 @@ Add_Definitions(-D_UNICODE)
 # 项目依赖
 target_link_libraries(${_lib_name}_test ${_lib_name})
 
-target_link_libraries(${_lib_name}_test debug 
-  "${THRD_LIB_PATH}/paho.mqtt.cpp/o_win/src/Debug/paho-mqttpp3.lib")
-
-target_link_libraries(${_lib_name}_test optimized 
-  "${THRD_LIB_PATH}/paho.mqtt.cpp/o_win/src/Release/paho-mqttpp3.lib")
-
-target_link_libraries(${_lib_name}_test 
-  "${THRD_LIB_PATH}/paho.mqtt.c/o_win/src/Release/paho-mqtt3a.lib")
-target_link_libraries(${_lib_name}_test 
-  "${THRD_LIB_PATH}/openssl-1.0.2o/out32/libeay32.lib")
-target_link_libraries(${_lib_name}_test 
-  "${THRD_LIB_PATH}/openssl-1.0.2o/out32/ssleay32.lib")
+#target_link_libraries(${_lib_name}_test debug 
+#  "${THRD_LIB_PATH}/paho.mqtt.cpp/o_win/src/Debug/paho-mqttpp3.lib")
+#target_link_libraries(${_lib_name}_test optimized 
+#  "${THRD_LIB_PATH}/paho.mqtt.cpp/o_win/src/Release/paho-mqttpp3.lib")
 
 cotire(${_lib_name} ${_lib_name}_test)

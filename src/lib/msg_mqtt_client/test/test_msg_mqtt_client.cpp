@@ -13,7 +13,7 @@
 #pragma region namespace
 namespace test {
 #pragma endregion
-
+/*
 // log
 void TestMqtt_Log(base::SBaseLog log) {
   std::wstring t = base::Log::FormatTypeW(log.type);
@@ -92,14 +92,14 @@ void TestMqtt_Client(int argc, char* argv[]) {
     return;
   }
 }
-
+*/
 #pragma region namespace
 }
 #pragma endregion
 
 int main(int argc, char* argv[]) {
 
-  test::TestMqtt_Client(argc, argv);
+  //test::TestMqtt_Client(argc, argv);
   system("pause");
   return 0;
   return 0;
