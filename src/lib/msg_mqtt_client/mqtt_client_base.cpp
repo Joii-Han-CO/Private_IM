@@ -43,40 +43,13 @@ CMqttClientBase::~CMqttClientBase() {}
 
 // 连接Mqtt服务器
 bool CMqttClientBase::Connect(const SMqttConnectInfo &info) {
-  auto ref = GlobalInitMqtt::Get()->Init();
-  if (ref != MOSQ_ERR_SUCCESS) {
-    SetLastErrAndLog("[Mqtt] global init failed, code: %d", ref);
-    return false;
-  }
+  StartTask();
 
-  // 创建mosquitto实例
-  mqtt_ = mosquitto_new(nullptr, true, this);
-  if (mqtt_ == nullptr || mqtt_ == (void*)EINVAL) {
-    SetLastErrAndLog("[Mqtt] new mosquitto failed");
-    return false;
-  }
+  auto func = [this, info] () {
+    Mqtt_Connect(info);
 
-  // 设置
-  if (MqttInitOpts(info) == false) {
-    return false;
-  }
-
-  ref = mosquitto_loop_start(mqtt_);
-  if (ref != MOSQ_ERR_SUCCESS) {
-    SetLastErrAndLog("[Mqtt] strart loop failed, code: %d", ref);
-    return false;
-  }
-
-  // 连接...
-  ref = mosquitto_connect_async(mqtt_,
-                                info.host.c_str(), info.port,
-                                info.keepalive);
-  if (ref != MOSQ_ERR_SUCCESS) {
-    SetLastErrAndLog("[Mqtt] connect failed, code: %d", ref);
-    return false;
-  }
-  is_connected = true;
-
+  };
+  AddTask(func);
   return true;
 }
 
@@ -103,8 +76,39 @@ bool CMqttClientBase::Publish() {
   return false;
 }
 
-// 初始化前，设置一些相关参数
-bool CMqttClientBase::MqttInitOpts(const SMqttConnectInfo &info) {
+// mqtt同步连接
+void CMqttClientBase::Mqtt_Connect(const SMqttConnectInfo &info) {
+  auto ref = GlobalInitMqtt::Get()->Init();
+  if (ref != MOSQ_ERR_SUCCESS) {
+    SetLastErrAndLog("[Mqtt] global init failed, code: %d", ref);
+    return;
+  }
+
+  // 创建mosquitto实例
+  mqtt_ = mosquitto_new(nullptr, true, this);
+  if (mqtt_ == nullptr || mqtt_ == (void*)EINVAL) {
+    SetLastErrAndLog("[Mqtt] new mosquitto failed");
+    return;
+  }
+
+  // 设置
+  if (Mqtt_InitOpts(info) == false) {
+    return;
+  }
+
+  // 连接...
+  ref = mosquitto_connect(mqtt_,
+                          info.host.c_str(), info.port,
+                          info.keepalive);
+  if (ref != MOSQ_ERR_SUCCESS) {
+    SetLastErrAndLog("[Mqtt] connect failed, code: %d", ref);
+    return;
+  }
+  is_connected = true;
+}
+
+// mqtt连接前，设置一些相关参数
+bool CMqttClientBase::Mqtt_InitOpts(const SMqttConnectInfo &info) {
   if (info.max_inflight_msg != -1 &&
       mosquitto_max_inflight_messages_set(mqtt_, info.max_inflight_msg) !=
       MOSQ_ERR_SUCCESS) {
@@ -112,36 +116,8 @@ bool CMqttClientBase::MqttInitOpts(const SMqttConnectInfo &info) {
     return false;
   }
 
-  // 设置回调
-  mosquitto_connect_with_flags_callback_set(mqtt_, SConnect_Cb);
-  mosquitto_message_callback_set(mqtt_, SMsg_Cb);
-
   return true;
 }
-
-#pragma region Callback
-
-void CMqttClientBase::SConnect_Cb(mosquitto *mosq, void *obj,
-                                  int result, int flags) {
-  if (obj == nullptr)
-    return;
-  CMqttClientBase *this_ = (CMqttClientBase*)obj;
-  if (mosq == nullptr || mosq != this_->mqtt_)
-    return;
-  this_->Connected(result, flags);
-}
-
-void CMqttClientBase::SMsg_Cb(mosquitto * mosq, void * obj,
-                              const mosquitto_message * message) {
-  if (obj == nullptr)
-    return;
-  CMqttClientBase *this_ = (CMqttClientBase*)obj;
-  if (mosq == nullptr || mosq != this_->mqtt_)
-    return;
-  this_->Messaged(message);
-}
-
-#pragma endregion
 
 #pragma region
 }

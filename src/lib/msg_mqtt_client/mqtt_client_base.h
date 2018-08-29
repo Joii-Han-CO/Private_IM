@@ -39,7 +39,7 @@ public:
   bool Publish();
 
 protected:
-  virtual void Connected(int result, int flags) = 0;
+  virtual void Connected() = 0;
   virtual void Subscribed() = 0;
   virtual void Published() = 0;
   virtual void Messaged(const mosquitto_message *msg) = 0;
@@ -47,20 +47,19 @@ protected:
   VirtualPrintLogFunc(OutLog);
 
 private:
-  // 设置Mqtt一些初始化信息
-  bool MqttInitOpts(const SMqttConnectInfo &info);
+  // mqtt同步连接
+  void Mqtt_Connect(const SMqttConnectInfo &info);
 
-private:
-  static void SConnect_Cb(struct mosquitto *mosq, void *obj,
-                          int result, int flags);
-  static void SMsg_Cb(struct mosquitto *mosq, void *obj,
-                      const struct mosquitto_message *message);
+  // mqtt连接前，设置一些相关参数
+  bool Mqtt_InitOpts(const SMqttConnectInfo &info);
+
 private:
   mosquitto * mqtt_;
 
   bool is_connected = false;
 
   // 各种默认常量
+
 };
 typedef std::shared_ptr<CMqttClientBase> pCMqttClientBase;
 

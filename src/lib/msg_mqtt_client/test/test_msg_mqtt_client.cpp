@@ -18,7 +18,7 @@ namespace test {
 
 class TestMsg: public im::CMqttClientBase {
 protected:
-  void Connected(int result, int flags) override {};
+  void Connected() override {};
   void Subscribed()override {};
   void Published() override {};
   void Messaged(const mosquitto_message *msg) override {};
