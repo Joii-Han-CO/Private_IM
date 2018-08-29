@@ -18,7 +18,7 @@ public:
 protected:
   void StartTask() {
     if (thread_)
-      thread_.reset(new std::thread(std::bind(&Task::Run, this)));
+      thread_.reset(new std::thread(std::bind(&Task::TaskRun, this)));
   };
   void StopTask() {
     break_ = true;
