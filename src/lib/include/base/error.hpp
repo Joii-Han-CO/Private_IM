@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <string>
 #include "character_conversion.hpp"
 #include "log.hpp"
@@ -7,7 +7,7 @@
 namespace base {
 #pragma endregion
 
-// ÓÃÓÚ¼Ì³Ð
+// ç”¨äºŽç»§æ‰¿
 class LastError {
 public:
   virtual ~LastError() {};
