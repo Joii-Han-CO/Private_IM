@@ -3,6 +3,7 @@
 #include <mosquitto.h>
 #include "base/log.hpp"
 #include "base/error.hpp"
+#include "base/task.hpp"
 
 #pragma region
 namespace im {
@@ -18,7 +19,8 @@ struct SMqttConnectInfo {
 
 class CMqttClientBase:
   public base::LastError,
-  public base::Log {
+  public base::Log,
+  public base::task::Task {
 
 public:
   CMqttClientBase();
@@ -54,7 +56,7 @@ private:
   static void SMsg_Cb(struct mosquitto *mosq, void *obj,
                       const struct mosquitto_message *message);
 private:
-  mosquitto *mqtt_;
+  mosquitto * mqtt_;
 
   bool is_connected = false;
 
