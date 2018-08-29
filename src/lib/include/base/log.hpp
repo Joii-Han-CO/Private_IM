@@ -5,6 +5,7 @@
 
 #pragma region namespace
 namespace base {
+namespace log {
 #pragma endregion
 
 #pragma region Format
@@ -91,7 +92,7 @@ public:
 #pragma region
 #define VirtualPrintLogFunc(FuncName) \
 protected: \
-  void VPrintLogFunc(const base::SBaseLog &func) { return FuncName(func); };
+  void VPrintLogFunc(const base::log::SBaseLog &func) { return FuncName(func); };
 
 #define BindVirtualLog(class_name) \
   std::bind(&class_name::VPrintLogFunc, this, std::placeholders::_1)
@@ -124,16 +125,16 @@ protected:
     l.log = str_log.c_str();
     func_(l);
   };
-#define PrintLog(type, log, ...) \
+#define PrintLog(type, log_str, ...) \
   if (func_) \
     LogPrintLog(type, __FUNCTION__, __FILE__, __LINE__, \
-      base::FormatStr(log, ##__VA_ARGS__).c_str());
-#define PrintInfo(log, ...) \
-  PrintLog(base::EBaseLogType::info, log, ##__VA_ARGS__)
-#define PrintWarn(log, ...) \
-  PrintLog(base::EBaseLogType::warn, log, ##__VA_ARGS__)
-#define PrintErro(log, ...) \
-  PrintLog(base::EBaseLogType::erro, log, ##__VA_ARGS__)
+      base::log::FormatStr(log_str, ##__VA_ARGS__).c_str());
+#define PrintInfo(log_str, ...) \
+  PrintLog(base::log::EBaseLogType::info, log_str, ##__VA_ARGS__)
+#define PrintWarn(log_str, ...) \
+  PrintLog(base::log::EBaseLogType::warn, log_str, ##__VA_ARGS__)
+#define PrintErro(log_str, ...) \
+  PrintLog(base::log::EBaseLogType::erro, log_str, ##__VA_ARGS__)
 
 #pragma endregion
 
@@ -142,5 +143,6 @@ protected:
 };
 
 #pragma region namespace
+}
 }
 #pragma endregion

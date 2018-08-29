@@ -18,8 +18,8 @@ struct SMqttConnectInfo {
 };
 
 class CMqttClientBase:
-  public base::LastError,
-  public base::Log,
+  public base::error::LastError,
+  public base::log::Log,
   public base::task::Task {
 
 public:
@@ -43,7 +43,7 @@ protected:
   virtual void Subscribed() = 0;
   virtual void Published() = 0;
   virtual void Messaged(const mosquitto_message *msg) = 0;
-  virtual void OutLog(const base::SBaseLog &func) = 0;
+  virtual void OutLog(const base::log::SBaseLog &func) = 0;
   VirtualPrintLogFunc(OutLog);
 
 private:

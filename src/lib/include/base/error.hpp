@@ -5,6 +5,7 @@
 
 #pragma region namespace
 namespace base {
+namespace error {
 #pragma endregion
 
 // 用于继承
@@ -22,17 +23,18 @@ protected:
   }
   template<typename ... T1>
   void SetLastErr(const char *sz, T1 ... args) {
-    last_error_ = base::GB2312ToUtf16(FormatStr(sz, args...));
+    last_error_ = base::GB2312ToUtf16(base::log::FormatStr(sz, args...));
   }
 
-#define SetLastErrAndLog(log, ...) \
-  SetLastErr(log, ##__VA_ARGS__); \
-  PrintErro(log, ##__VA_ARGS__);
+#define SetLastErrAndLog(log_str, ...) \
+  SetLastErr(log_str, ##__VA_ARGS__); \
+  PrintErro(log_str, ##__VA_ARGS__);
 
 protected:
   std::wstring last_error_;
 };
 
 #pragma region namespace
+}
 }
 #pragma endregion

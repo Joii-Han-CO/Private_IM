@@ -37,7 +37,7 @@ private:
 }
 
 CMqttClientBase::CMqttClientBase():
-  base::Log(BindVirtualLog(CMqttClientBase)) {}
+  base::log::Log(BindVirtualLog(CMqttClientBase)) {}
 
 CMqttClientBase::~CMqttClientBase() {}
 

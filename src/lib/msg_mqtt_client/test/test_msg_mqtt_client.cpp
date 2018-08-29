@@ -22,7 +22,7 @@ protected:
   void Subscribed()override {};
   void Published() override {};
   void Messaged(const mosquitto_message *msg) override {};
-  void OutLog(const base::SBaseLog &func) override {};
+  void OutLog(const base::log::SBaseLog &func) override {};
 };
 
 void TestMqtt_Client(int argc, char* argv[]) {
