@@ -127,9 +127,7 @@ Add_Definitions(-D_UNICODE)
 # 项目依赖
 target_link_libraries(${_lib_name}_test ${_lib_name})
 
-#target_link_libraries(${_lib_name}_test debug 
-#  "${THRD_LIB_PATH}/paho.mqtt.cpp/o_win/src/Debug/paho-mqttpp3.lib")
-#target_link_libraries(${_lib_name}_test optimized 
-#  "${THRD_LIB_PATH}/paho.mqtt.cpp/o_win/src/Release/paho-mqttpp3.lib")
+target_link_libraries(${_lib_name}_test 
+  "${THRD_LIB_PATH}/mosquitto/mosquitto.lib")
 
 cotire(${_lib_name} ${_lib_name}_test)

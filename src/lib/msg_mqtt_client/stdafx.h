@@ -7,3 +7,4 @@
 #include <condition_variable>
 
 // Mqtt
+#include <mosquitto.h>
