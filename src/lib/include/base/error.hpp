@@ -25,6 +25,10 @@ protected:
     last_error_ = base::GB2312ToUtf16(FormatStr(sz, args...));
   }
 
+#define SetLastErrAndLog(log, ...) \
+  SetLastErr(log, ##__VA_ARGS__); \
+  PrintErro(log, ##__VA_ARGS__);
+
 protected:
   std::wstring last_error_;
 };
