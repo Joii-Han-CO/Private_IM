@@ -88,6 +88,16 @@ public:
       return L"";
   }
 
+#pragma region
+#define VirtualPrintLogFunc(FuncName) \
+protected: \
+  void VPrintLogFunc(const base::SBaseLog &func) { return FuncName(func); };
+
+#define BindVirtualLog(class_name) \
+  std::bind(&class_name::VPrintLogFunc, this, std::placeholders::_1)
+
+#pragma endregion
+
 protected:
 #pragma region PrintLog
 
