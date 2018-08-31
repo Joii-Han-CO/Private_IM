@@ -1,3 +1,5 @@
+echo off
+
 :: 先获取环境变量
 call tools\build\win\set_env.bat
 
@@ -10,4 +12,13 @@ cd o_win
 mkdir ..\src\lib\msg_proto\proto_class\
 cmake -G "Visual Studio 15 2017" ./../src/ -DTHRD_LIB_PATH=%im_3rd_lib%
 
+set cmake_ref_val=%errorlevel%
 cd ..
+
+if %cmake_ref_val%==0 goto end
+
+:cmake_error
+echo ----CMake Failed!----
+pause
+
+:end
