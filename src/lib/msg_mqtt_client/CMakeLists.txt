@@ -29,7 +29,13 @@ include_directories(${_lib_name}
 
 # 创建目录
 set(_inc_file
-  ${_stdafx}.h)
+  ${_stdafx}.h
+  ${_incldue}/base/character_conversion.hpp
+  ${_incldue}/base/debug.hpp
+  ${_incldue}/base/error.hpp
+  ${_incldue}/base/log.hpp
+  ${_incldue}/base/task.hpp
+  ${_incldue}/base/type_def.h)
 source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
