@@ -43,7 +43,7 @@ add_executable(${_lib_name}
 
 # 设置工程目录
 set_target_properties(${_lib_name} PROPERTIES FOLDER
-                      ${_lib_folder}/${_lib_name})
+                      ${_lib_folder})
 
 # 预编译头
 set_target_properties(${_lib_name} PROPERTIES
