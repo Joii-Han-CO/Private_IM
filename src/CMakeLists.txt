@@ -51,3 +51,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib/msg_mqtt_client/)
 
 # server_main
 add_subdirectory(${PROJECT_SOURCE_DIR}/server/server_main/)
+
+# net_communication
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/net_communication/)
