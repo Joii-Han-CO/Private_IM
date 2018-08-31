@@ -78,7 +78,8 @@ source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
   ${_stdafx}.cpp
-  ${PROJECT_SOURCE_DIR}/test/test_${_lib_name}.cpp)
+  ${PROJECT_SOURCE_DIR}/test/test_${_lib_name}.cpp
+  ${PROJECT_SOURCE_DIR}/test/test_transmission.cpp)
 source_group("source" FILES ${_cpp_file})
 
 # add src files
