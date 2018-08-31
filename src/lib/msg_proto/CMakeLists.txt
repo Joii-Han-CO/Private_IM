@@ -82,7 +82,7 @@ set_target_properties(${_lib_name} PROPERTIES
 # Test
 
 set(_test_name ${_lib_name}_test)
-project(${_lib_name}_test1)
+project(${_test_name})
 
 set(_stdafx ${PROJECT_SOURCE_DIR}/test/stdafx)
 
