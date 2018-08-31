@@ -7,13 +7,6 @@ cmake_minimum_required (VERSION 3.0)
 set(_lib_name "msg_mqtt_client")
 project(${_lib_name})
 
-set(CMAKE_CXX_FLAGS_DEBUG_INIT "/D_DEBUG /MTd /Zi /Ob0 /Od /RTC1")
-set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT     "/MT /O1 /Ob1 /D NDEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE_INIT        "/MT /O2 /Ob2 /D NDEBUG sdfsefsefs")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "/MT /Zi /O2 /Ob1 /D NDEBUG")
-
-
-
 set(_lib_folder "lib")
 
 # C\C++ 包含源码路径
@@ -36,14 +29,11 @@ include_directories(${_lib_name}
 
 # 创建目录
 set(_inc_file
-  ${_stdafx}.h
-  ${_incldue}/${_namepace}_${_lib_name}.h
-  ${_incldue}/${_namepace}_${_lib_name}.hpp)
+  ${_stdafx}.h)
 source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
-  ${_stdafx}.cpp
-  ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp)
+  ${_stdafx}.cpp)
 source_group("source" FILES ${_cpp_file})
 
 set(_mqtt_client
@@ -78,7 +68,7 @@ set_target_properties(${_lib_name} PROPERTIES
 # Test
 
 set(_test_name ${_lib_name}_test)
-project(${_lib_name}_test1)
+project(${_test_name})
 
 set(_stdafx ${PROJECT_SOURCE_DIR}/test/stdafx)
 
@@ -125,9 +115,9 @@ set_target_properties(${_test_name} PROPERTIES
 Add_Definitions(-D_UNICODE)
 
 # 项目依赖
-target_link_libraries(${_lib_name}_test ${_lib_name})
+target_link_libraries(${_test_name} ${_lib_name})
 
-target_link_libraries(${_lib_name}_test 
+target_link_libraries(${_test_name} 
   "${THRD_LIB_PATH}/mosquitto/mosquitto.lib")
 
-cotire(${_lib_name} ${_lib_name}_test)
+cotire(${_lib_name} ${_test_name})

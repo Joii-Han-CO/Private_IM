@@ -1,8 +1,6 @@
 ﻿#include "stdafx.h"
 #include "test_msg_mqtt_client.h"
 #include "base/character_conversion.hpp"
-#include "im_msg_mqtt_client.h"
-#include "im_msg_mqtt_client.hpp"
 
 #include "base/debug.hpp"
 
