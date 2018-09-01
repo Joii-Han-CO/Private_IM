@@ -13,6 +13,7 @@ namespace nc {
 #pragma endregion
 
 typedef std::function<void()> FUNC_MessageCallback;
+typedef std::function<void()> FUNC_ResponseCallback;
 typedef std::function<void(const base::log::SBaseLog &func)> FUNC_LogCallback;
 
 // 初始化参数
@@ -22,6 +23,7 @@ struct SNetCom_InitArgs {
   bool listener = false;
 
   FUNC_MessageCallback cb_message;
+  FUNC_ResponseCallback cb_responose;
   FUNC_LogCallback cb_log;
 };
 
@@ -58,11 +60,22 @@ public:
   bool Request(const std::vector<char> &data,
                const FUNC_RequestCallback &cb);
 
+  // 日志
 private:
   void LogCallabck(const base::log::SBaseLog &func);
 
+  bool InitCallback(const SNetCom_InitArgs &args);
+
+  // 网络相关
+  bool InitNet(const SNetCom_InitArgs &args);
+
 private:
+  FUNC_MessageCallback cb_message_ = nullptr;
+  FUNC_ResponseCallback cb_responose_ = nullptr;
   FUNC_LogCallback cb_log_ = nullptr;
+
+  // 网络连接
+  std::shared_ptr<boost::asio::ip::tcp::acceptor> acceptor_;
 
 };
 typedef std::shared_ptr<CNetCom> pCNetCom;
