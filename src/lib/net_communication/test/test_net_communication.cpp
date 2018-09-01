@@ -9,7 +9,7 @@ namespace test {
 }
 #pragma endregion
 
-int main() {
-
+int main(int argc, char *argv[]) {
+  test::TestNC(argc, argv);
   return 0;
 }
