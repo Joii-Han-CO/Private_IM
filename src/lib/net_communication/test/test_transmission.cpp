@@ -1,14 +1,17 @@
 ﻿#include "stdafx.h"
 #include "test_net_communication.h"
-#include "base/debug.hpp"
 #include "net_communication.h"
+#include <base/debug.hpp>
 #include <base/character_conversion.hpp>
 
 #pragma region namespace
 namespace test {
 #pragma endregion
 
+const int test_data_loop_ = 100;
+
 im::nc::pCNetCom g_nc1, g_nc2;
+std::vector<std::string> data;
 
 int g_port1 = 0;
 int g_port2 = 0;
@@ -71,6 +74,17 @@ bool Init_2() {
   });
 
   return true;
+}
+
+// 生成测试数据
+std::string GenerDataList() {
+  return std::string();
+}
+
+void TestSendMsg(im::nc::pCNetCom nc) {
+  for (int i = 0; i < 100; i++) {
+
+  }
 }
 
 void TestNC(int argc, char *argv[]) {

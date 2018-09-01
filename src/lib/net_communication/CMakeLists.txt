@@ -25,7 +25,8 @@ set(_stdafx ${PROJECT_SOURCE_DIR}/stdafx)
 include_directories(${_lib_name}
                     ${_incldue}
                     ${PROJECT_SOURCE_DIR}
-                    ${_include_dirs})
+                    ${_include_dirs}
+                    ${Boost_INCLUDE_DIRS})
 
 # 创建目录
 set(_inc_file
@@ -115,4 +116,4 @@ Add_Definitions(-D_UNICODE)
 # 项目依赖
 target_link_libraries(${_lib_name}_test ${_lib_name})
 
-cotire(${_lib_name} ${_lib_name}_test1)
+cotire(${_lib_name} ${_lib_name}_test)

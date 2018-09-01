@@ -29,6 +29,7 @@ set(_namepace "im")
 # 工程属性
 if (CMAKE_SYSTEM_NAME MATCHES "Windows")
   add_compile_options("/WX")
+  link_directories(${_test_name} ${Boost_LIBRARY_DIRS})
 else()
   add_compile_options(-std=c++11)
 endif()

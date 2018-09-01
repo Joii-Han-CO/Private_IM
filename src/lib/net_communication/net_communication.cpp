@@ -1,7 +1,6 @@
 ﻿#include "stdafx.h"
 #include "net_communication.h"
 
-
 #pragma region namespace
 namespace im {
 namespace nc {
@@ -13,21 +12,23 @@ CNetCom::CNetCom():
 
 CNetCom::~CNetCom() {}
 
+// 初始化
 bool CNetCom::Init(const SNetCom_InitArgs &args,
                    const std::function<void(int)> &cb) {
   return true;
 }
 
+// 释放
 bool CNetCom::Release(const std::function<void()> &cb) {
   return true;
 }
 
-bool CNetCom::Send(std::vector<char> data,
+bool CNetCom::Send(const std::vector<char> &data,
                    const FUNC_SendCallback &cb) {
   return true;
 }
 
-bool CNetCom::Request(std::vector<char> data,
+bool CNetCom::Request(const std::vector<char> &data,
                       const FUNC_RequestCallback &cb) {
   return true;
 }

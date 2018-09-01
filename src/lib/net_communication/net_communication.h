@@ -5,7 +5,7 @@
 #include <functional>
 #include <vector>
 #include <memory>
-
+#include <boost/asio.hpp>
 
 #pragma region namespace
 namespace im {
@@ -15,6 +15,7 @@ namespace nc {
 typedef std::function<void()> FUNC_MessageCallback;
 typedef std::function<void(const base::log::SBaseLog &func)> FUNC_LogCallback;
 
+// 初始化参数
 struct SNetCom_InitArgs {
   std::string host;
   int port = -1;   // 如果为 -1 则自动查找到一个默认端口使用
@@ -48,13 +49,13 @@ public:
 
   // 描述：发送消息
   typedef std::function<void(SNetCom_InitArgs)> FUNC_SendCallback;
-  bool Send(std::vector<char> data,
+  bool Send(const std::vector<char> &data,
             const FUNC_SendCallback &cb);
 
   // 描述：请求数据
   typedef std::function<void(ENetCom_ReqStatus, std::vector<char>)>
     FUNC_RequestCallback;
-  bool Request(std::vector<char> data,
+  bool Request(const std::vector<char> &data,
                const FUNC_RequestCallback &cb);
 
 private:
