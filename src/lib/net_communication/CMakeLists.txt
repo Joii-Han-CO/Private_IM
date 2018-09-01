@@ -29,11 +29,13 @@ include_directories(${_lib_name}
 
 # 创建目录
 set(_inc_file
-  ${_stdafx}.h)
+  ${_stdafx}.h
+  ${PROJECT_SOURCE_DIR}/net_communication.h)
 source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
-  ${_stdafx}.cpp)
+  ${_stdafx}.cpp
+  ${PROJECT_SOURCE_DIR}/net_communication.cpp)
 source_group("source" FILES ${_cpp_file})
 
 add_library(${_lib_name} ${_prj_lib_type}
@@ -62,7 +64,7 @@ set_target_properties(${_lib_name} PROPERTIES
 ################################################################
 # Test1
 
-set(_test_name ${_lib_name}_test1)
+set(_test_name ${_lib_name}_test)
 project(${_test_name})
 
 set(_stdafx ${PROJECT_SOURCE_DIR}/test/stdafx)
@@ -100,40 +102,8 @@ set_target_properties(${_test_name} PROPERTIES FOLDER
 # 预编译头
 set_target_properties(${_test_name} PROPERTIES
                       COTIRE_CXX_PREFIX_HEADER_INIT ${_stdafx}.h)
-set_target_properties(${_test_name} PROPERTIES
-                      COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
-################################################################
-
-
-################################################################
-# Test2
-
-set(_test_name ${_lib_name}_test2)
-project(${_test_name})
-
-# 源码包含目录
-include_directories(${_test_name} ${_incldue})
-
-source_group("include" FILES ${_inc_file})
-source_group("source" FILES ${_cpp_file})
-
-# add src files
-add_executable(${_test_name}
-               ${_inc_file} ${_cpp_file})
-
-# 设置环境变量
-target_compile_definitions(${_test_name}
-                           PRIVATE
-                           ${_compile_def} TEST_2)
-                           
-set_target_properties(${_test_name} PROPERTIES FOLDER
-                      ${_lib_folder}/${_lib_name})
-
-# 预编译头
-set_target_properties(${_test_name} PROPERTIES
-                      COTIRE_CXX_PREFIX_HEADER_INIT ${_stdafx}.h)
-set_target_properties(${_test_name} PROPERTIES
-                      COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
+#set_target_properties(${_test_name} PROPERTIES
+#                      COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
 ################################################################
 
 
@@ -143,7 +113,6 @@ set_target_properties(${_test_name} PROPERTIES
 Add_Definitions(-D_UNICODE)
 
 # 项目依赖
-target_link_libraries(${_lib_name}_test1 ${_lib_name})
-target_link_libraries(${_lib_name}_test2 ${_lib_name})
+target_link_libraries(${_lib_name}_test ${_lib_name})
 
-cotire(${_lib_name} ${_lib_name}_test1 ${_lib_name}_test2)
+cotire(${_lib_name} ${_lib_name}_test1)
