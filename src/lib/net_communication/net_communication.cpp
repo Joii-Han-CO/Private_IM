@@ -13,7 +13,6 @@ CNetCom::CNetCom():
 
 CNetCom::~CNetCom() {}
 
-
 #pragma region Init
 
 // 初始化
@@ -25,6 +24,11 @@ bool CNetCom::Init(const SNetCom_InitArgs &args,
   if (InitNet(args) == false)
     return false;
 
+  thread_server_ = std::thread([this] () {
+    io_service_->run();
+  });
+
+  cb(bind_post_);
   return true;
 }
 
@@ -44,13 +48,55 @@ bool CNetCom::InitCallback(const SNetCom_InitArgs &args) {
 }
 
 bool CNetCom::InitNet(const SNetCom_InitArgs &args) {
+  io_service_ = std::make_shared<boost_io_service>();
+  sock_ = std::make_shared<boost_tcp::socket>(*io_service_);
+
   if (args.listener == true) {
     // 打开端口进行监听
+    if (InitListener() == false)
+      return false;
   }
   else {
     // 打开对方端口
+    if (InitConnector(args.host, args.port) == false)
+      return false;
   }
 
+  return true;
+}
+
+// 初始化监听者
+bool CNetCom::InitListener() {
+  int port = g_port_tmp_;
+  acceptor_ = BindPort_Sync(port);
+  try {
+    acceptor_->async_accept(
+      *sock_,
+      boost::bind(&CNetCom::HandleAccept,
+                  this,
+                  boost::asio::placeholders::error));
+  }
+  catch (std::exception& e) {
+    SetLastErrAndLog("[net]--run async_accept failed,des:%s", e.what());
+    return false;
+  }
+
+  bind_post_ = port;
+  return true;
+}
+
+// 初始化连接
+bool CNetCom::InitConnector(const std::string &host, int port) {
+  boost_tcp::resolver resolver(*io_service_);
+  auto ep =
+    resolver.resolve(
+      boost_tcp::resolver::query(host, std::to_string(port)));
+
+  boost::asio::async_connect(
+    *sock_, ep,
+    boost::bind(&CNetCom::HandleConnect,
+                this,
+                boost::asio::placeholders::error));
   return true;
 }
 
@@ -76,6 +122,55 @@ void CNetCom::LogCallabck(const base::log::SBaseLog &func) {
     cb_log_(func);
 }
 
+#pragma region Net
+
+// 循环绑定端口
+std::shared_ptr<boost_tcp::acceptor> CNetCom::BindPort_Sync(int &begin) {
+  for (int port = begin; port <= g_port_max_; port++) {
+    try {
+      auto ep = std::make_shared<boost_tcp::endpoint>(
+        boost::asio::ip::tcp::v4(), port);
+      auto a = std::make_shared<boost_tcp::acceptor>(
+        *io_service_, *ep);
+      return a;
+    }
+    catch (boost::system::system_error &e) {
+      auto code = e.code().value();
+      if (code != 10013) {
+        SetLastErrAndLog("[net]--bind port failed, code:%d", code);
+        nullptr;
+      }
+    }
+  }
+  SetLastErrAndLog("[net]--bind port failed, port exhausted");
+  return nullptr;
+}
+
+void CNetCom::HandleAccept(const boost::system::error_code &error) {
+  // 这里是否考虑同步...
+  if (error) {
+    PrintErro("[net]--accept error,des:%d", error.message().c_str());
+    return;
+  }
+  NetStart();
+}
+
+void CNetCom::HandleConnect(const boost::system::error_code &error) {
+  // 这里是否考虑同步...
+  if (error) {
+    PrintErro("[net]--accept error,des:%d", error.message().c_str());
+    return;
+  }
+  NetStart();
+}
+
+
+
+void CNetCom::NetStart() {
+  cb_message_();
+}
+
+#pragma endregion
 
 #pragma region namespace
 }

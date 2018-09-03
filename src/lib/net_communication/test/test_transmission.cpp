@@ -22,6 +22,9 @@ bool Init_1() {
   args.port = -1;
   args.listener = true;
 
+  args.cb_message = [] () {};
+  args.cb_responose = [] () {};
+
   // 同步等待
   std::condition_variable wait_init_finished;
   std::mutex wait_init_finished_sync;
@@ -51,6 +54,9 @@ bool Init_2() {
   args.host = "127.0.0.1";
   args.port = g_port1;
   args.listener = false;
+
+  args.cb_message = [] () {};
+  args.cb_responose = [] () {};
 
   // 同步等待
   std::condition_variable wait_init_finished;
@@ -88,6 +94,9 @@ void TestSendMsg(im::nc::pCNetCom nc) {
 }
 
 void TestNC(int argc, char *argv[]) {
+  g_nc1 = std::make_shared<im::nc::CNetCom>();
+  g_nc2 = std::make_shared<im::nc::CNetCom>();
+
   // 直接在同一个进程测试
   if (Init_1() == false) {
     base::debug::OutPut("Init listener failed");
@@ -99,7 +108,7 @@ void TestNC(int argc, char *argv[]) {
   }
 
   // 打开监听
-
+  getchar();
 
 };
 
