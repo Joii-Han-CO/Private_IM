@@ -23,6 +23,7 @@ typedef boost::asio::io_service boost_io_service;
 typedef std::function<void()> FUNC_MessageCallback;
 typedef std::function<void()> FUNC_ResponseCallback;
 typedef std::function<void(const base::log::SBaseLog &func)> FUNC_LogCallback;
+typedef std::function<void()> FUNC_ConnectedCallback;
 
 // 初始化参数
 struct SNetCom_InitArgs {
@@ -30,6 +31,7 @@ struct SNetCom_InitArgs {
   int port = -1;   // 如果为 -1 则自动查找到一个默认端口使用
   bool listener = false;
 
+  FUNC_ConnectedCallback cb_connected;
   FUNC_MessageCallback cb_message;
   FUNC_ResponseCallback cb_responose;
   FUNC_LogCallback cb_log;
@@ -40,7 +42,6 @@ enum class ENetCom_ReqStatus {
 };
 
 class CNetCom:
-  private base::task::Task,
   public base::log::Log,
   public base::error::LastError {
 public:
@@ -50,11 +51,10 @@ public:
   // 描述：初始化，异步
   //  cb  初始化完成后的回调
   //        参数1   打开的端口号
-  bool Init(const SNetCom_InitArgs &args,
-            const std::function<void(int)> &cb);
+  bool Init(const SNetCom_InitArgs &args, int *port);
 
-  // 描述：释放资源，异步
-  //  cb    完成后的通知
+ // 描述：释放资源，异步
+ //  cb    完成后的通知
   bool Release(const std::function<void()> &cb);
 
   // 描述：发送消息
@@ -86,26 +86,28 @@ private:
 
   // 尝试绑定某个端口
   //  begin  输出起始端口，输出绑定成功的端口。
-  std::shared_ptr<boost_tcp::acceptor> BindPort_Sync(int &begin);
+  std::shared_ptr<boost_tcp::acceptor> BindPort_Sync(int begin);
 
   void HandleAccept(const boost::system::error_code& error);
 
   void HandleConnect(const boost::system::error_code &error);
 
   // 某个用户连接上...
-  void NetStart();
+  void NetListener();
+  void NetConnected();
 
 private:
+  FUNC_ConnectedCallback cb_connected = nullptr;
   FUNC_MessageCallback cb_message_ = nullptr;
   FUNC_ResponseCallback cb_responose_ = nullptr;
   FUNC_LogCallback cb_log_ = nullptr;
+
 
   // 网络连接
   std::shared_ptr<boost_io_service> io_service_;
   std::shared_ptr<boost_tcp::acceptor> acceptor_;
   std::shared_ptr<boost_tcp::socket> sock_;
 
-  int bind_post_ = 0;
   std::thread thread_server_;
 
 };

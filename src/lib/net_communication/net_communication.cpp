@@ -16,19 +16,21 @@ CNetCom::~CNetCom() {}
 #pragma region Init
 
 // 初始化
-bool CNetCom::Init(const SNetCom_InitArgs &args,
-                   const std::function<void(int)> &cb) {
+bool CNetCom::Init(const SNetCom_InitArgs &args, int *port) {
   if (InitCallback(args) == false)
     return false;
 
   if (InitNet(args) == false)
     return false;
-
   thread_server_ = std::thread([this] () {
     io_service_->run();
   });
 
-  cb(bind_post_);
+  if (port)
+    if (acceptor_)
+      *port = acceptor_->local_endpoint().port();
+    else if (sock_)
+      *port = sock_->local_endpoint().port();
   return true;
 }
 
@@ -67,8 +69,7 @@ bool CNetCom::InitNet(const SNetCom_InitArgs &args) {
 
 // 初始化监听者
 bool CNetCom::InitListener() {
-  int port = g_port_tmp_;
-  acceptor_ = BindPort_Sync(port);
+  acceptor_ = BindPort_Sync(g_port_tmp_);
   try {
     acceptor_->async_accept(
       *sock_,
@@ -81,17 +82,16 @@ bool CNetCom::InitListener() {
     return false;
   }
 
-  bind_post_ = port;
   return true;
 }
 
 // 初始化连接
 bool CNetCom::InitConnector(const std::string &host, int port) {
   boost_tcp::resolver resolver(*io_service_);
+  // 这里不会使用域名，因此直接使用同步的方式
   auto ep =
     resolver.resolve(
       boost_tcp::resolver::query(host, std::to_string(port)));
-
   boost::asio::async_connect(
     *sock_, ep,
     boost::bind(&CNetCom::HandleConnect,
@@ -125,7 +125,7 @@ void CNetCom::LogCallabck(const base::log::SBaseLog &func) {
 #pragma region Net
 
 // 循环绑定端口
-std::shared_ptr<boost_tcp::acceptor> CNetCom::BindPort_Sync(int &begin) {
+std::shared_ptr<boost_tcp::acceptor> CNetCom::BindPort_Sync(int begin) {
   for (int port = begin; port <= g_port_max_; port++) {
     try {
       auto ep = std::make_shared<boost_tcp::endpoint>(
@@ -152,7 +152,7 @@ void CNetCom::HandleAccept(const boost::system::error_code &error) {
     PrintErro("[net]--accept error,des:%d", error.message().c_str());
     return;
   }
-  NetStart();
+  NetListener();
 }
 
 void CNetCom::HandleConnect(const boost::system::error_code &error) {
@@ -161,13 +161,15 @@ void CNetCom::HandleConnect(const boost::system::error_code &error) {
     PrintErro("[net]--accept error,des:%d", error.message().c_str());
     return;
   }
-  NetStart();
+  NetConnected();
 }
 
-
-
-void CNetCom::NetStart() {
+void CNetCom::NetListener() {
   cb_message_();
+}
+
+void CNetCom::NetConnected() {
+
 }
 
 #pragma endregion

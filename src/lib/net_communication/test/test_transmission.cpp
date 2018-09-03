@@ -25,27 +25,9 @@ bool Init_1() {
   args.cb_message = [] () {};
   args.cb_responose = [] () {};
 
-  // 同步等待
-  std::condition_variable wait_init_finished;
-  std::mutex wait_init_finished_sync;
-  bool wait_init_finished_flag = false;
-  auto cb_finished =
-    [&wait_init_finished, &wait_init_finished_flag] (int port) {
-
-    g_port1 = port;
-    wait_init_finished_flag = true;
-    wait_init_finished.notify_one();
-  };
-
-  g_nc1->Init(args, cb_finished);
-
-  // 同步等待初始化完成
-  std::unique_lock<std::mutex> lock(wait_init_finished_sync);
-  wait_init_finished.wait(lock,
-                          [wait_init_finished_flag] () {
-    return wait_init_finished_flag;
-  });
-
+  if (g_nc1->Init(args, &g_port1) == false)
+    return false;
+  base::debug::OutPut("Listener port:%d", g_port1);
   return true;
 }
 
@@ -58,27 +40,9 @@ bool Init_2() {
   args.cb_message = [] () {};
   args.cb_responose = [] () {};
 
-  // 同步等待
-  std::condition_variable wait_init_finished;
-  std::mutex wait_init_finished_sync;
-  bool wait_init_finished_flag = false;
-  auto cb_finished =
-    [&wait_init_finished, &wait_init_finished_flag] (int port) {
-
-    g_port2 = port;
-    wait_init_finished_flag = true;
-    wait_init_finished.notify_one();
-  };
-
-  g_nc2->Init(args, cb_finished);
-
-  // 同步等待初始化完成
-  std::unique_lock<std::mutex> lock(wait_init_finished_sync);
-  wait_init_finished.wait(lock,
-                          [wait_init_finished_flag] () {
-    return wait_init_finished_flag;
-  });
-
+  if (g_nc2->Init(args, &g_port2) == false)
+    return false;
+  base::debug::OutPut("Connect port:%d", g_port2);
   return true;
 }
 
