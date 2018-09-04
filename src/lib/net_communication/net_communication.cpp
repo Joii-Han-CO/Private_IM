@@ -103,19 +103,47 @@ bool CNetCom::InitListener() {
   return true;
 }
 
+// 循环绑定端口
+std::shared_ptr<boost_tcp::acceptor> CNetCom::BindPort_Sync(int begin) {
+  for (int port = begin; port <= g_port_max_; port++) {
+    try {
+      auto ep = std::make_shared<boost_tcp::endpoint>(
+        boost::asio::ip::tcp::v4(), port);
+      auto a = std::make_shared<boost_tcp::acceptor>(
+        *io_service_, *ep);
+      return a;
+    }
+    catch (boost::system::system_error &e) {
+      auto code = e.code().value();
+      if (code != 10013) {
+        SetLastErrAndLog("[net]--bind port failed, code:%d", code);
+        nullptr;
+      }
+    }
+  }
+  SetLastErrAndLog("[net]--bind port failed, port exhausted");
+  return nullptr;
+}
+
 // 初始化连接
 bool CNetCom::InitConnector(const std::string &host, int port) {
   boost_tcp::resolver resolver(*io_service_);
   // 这里不会使用域名，因此直接使用同步的方式
-  auto ep =
-    resolver.resolve(
-      boost_tcp::resolver::query(host, std::to_string(port)));
+  resolver.async_resolve(
+    boost_tcp::resolver::query(host, std::to_string(port)),
+    boost::bind(&CNetCom::HandleResolve, this,
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::iterator));
+  return true;
+}
+
+void CNetCom::HandleResolve(const boost::system::error_code &error,
+                            boost_tcp::resolver::iterator ep) {
   boost::asio::async_connect(
     *socket_, ep,
     boost::bind(&CNetCom::HandleConnect,
                 this,
                 boost::asio::placeholders::error));
-  return true;
 }
 
 #pragma endregion
@@ -161,28 +189,6 @@ void CNetCom::LogCallabck(const base::log::SBaseLog &func) {
 #pragma endregion
 
 #pragma region Net
-
-// 循环绑定端口
-std::shared_ptr<boost_tcp::acceptor> CNetCom::BindPort_Sync(int begin) {
-  for (int port = begin; port <= g_port_max_; port++) {
-    try {
-      auto ep = std::make_shared<boost_tcp::endpoint>(
-        boost::asio::ip::tcp::v4(), port);
-      auto a = std::make_shared<boost_tcp::acceptor>(
-        *io_service_, *ep);
-      return a;
-    }
-    catch (boost::system::system_error &e) {
-      auto code = e.code().value();
-      if (code != 10013) {
-        SetLastErrAndLog("[net]--bind port failed, code:%d", code);
-        nullptr;
-      }
-    }
-  }
-  SetLastErrAndLog("[net]--bind port failed, port exhausted");
-  return nullptr;
-}
 
 void CNetCom::HandleAccept(const boost::system::error_code &error) {
   // 这里是否考虑同步...

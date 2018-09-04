@@ -83,16 +83,19 @@ private:
   // 初始化监听者
   bool InitListener();
 
+  // 尝试绑定某个端口
+  //  begin  输出起始端口，输出绑定成功的端口。
+  std::shared_ptr<boost_tcp::acceptor> BindPort_Sync(int begin);
+
   bool InitConnector(const std::string &host, int port);
+
+  void HandleResolve(const boost::system::error_code &error,
+                     boost_tcp::resolver::iterator ep);
 
   // 释放网络资源
   void ReleaseNet();
 
   // 网络连接相关
-
-  // 尝试绑定某个端口
-  //  begin  输出起始端口，输出绑定成功的端口。
-  std::shared_ptr<boost_tcp::acceptor> BindPort_Sync(int begin);
 
   void HandleAccept(const boost::system::error_code& error);
 
