@@ -16,14 +16,45 @@ std::vector<std::string> data;
 int g_port1 = 0;
 int g_port2 = 0;
 
+#pragma region FuncDefine
+void CBListener();
+void CBConnected();
+void CBMessage();
+void CBResponse();
+void CBLog_L(const base::log::SBaseLog &l) {
+  std::string str_type = base::log::Log::FormatTypeA(l.type);
+  std::string str_func;
+  if (l.func) str_func = l.func;
+  std::string str_log;
+  if (l.log) str_log = base::Utf16ToGB2312(l.log);
+
+  base::debug::OutPut("[Log]-L-%s--%s:%d---%s",
+                      str_type.c_str(), str_func.c_str(),
+                      l.line, str_log.c_str());
+}
+void CBLog_C(const base::log::SBaseLog &l) {
+  std::string str_type = base::log::Log::FormatTypeA(l.type);
+  std::string str_func;
+  if (l.func) str_func = l.func;
+  std::string str_log;
+  if (l.log) str_log = base::Utf16ToGB2312(l.log);
+
+  base::debug::OutPut("[Log]-C-%s--%s:%d---%s",
+                      str_type.c_str(), str_func.c_str(),
+                      l.line, str_log.c_str());
+}
+#pragma endregion
+
 bool Init_1() {
   im::nc::SNetCom_InitArgs args;
   args.host = "127.0.0.1";
   args.port = -1;
   args.listener = true;
 
-  args.cb_message = [] () {};
-  args.cb_responose = [] () {};
+  args.cb_listener = CBListener;
+  args.cb_message = CBMessage;
+  args.cb_responose = CBResponse;
+  args.cb_log = CBLog_L;
 
   if (g_nc1->Init(args, &g_port1) == false)
     return false;
@@ -37,14 +68,28 @@ bool Init_2() {
   args.port = g_port1;
   args.listener = false;
 
-  args.cb_message = [] () {};
-  args.cb_responose = [] () {};
+  args.cb_connected = CBConnected;
+  args.cb_message = CBMessage;
+  args.cb_responose = CBResponse;
+  args.cb_log = CBLog_C;
 
   if (g_nc2->Init(args, &g_port2) == false)
     return false;
   base::debug::OutPut("Connect port:%d", g_port2);
   return true;
 }
+
+void CBListener() {
+  base::debug::OutPut("L--");
+}
+
+void CBConnected() {
+  base::debug::OutPut("C--");
+}
+
+void CBMessage() {}
+
+void CBResponse() {}
 
 // 生成测试数据
 std::string GenerDataList() {
@@ -61,6 +106,7 @@ void TestNC(int argc, char *argv[]) {
   g_nc1 = std::make_shared<im::nc::CNetCom>();
   g_nc2 = std::make_shared<im::nc::CNetCom>();
 
+  base::debug::OutPut("Begin...");
   // 直接在同一个进程测试
   if (Init_1() == false) {
     base::debug::OutPut("Init listener failed");
@@ -70,10 +116,10 @@ void TestNC(int argc, char *argv[]) {
     base::debug::OutPut("Init connector failed");
     return;
   }
+  base::debug::OutPut("Init finished.");
 
-  // 打开监听
+  base::debug::OutPut("End, press enter exit...");
   getchar();
-
 };
 
 #pragma region namespace

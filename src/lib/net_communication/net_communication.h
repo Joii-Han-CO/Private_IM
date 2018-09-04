@@ -20,10 +20,12 @@ typedef boost::asio::ip::tcp boost_tcp;
 typedef boost::asio::ip::udp boost_udp;
 typedef boost::asio::io_service boost_io_service;
 
+typedef std::function<void()> FUNC_ListenerCallback;
+typedef std::function<void()> FUNC_ConnectedCallback;
+
 typedef std::function<void()> FUNC_MessageCallback;
 typedef std::function<void()> FUNC_ResponseCallback;
 typedef std::function<void(const base::log::SBaseLog &func)> FUNC_LogCallback;
-typedef std::function<void()> FUNC_ConnectedCallback;
 
 // 初始化参数
 struct SNetCom_InitArgs {
@@ -31,6 +33,7 @@ struct SNetCom_InitArgs {
   int port = -1;   // 如果为 -1 则自动查找到一个默认端口使用
   bool listener = false;
 
+  FUNC_ListenerCallback cb_listener;
   FUNC_ConnectedCallback cb_connected;
   FUNC_MessageCallback cb_message;
   FUNC_ResponseCallback cb_responose;
@@ -97,7 +100,8 @@ private:
   void NetConnected();
 
 private:
-  FUNC_ConnectedCallback cb_connected = nullptr;
+  FUNC_ListenerCallback cb_listener_ = nullptr;
+  FUNC_ConnectedCallback cb_connected_ = nullptr;
   FUNC_MessageCallback cb_message_ = nullptr;
   FUNC_ResponseCallback cb_responose_ = nullptr;
   FUNC_LogCallback cb_log_ = nullptr;

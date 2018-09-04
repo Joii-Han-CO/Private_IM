@@ -35,6 +35,22 @@ bool CNetCom::Init(const SNetCom_InitArgs &args, int *port) {
 }
 
 bool CNetCom::InitCallback(const SNetCom_InitArgs &args) {
+  if (args.listener == true) {
+    if (!args.cb_listener) {
+      SetLastErrAndLog("args.cb_listener is nullptr in listener");
+      return false;
+    }
+    cb_listener_ = args.cb_listener;
+  }
+  else {
+    if (!args.cb_connected) {
+      SetLastErrAndLog("args.cb_connected is nullptr in listener");
+      return false;
+    }
+    cb_connected_ = args.cb_connected;
+  }
+
+  cb_connected_ = args.cb_connected;
   if (args.cb_message == nullptr) {
     SetLastErrAndLog("args.cb_message is nullptr");
     return false;
@@ -164,12 +180,16 @@ void CNetCom::HandleConnect(const boost::system::error_code &error) {
   NetConnected();
 }
 
+// 有新的连接
 void CNetCom::NetListener() {
-  cb_message_();
+  if (cb_listener_)
+    cb_listener_();
 }
 
+// 已经连接上
 void CNetCom::NetConnected() {
-
+  if (cb_connected_)
+    cb_connected_();
 }
 
 #pragma endregion
