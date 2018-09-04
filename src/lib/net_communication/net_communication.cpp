@@ -23,7 +23,10 @@ bool CNetCom::Init(const SNetCom_InitArgs &args, int *port) {
   if (InitNet(args) == false)
     return false;
   thread_server_ = std::thread([this] () {
-    io_service_->run();
+    while (!thread_stop_flag_) {
+      io_service_->run_one();
+    }
+    ReleaseNet();
   });
 
   if (port)
@@ -118,10 +121,26 @@ bool CNetCom::InitConnector(const std::string &host, int port) {
 
 #pragma endregion
 
+#pragma region Release
+
 // 释放
-bool CNetCom::Release(const std::function<void()> &cb) {
-  return true;
+void CNetCom::Release(const std::function<void()> &cb) {
+  if (io_service_) {
+    thread_stop_flag_ = true;
+    io_service_->stop();
+  }
+  if (thread_server_.joinable())
+    thread_server_.join();
 }
+
+void CNetCom::ReleaseNet() {
+  if (acceptor_)
+    acceptor_->close();
+  else if (sock_)
+    sock_->close();
+}
+
+#pragma endregion
 
 bool CNetCom::Send(const std::vector<char> &data,
                    const FUNC_SendCallback &cb) {

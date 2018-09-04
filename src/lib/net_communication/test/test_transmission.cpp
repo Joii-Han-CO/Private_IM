@@ -96,6 +96,7 @@ std::string GenerDataList() {
   return std::string();
 }
 
+// 测试消息发送
 void TestSendMsg(im::nc::pCNetCom nc) {
   for (int i = 0; i < 100; i++) {
 
@@ -118,8 +119,13 @@ void TestNC(int argc, char *argv[]) {
   }
   base::debug::OutPut("Init finished.");
 
+
   base::debug::OutPut("End, press enter exit...");
   getchar();
+  g_nc1->Release(nullptr);
+  g_nc1 = nullptr;
+  g_nc2->Release(nullptr);
+  g_nc2 = nullptr;
 };
 
 #pragma region namespace

@@ -58,7 +58,7 @@ public:
 
  // 描述：释放资源，异步
  //  cb    完成后的通知
-  bool Release(const std::function<void()> &cb);
+  void Release(const std::function<void()> &cb);
 
   // 描述：发送消息
   typedef std::function<void(SNetCom_InitArgs)> FUNC_SendCallback;
@@ -84,6 +84,9 @@ private:
   bool InitListener();
 
   bool InitConnector(const std::string &host, int port);
+
+  // 释放网络资源
+  void ReleaseNet();
 
   // 网络连接相关
 
@@ -113,7 +116,7 @@ private:
   std::shared_ptr<boost_tcp::socket> sock_;
 
   std::thread thread_server_;
-
+  bool thread_stop_flag_ = false;
 };
 typedef std::shared_ptr<CNetCom> pCNetCom;
 
