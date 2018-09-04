@@ -15,6 +15,7 @@ namespace nc {
 
 const int g_port_max_ = 65535;
 const int g_port_tmp_ = 49152;
+const int g_net_buf_max_ = 1024 * 8;
 
 typedef boost::asio::ip::tcp boost_tcp;
 typedef boost::asio::ip::udp boost_udp;
@@ -92,6 +93,7 @@ private:
   void HandleResolve(const boost::system::error_code &error,
                      boost_tcp::resolver::iterator ep);
 
+  void InitNetBuf();
   // 释放网络资源
   void ReleaseNet();
 
@@ -104,6 +106,8 @@ private:
   // 某个用户连接上...
   void NetListener();
   void NetConnected();
+
+  void NetStart();
 
 private:
   FUNC_ListenerCallback cb_listener_ = nullptr;
@@ -120,6 +124,8 @@ private:
 
   std::thread thread_server_;
   bool thread_stop_flag_ = false;
+
+  std::vector<char> net_read_buf_;
 };
 typedef std::shared_ptr<CNetCom> pCNetCom;
 

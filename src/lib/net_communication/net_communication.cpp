@@ -137,6 +137,7 @@ bool CNetCom::InitConnector(const std::string &host, int port) {
   return true;
 }
 
+// 异步实现
 void CNetCom::HandleResolve(const boost::system::error_code &error,
                             boost_tcp::resolver::iterator ep) {
   boost::asio::async_connect(
@@ -144,6 +145,11 @@ void CNetCom::HandleResolve(const boost::system::error_code &error,
     boost::bind(&CNetCom::HandleConnect,
                 this,
                 boost::asio::placeholders::error));
+}
+
+void CNetCom::InitNetBuf() {
+  if (net_read_buf_.empty())
+    net_read_buf_.resize(g_net_buf_max_);
 }
 
 #pragma endregion
@@ -210,14 +216,26 @@ void CNetCom::HandleConnect(const boost::system::error_code &error) {
 
 // 有新的连接
 void CNetCom::NetListener() {
+  InitNetBuf();
+  NetStart();
+
   if (cb_listener_)
     cb_listener_();
 }
 
 // 已经连接上
 void CNetCom::NetConnected() {
+  InitNetBuf();
+  NetStart();
+
   if (cb_connected_)
     cb_connected_();
+}
+
+void CNetCom::NetStart() {
+  socket_->async_read_some(boost::asio::buffer(net_read_buf_),
+                           [this]
+  (boost::system::error_code ec, std::size_t bytes_transferred) {});
 }
 
 #pragma endregion
