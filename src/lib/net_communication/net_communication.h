@@ -113,7 +113,7 @@ private:
   // 网络连接
   std::shared_ptr<boost_io_service> io_service_;
   std::shared_ptr<boost_tcp::acceptor> acceptor_;
-  std::shared_ptr<boost_tcp::socket> sock_;
+  std::shared_ptr<boost_tcp::socket> socket_;
 
   std::thread thread_server_;
   bool thread_stop_flag_ = false;

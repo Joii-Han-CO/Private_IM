@@ -6,7 +6,6 @@ namespace im {
 namespace nc {
 #pragma endregion
 
-
 CNetCom::CNetCom():
   base::log::Log(std::bind(&CNetCom::LogCallabck,
                            this, std::placeholders::_1)) {}
@@ -32,8 +31,8 @@ bool CNetCom::Init(const SNetCom_InitArgs &args, int *port) {
   if (port)
     if (acceptor_)
       *port = acceptor_->local_endpoint().port();
-    else if (sock_)
-      *port = sock_->local_endpoint().port();
+    else if (socket_)
+      *port = socket_->local_endpoint().port();
   return true;
 }
 
@@ -70,7 +69,7 @@ bool CNetCom::InitCallback(const SNetCom_InitArgs &args) {
 
 bool CNetCom::InitNet(const SNetCom_InitArgs &args) {
   io_service_ = std::make_shared<boost_io_service>();
-  sock_ = std::make_shared<boost_tcp::socket>(*io_service_);
+  socket_ = std::make_shared<boost_tcp::socket>(*io_service_);
 
   if (args.listener == true) {
     // 打开端口进行监听
@@ -91,7 +90,7 @@ bool CNetCom::InitListener() {
   acceptor_ = BindPort_Sync(g_port_tmp_);
   try {
     acceptor_->async_accept(
-      *sock_,
+      *socket_,
       boost::bind(&CNetCom::HandleAccept,
                   this,
                   boost::asio::placeholders::error));
@@ -112,7 +111,7 @@ bool CNetCom::InitConnector(const std::string &host, int port) {
     resolver.resolve(
       boost_tcp::resolver::query(host, std::to_string(port)));
   boost::asio::async_connect(
-    *sock_, ep,
+    *socket_, ep,
     boost::bind(&CNetCom::HandleConnect,
                 this,
                 boost::asio::placeholders::error));
@@ -136,8 +135,8 @@ void CNetCom::Release(const std::function<void()> &cb) {
 void CNetCom::ReleaseNet() {
   if (acceptor_)
     acceptor_->close();
-  else if (sock_)
-    sock_->close();
+  else if (socket_)
+    socket_->close();
 }
 
 #pragma endregion
@@ -152,10 +151,14 @@ bool CNetCom::Request(const std::vector<char> &data,
   return true;
 }
 
+#pragma region Unit
+
 void CNetCom::LogCallabck(const base::log::SBaseLog &func) {
   if (cb_log_)
     cb_log_(func);
 }
+
+#pragma endregion
 
 #pragma region Net
 
