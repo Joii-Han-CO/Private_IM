@@ -16,84 +16,109 @@ namespace test {
 
 std::string g_topic_ = "test_1";
 
-class TestMsg: public im::CMqttClientBase {
-protected:
-  void OnlineStatusChange(im::EMqttOnlineStatus status) override {
-    base::debug::OutPut("[StatusChange]--%s",
-                        FormatOnlineStatusA(status).c_str());
+im::pCMqttClientBase gmsg;
 
-    // 连接成功后，添加一个订阅
+#pragma region Callback
+
+void MqttLog(const base::log::SBaseLog &l) {
+  base::debug::OutputLogInfo(l);
+}
+
+#pragma endregion
+
+#pragma region I/R
+
+// 连接...
+bool Test_Init() {
+  base::debug::OutPut("Begin...");
+  gmsg = std::make_shared<im::CMqttClientBase>(MqttLog);
+
+  // 同步连接
+  std::condition_variable wait_conncet;
+  std::mutex wait_conncet_mutex;
+  bool wait_conncet_flag = false;
+
+  // 初始化连接参数
+  im::SMqttConnectInfo connect_info;
+  connect_info.host = "127.0.0.1";
+  connect_info.port = 1883;
+
+  // 回调
+  connect_info.cb_status_change =
+    [&wait_conncet, &wait_conncet_flag] (im::EMqttOnlineStatus status) {
+    base::debug::OutPut(
+      "[StatusChange]--%s",
+      im::CMqttClientBase::FormatOnlineStatusA(status).c_str());
     if (status == im::EMqttOnlineStatus::connected) {
-      if (Subscribe(g_topic_,
-                    std::bind(&TestMsg::Msg_1, this,
-                              g_topic_, std::placeholders::_1))
-          == false) {
-        base::debug::OutPut(L"Subscribe failed, des:%S",
-                            GetLastErr_Astd().c_str());
-        return;
-      }
-      base::debug::OutPut("Subscribe finished");
+      wait_conncet_flag = true;
+      wait_conncet.notify_all();
     }
   };
 
-  void Subscribed(const std::string &topic) override {
-    base::debug::OutPut("[Subscribed]--%s", topic.c_str());
-  };
-
-  void OutLog(const base::log::SBaseLog &l) override {
-    base::debug::OutputLogInfo(l);
-  };
-
-  void Msg_1(const std::string &topic, const std::vector<char> &data) {
-    base::debug::OutPut("%s message", topic.c_str());
+  if (gmsg->Connect(connect_info) == false) {
+    base::debug::OutPut(L"Connect failed, des:%S",
+                        gmsg->GetLastErr_Astd().c_str());
+    return false;
   }
-};
 
-void Loop(std::shared_ptr<TestMsg> p_mqt) {
+  std::unique_lock<std::mutex> lock(wait_conncet_mutex);
+  wait_conncet.wait(lock,
+                    [&wait_conncet_flag] () {return wait_conncet_flag; });
+
+  base::debug::OutPut("Connect finished");
+  return true;
+}
+
+void Test_Release() {
+  gmsg->Disconnect();
+  base::debug::OutPut("Disconnect finished");
+}
+
+bool Test_Sub(int argc, char* argv[]) {
+  auto args = base::ArgsToMap(argc, argv);
+  auto arg_topic = args["t"];
+  if (!arg_topic.empty())
+    g_topic_ = arg_topic;
+
+  gmsg->Subscribe(g_topic_, [] (std::vector<char>) {});
+
+}
+
+bool Test_UnSub() {
+
+}
+
+#pragma endregion
+
+void Test_SendMsg() {
   base::debug::OutPut("Loop");
   while (true) {
     std::string cmd, data;
     std::cin >> cmd >> data;
     if (cmd == "q")
       break;
-    if (p_mqt->Publish(cmd, std::vector<char>(data.begin(), data.end()),
-                       [] () {
+    if (gmsg->Publish(cmd, std::vector<char>(data.begin(), data.end()),
+                      [] () {
       base::debug::OutPut(L"Publish success");
     })
         == false) {
       base::debug::OutPut(L"Publish failed, des:%S",
-                          p_mqt->GetLastErr_Astd().c_str());
+                          gmsg->GetLastErr_Astd().c_str());
     }
   }
 }
 
 void TestMqtt_Client(int argc, char* argv[]) {
-  auto args = base::ArgsToMap(argc, argv);
-  auto arg_topic = args["t"];
-  if (!arg_topic.empty())
-    g_topic_ = arg_topic;
-
-  base::debug::OutPut("Begin...");
-  auto p_mqt = std::make_shared<TestMsg>();
-
-  im::SMqttConnectInfo connect_info;
-  connect_info.host = "127.0.0.1";
-  connect_info.port = 1883;
-
-  if (p_mqt->Connect(connect_info) == false) {
-    base::debug::OutPut(L"Connect failed, des:%S",
-                        p_mqt->GetLastErr_Astd().c_str());
+  if (Test_Init(argc, argv) == false)
     return;
-  }
-  base::debug::OutPut("Connect finished");
 
-  // loop
-  Loop(p_mqt);
+  // 测试消息
+  Test_SendMsg();
 
-  p_mqt->Disconnect();
-  base::debug::OutPut("Disconnect finished");
+  // 断开连接
+  Test_Release();
 
-  base::debug::OutPut("End...");
+  base::debug::OutPut("End press enter exit...");
   getchar();
 }
 

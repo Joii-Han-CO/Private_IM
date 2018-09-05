@@ -36,13 +36,15 @@ private:
 };
 }
 
-CMqttClientBase::CMqttClientBase():
-  base::log::Log(BindVirtualLog(CMqttClientBase)) {}
+CMqttClientBase::CMqttClientBase(base::log::LogCallback func):
+  base::log::Log(func) {}
 
 CMqttClientBase::~CMqttClientBase() {}
 
 // 连接
 bool CMqttClientBase::Connect(const SMqttConnectInfo &info) {
+  cb_status_change_ = info.cb_status_change;
+
   StartTask();
   AddTask(
     std::bind(&CMqttClientBase::Mqtt_Connect, this, info));
@@ -51,7 +53,7 @@ bool CMqttClientBase::Connect(const SMqttConnectInfo &info) {
 
 // 断开
 void CMqttClientBase::Disconnect() {
-  OnlineStatusChange(EMqttOnlineStatus::disconnecting);
+  Mqtt_StatusChange(EMqttOnlineStatus::disconnecting);
   if (mqtt_ == nullptr) {
     PrintWarn("[Mqtt] not connected, mqtt_ == nullptr");
     return;
@@ -59,7 +61,7 @@ void CMqttClientBase::Disconnect() {
 
   mosquitto_destroy(mqtt_);
   mqtt_ = nullptr;
-  OnlineStatusChange(EMqttOnlineStatus::disconnected);
+  Mqtt_StatusChange(EMqttOnlineStatus::disconnected);
   is_connected = false;
 
   StopTask();
@@ -130,7 +132,7 @@ void CMqttClientBase::Mqtt_Connect(const SMqttConnectInfo &info) {
     return;
   }
 
-  OnlineStatusChange(EMqttOnlineStatus::connecting);
+  Mqtt_StatusChange(EMqttOnlineStatus::connecting);
 
   auto ref = GlobalInitMqtt::Get()->Init();
   if (ref != MOSQ_ERR_SUCCESS) {
@@ -159,7 +161,7 @@ void CMqttClientBase::Mqtt_Connect(const SMqttConnectInfo &info) {
     return;
   }
   is_connected = true;
-  OnlineStatusChange(EMqttOnlineStatus::connected);
+  Mqtt_StatusChange(EMqttOnlineStatus::connected);
 
   loop_timeout_ = info.loop_timeout;
 
@@ -191,6 +193,11 @@ void CMqttClientBase::Mqtt_MsgLoop() {
 
     }
   }
+}
+
+void CMqttClientBase::Mqtt_StatusChange(EMqttOnlineStatus status) {
+  if (cb_status_change_)
+    cb_status_change_(status);
 }
 
 // 消息循环的静态回调

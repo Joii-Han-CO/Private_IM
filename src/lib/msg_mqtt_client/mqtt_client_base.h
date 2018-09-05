@@ -9,14 +9,7 @@
 namespace im {
 #pragma endregion
 
-struct SMqttConnectInfo {
-  std::string host;
-  int port = 1883;
-  int keepalive = 30;
-  int max_inflight_msg = -1;  // 如果离线，最大消息数。默认-1（mosquitto 默认为20）
-  int loop_timeout = 0;   // 每次消息循环的超时时间
-};
-
+// mqtt 各种连接状态...
 enum class EMqttOnlineStatus {
   none,   // 最初状态
   connecting, // 正在连接
@@ -25,13 +18,26 @@ enum class EMqttOnlineStatus {
   disconnected,   // 已断开
 };
 
+typedef std::function<void(EMqttOnlineStatus status)> FUNC_StatusChange;
+
+
+struct SMqttConnectInfo {
+  std::string host;
+  int port = 1883;
+  int keepalive = 30;
+  int max_inflight_msg = -1;  // 如果离线，最大消息数。默认-1（mosquitto 默认为20）
+  int loop_timeout = 0;   // 每次消息循环的超时时间
+
+  FUNC_StatusChange cb_status_change;
+};
+
 class CMqttClientBase:
   public base::error::LastError,
   public base::log::Log,
   public base::task::Task {
 
 public:
-  CMqttClientBase();
+  CMqttClientBase(base::log::LogCallback func);
   ~CMqttClientBase();
 
   // 描述：连接\断开
@@ -43,18 +49,15 @@ public:
   bool Subscribe(const std::string &topic,
                  const std::function<void(std::vector<char>)> &func);
 
+  // 描述：取消一个订阅
+  bool Unsubscribe(const std::string &topic);
+
   // 描述：推送消息
   bool Publish(const std::string &topic,
                const std::vector<char> &data,
                const std::function<void()> &func);
 
   static std::string FormatOnlineStatusA(EMqttOnlineStatus s);
-
-protected:
-  virtual void OnlineStatusChange(EMqttOnlineStatus status) = 0;
-  virtual void Subscribed(const std::string &topic) = 0;
-  virtual void OutLog(const base::log::SBaseLog &func) = 0;
-  VirtualPrintLogFunc(OutLog);
 
 private:
   // mqtt同步连接
@@ -65,6 +68,9 @@ private:
 
   void Mqtt_MsgLoop();
 
+  // mqtt状态变更
+  void Mqtt_StatusChange(EMqttOnlineStatus status);
+
   static void SMsg_Cb(mosquitto *mosq, void *obj,
                       const mosquitto_message *message);
   void Msg_Cb(const mosquitto_message *message);
@@ -73,6 +79,10 @@ private:
   void Pub_Cb(int data);
 
 private:
+  // 回调
+  FUNC_StatusChange cb_status_change_ = nullptr;
+
+
   mosquitto * mqtt_;
   bool is_connected = false;
   int loop_timeout_ = 0;
