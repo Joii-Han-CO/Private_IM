@@ -88,6 +88,10 @@ bool CMqttClientBase::Subscribe(
   return true;
 }
 
+bool CMqttClientBase::Unsubscribe(const std::string & topic) {
+  return false;
+}
+
 // 推送消息
 bool CMqttClientBase::Publish(const std::string &topic,
                               const std::vector<char> &data,
