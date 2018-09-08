@@ -1,19 +1,21 @@
 :: set environmental variable
-set_env.bat
+call set_env.bat
 
 :: pthread-win32
 xcopy /r /y "%im_lib_src%\pthread-win32\bin\Win32_MSVC2015.Release\pthread_dll.dll" %im_3rd_lib%\pthread-win32\
 xcopy /r /y "%im_lib_src%\pthread-win32\bin\Win32_MSVC2015.Release\pthread_dll.lib" %im_3rd_lib%\pthread-win32\
 xcopy /r /y "%im_lib_src%\pthread-win32\bin\Win32_MSVC2015.Release\pthread_lib.lib" %im_3rd_lib%\pthread-win32\
+xcopy /r /y "%im_lib_src%\pthread-win32\bin\Win32_MSVC2015.Debug\pthread_lib.lib" %im_3rd_lib%\pthread-win32\debug\
 
 
 :: mosquitto
 xcopy /r /y "%im_lib_src%\mosquitto\o_win\src/release\mosquitto.exe" %im_3rd_lib%\mosquitto\
 xcopy /r /y "%im_lib_src%\mosquitto\o_win\lib/release\mosquitto.dll" %im_3rd_lib%\mosquitto\
 xcopy /r /y "%im_lib_src%\mosquitto\o_win\lib/release\mosquitto.lib" %im_3rd_lib%\mosquitto\
+xcopy /r /y "%im_lib_src%\mosquitto\o_win\lib/release\mosquitto_static.lib" %im_3rd_lib%\mosquitto\
 xcopy /r /y "%im_lib_src%\mosquitto\o_win\client/release\mosquitto_pub.exe" %im_3rd_lib%\mosquitto\
 xcopy /r /y "%im_lib_src%\mosquitto\o_win\client/release\mosquitto_sub.exe" %im_3rd_lib%\mosquitto\
-
+xcopy /r /y "%im_lib_src%\mosquitto\o_win\lib/debug\mosquitto_static.lib" %im_3rd_lib%\mosquitto\debug\
 xcopy /r /y "%im_lib_src%\mosquitto\lib\mosquitto.h" %im_3rd_lib%\mosquitto\include\
 
 

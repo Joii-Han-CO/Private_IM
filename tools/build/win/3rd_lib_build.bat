@@ -27,7 +27,7 @@ git checkout v1.5.1
 mkdir %im_output_name%
 cd %im_output_name%
 :: lib/CMakeLists.txt 替换 pthread-win32 的地址
-cmake -G "Visual Studio 15 2017" ./../ -DWITH_TLS=OFF -DPTHREAD_INCLUDE_DIR=%im_lib_src%/pthread-win32
+cmake -G "Visual Studio 15 2017" ./../ -DWITH_TLS=OFF -DWITH_STATIC_LIBRARIES=ON -DWITH_PIC=ON -DPTHREAD_INCLUDE_DIR=%im_lib_src%/pthread-win32
 :: 使用静态库
 :: 添加 PTW32_STATIC_LIB 标识
 :: MT
