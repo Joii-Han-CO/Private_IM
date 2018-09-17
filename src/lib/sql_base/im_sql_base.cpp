@@ -6,10 +6,8 @@ namespace im {
 namespace sql_base {
 #pragma endregion
 
-  bool Test_sql_base_C(IN int test_args) {
-    return true;
-  }
-  
+
+
 #pragma region namespace
 }
 }

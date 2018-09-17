@@ -2,13 +2,19 @@
 #include "base/type_def.h"
 
 
-#ifdef __cplusplus
+#pragma region
 namespace im {
 namespace sql_base {
-#endif
+#pragma endregion
 
+class SqlBase {
+public:
+  SqlBase();
+  virtual ~SqlBase();
 
-#ifdef __cplusplus
+};
+
+#pragma region
 }
 }
-#endif
+#pragma endregion

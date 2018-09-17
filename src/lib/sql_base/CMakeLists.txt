@@ -38,8 +38,15 @@ set(_cpp_file
   ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp)
 source_group("source" FILES ${_cpp_file})
 
+set(_sqlite3_dir ${PROJECT_SOURCE_DIR}/sqlite3)
+set(_sqlite3_file
+  ${_sqlite3_dir}/sqlite3.c
+  ${_sqlite3_dir}/sqlite3.h
+  ${_sqlite3_dir}/sqlite3ext.h)
+source_group("sqlite3" FILES ${_sqlite3_file})
+
 add_library(${_lib_name} ${_prj_lib_type}
-            ${_inc_file} ${_cpp_file})
+            ${_inc_file} ${_cpp_file} ${_sqlite3_file})
 target_link_libraries(${_lib_name} LINK_PUBLIC ${_lib_dirs})
 
 # 设置环境变量
