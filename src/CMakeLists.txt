@@ -17,11 +17,6 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX
 set(_sln_name "pim")
 project (${_sln_name})
 
-set(CMAKE_CXX_FLAGS_DEBUG_INIT          "/D_DEBUG /MTd /Zi /Ob0 /Od /RTC1")
-set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT     "/MT /O1 /Ob1 /D NDEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE_INIT        "/MT /O2 /Ob2 /D NDEBUG")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "/MT /Zi /O2 /Ob1 /D NDEBUG")
-
 # 命名空间
 set(_namepace "im")
 
@@ -29,6 +24,10 @@ set(_namepace "im")
 if (CMAKE_SYSTEM_NAME MATCHES "Windows")
   add_compile_options("/WX")
   link_directories(${_test_name} ${Boost_LIBRARY_DIRS})
+  set(CMAKE_CXX_FLAGS_DEBUG_INIT          "/D_DEBUG /MTd /Zi /Ob0 /Od /RTC1")
+  set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT     "/MT /O1 /Ob1 /D NDEBUG")
+  set(CMAKE_CXX_FLAGS_RELEASE_INIT        "/MT /O2 /Ob2 /D NDEBUG")
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "/MT /Zi /O2 /Ob1 /D NDEBUG")
 else()
   add_compile_options(-std=c++11)
 endif()
@@ -60,3 +59,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/server/server_main/)
 
 # net_communication
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/net_communication/)
+
+# plugin_mosquitto
+add_subdirectory(${PROJECT_SOURCE_DIR}/plugin/plugin_mosquitto/)

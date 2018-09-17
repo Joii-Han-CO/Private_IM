@@ -56,20 +56,7 @@ bool CMqttClientBase::Connect(const SMqttConnectInfo &info) {
 // 断开
 void CMqttClientBase::Disconnect() {
   Mqtt_StatusChange(EMqttOnlineStatus::disconnecting);
-  if (mqtt_ == nullptr) {
-    PrintWarn("[Mqtt] not connected, mqtt_ == nullptr");
-    return;
-  }
-
-  std::unique_lock<std::mutex> lock(sync_disconnect_lock_);
-  sync_disconnect_flag = true;
-
-  mosquitto_destroy(mqtt_);
-  mqtt_ = nullptr;
-  Mqtt_StatusChange(EMqttOnlineStatus::disconnected);
-  is_connected = false;
-
-  StopTask();
+  sync_disconnect_flag_.Set(true);
 }
 
 // 添加一个订阅
@@ -195,6 +182,21 @@ void CMqttClientBase::Mqtt_Connect(const SMqttConnectInfo &info) {
     std::bind(&CMqttClientBase::Mqtt_MsgLoop, this));
 }
 
+// mqtt断开连接
+void CMqttClientBase::Mqtt_Disconnect() {
+  if (mqtt_ == nullptr) {
+    PrintWarn("[Mqtt] not connected, mqtt_ == nullptr");
+    return;
+  }
+
+  mosquitto_destroy(mqtt_);
+  mqtt_ = nullptr;
+  Mqtt_StatusChange(EMqttOnlineStatus::disconnected);
+  is_connected = false;
+
+  StopTask();
+}
+
 // mqtt连接前，设置一些相关参数
 bool CMqttClientBase::Mqtt_InitOpts(const SMqttConnectInfo &info) {
   if (info.max_inflight_msg != -1 &&
@@ -202,6 +204,14 @@ bool CMqttClientBase::Mqtt_InitOpts(const SMqttConnectInfo &info) {
       MOSQ_ERR_SUCCESS) {
     SetLastErrAndLog("[Mqtt] set max in flight message failed");
     return false;
+  }
+  if (info.user_name.empty() == false && info.user_pwd.empty() == false) {
+    if (mosquitto_username_pw_set(mqtt_,
+                                  info.user_name.c_str(),
+                                  info.user_pwd.c_str()) != MOSQ_ERR_SUCCESS) {
+      SetLastErrAndLog("[Mqtt] set user and possword failed");
+      return false;
+    }
   }
 
   mosquitto_subscribe_callback_set(mqtt_, SSub_Cb);
@@ -215,8 +225,8 @@ bool CMqttClientBase::Mqtt_InitOpts(const SMqttConnectInfo &info) {
 void CMqttClientBase::Mqtt_MsgLoop() {
   int i_ref = 0;
   while (true) {
-    std::unique_lock<std::mutex> lock(sync_disconnect_lock_);
-    if (sync_disconnect_flag) {
+    if (sync_disconnect_flag_.Get()) {
+      Mqtt_Disconnect();
       PrintInfo("[mqtt]--exit loop");
       break;
     }

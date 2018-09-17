@@ -58,6 +58,9 @@ bool Test_Init() {
   connect_info.host = "127.0.0.1";
   connect_info.port = 1883;
 
+  connect_info.user_name = "user_test_1";
+  connect_info.user_pwd = "123";
+
   // status callback
   connect_info.cb_status_change =
     [&wait_conncet, &wait_conncet_flag] (im::EMqttOnlineStatus status) {
