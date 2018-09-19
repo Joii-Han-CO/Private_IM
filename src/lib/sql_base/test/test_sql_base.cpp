@@ -7,11 +7,13 @@
 namespace test {
 #pragma endregion
 
+
 #pragma region namespace
 }
 #pragma endregion
 
 int main() {
+
+
   return 0;
 }
-

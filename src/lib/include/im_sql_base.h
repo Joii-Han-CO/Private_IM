@@ -7,12 +7,6 @@ namespace im {
 namespace sql_base {
 #pragma endregion
 
-class SqlBase {
-public:
-  SqlBase();
-  virtual ~SqlBase();
-
-};
 
 #pragma region
 }

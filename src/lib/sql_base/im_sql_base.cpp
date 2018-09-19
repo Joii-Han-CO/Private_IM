@@ -6,8 +6,7 @@ namespace im {
 namespace sql_base {
 #pragma endregion
 
-
-
+  
 #pragma region namespace
 }
 }

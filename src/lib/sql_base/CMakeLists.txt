@@ -21,11 +21,14 @@ set(_incldue ${PROJECT_SOURCE_DIR}/../include/)
 
 set(_stdafx ${PROJECT_SOURCE_DIR}/stdafx)
 
+set(_sqlite3_dir ${PROJECT_SOURCE_DIR}/../include/3rd_lib/sqlite3/)
+
 # 源码包含目录
 include_directories(${_lib_name}
                     ${_incldue}
                     ${PROJECT_SOURCE_DIR}
-                    ${_include_dirs})
+                    ${_include_dirs}
+                    ${_sqlite3_dir})
 
 # 创建目录
 set(_inc_file
@@ -38,15 +41,15 @@ set(_cpp_file
   ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp)
 source_group("source" FILES ${_cpp_file})
 
-set(_sqlite3_dir ${PROJECT_SOURCE_DIR}/sqlite3)
-set(_sqlite3_file
-  ${_sqlite3_dir}/sqlite3.c
+# Add sqlite3
+set(sqlite3_files
   ${_sqlite3_dir}/sqlite3.h
-  ${_sqlite3_dir}/sqlite3ext.h)
-source_group("sqlite3" FILES ${_sqlite3_file})
+  ${_sqlite3_dir}/sqlite3ext.h
+  ${_sqlite3_dir}/sqlite3.c)
+source_group("sqlite3" FILES ${sqlite3_files})
 
 add_library(${_lib_name} ${_prj_lib_type}
-            ${_inc_file} ${_cpp_file} ${_sqlite3_file})
+            ${_inc_file} ${_cpp_file} ${sqlite3_files})
 target_link_libraries(${_lib_name} LINK_PUBLIC ${_lib_dirs})
 
 # 设置环境变量
