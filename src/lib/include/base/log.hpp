@@ -60,7 +60,7 @@ struct SBaseLog {
   const wchar_t *log = nullptr;
 };
 
-typedef std::function<void(const SBaseLog &func)> LogCallback;
+typedef std::function<void(const SBaseLog &)> LogCallback;
 
 class Log {
 public:

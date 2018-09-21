@@ -2,16 +2,20 @@
 #include <mosquitto_plugin.h>
 #include <memory>
 
+#include "server/include/im_server_sql.h"
+
+
 #pragma region
 namespace im {
 namespace plugin {
 #pragma endregion
 
-class CPluginMosq: public std::enable_shared_from_this<CPluginMosq> {
+class CPluginMosq {
 public:
   static int GetVersion();
 
 public:
+  CPluginMosq();
   bool Init();
   void Release();
 
@@ -29,10 +33,13 @@ public:
                      const struct mosquitto_acl_msg *msg);
 
 private:
+  void OnLog(const base::log::SBaseLog &func);
+
+private:
+  im::server_sql::CServerSql_User sql_user_;
 
 };
 typedef CPluginMosq* pCPluginMosq;
-
 
 #pragma region
 }

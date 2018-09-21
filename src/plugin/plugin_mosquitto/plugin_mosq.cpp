@@ -18,6 +18,9 @@ int CPluginMosq::GetVersion() {
 
 #pragma region I/R
 
+CPluginMosq::CPluginMosq():
+  sql_user_(std::bind(&CPluginMosq::OnLog, this, std::placeholders::_1)) {}
+
 bool CPluginMosq::Init() {
   return false;
 }
@@ -44,6 +47,10 @@ bool CPluginMosq::UserSubscribe(int access,
                                 const struct mosquitto *client,
                                 const struct mosquitto_acl_msg *msg) {
   return true;
+}
+
+void CPluginMosq::OnLog(const base::log::SBaseLog & func) {
+
 }
 
 #pragma endregion

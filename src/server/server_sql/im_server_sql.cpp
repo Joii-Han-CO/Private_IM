@@ -165,15 +165,26 @@ bool CServerSql_User::SetUserInfo(
   return true;
 }
 
-pSSqlUserInfo CServerSql_User::GetUserInfo(std::wstring e_mail,
-                                           std::wstring mobile) {
-  return GetUserInfoBase(e_mail, mobile, std::wstring());
+void CServerSql_User::GetUserInfo(
+  std::wstring e_mail, std::wstring mobile,
+  std::function<void(pSSqlUserInfo suc, std::wstring err)> callback) {
+  auto func = [e_mail, mobile, callback, this] () {
+    auto info = GetUserInfoBase(e_mail, mobile, std::wstring());
+    if (callback)
+      callback(info, GetLastErr_Wstd());
+  };
+  AddTask(func);
 }
 
-pSSqlUserInfo CServerSql_User::GetUserInfo(std::wstring e_mail,
-                                           std::wstring mobile,
-                                           std::wstring pwd) {
-  return GetUserInfoBase(e_mail, mobile, pwd);
+void CServerSql_User::GetUserInfo(
+  std::wstring e_mail, std::wstring mobile, std::wstring pwd,
+  std::function<void(pSSqlUserInfo suc, std::wstring err)> callback) {
+  auto func = [e_mail, mobile, pwd, callback, this] () {
+    auto info = GetUserInfoBase(e_mail, mobile, pwd);
+    if (callback)
+      callback(info, GetLastErr_Wstd());
+  };
+  AddTask(func);
 }
 
 pSSqlUserInfo CServerSql_User::GetUserInfoBase(std::wstring e_mail,

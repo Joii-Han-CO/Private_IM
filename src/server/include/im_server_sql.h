@@ -66,12 +66,15 @@ public:
   //  如果 email 或者 mobile一个不为空，就用其中一个
   //  如果两个都存在，则同时作为条件
   //  获取用户信息不会获取密码
-  pSSqlUserInfo GetUserInfo(std::wstring e_mail, std::wstring mobile);
-  pSSqlUserInfo GetUserInfo(std::wstring e_mail, std::wstring mobile,
-                            std::wstring pwd);
+  void GetUserInfo(
+    std::wstring e_mail, std::wstring mobile,
+    std::function<void(pSSqlUserInfo suc, std::wstring err)> callback);
+  void GetUserInfo(
+    std::wstring e_mail, std::wstring mobile, std::wstring pwd,
+    std::function<void(pSSqlUserInfo suc, std::wstring err)> callback);
 
-  // 校验密码
-  //  先通过e-mail或者手机号获取用户信息，再去比对密码的哈希
+// 校验密码
+//  先通过e-mail或者手机号获取用户信息，再去比对密码的哈希
   bool CheckPwd(std::wstring e_mail, std::wstring mobile, std::wstring pwd);
 
 private:

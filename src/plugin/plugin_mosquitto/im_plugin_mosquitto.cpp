@@ -1,6 +1,5 @@
 ﻿#include "stdafx.h"
 #include "im_plugin_mosquitto.h"
-#include "..\include\im_plugin_mosquitto.h"
 #include "plugin_mosq.h"
 
 // 定义 mosquitto 的各个接口, 调试直接挂载 mosquitto 进程
@@ -15,7 +14,7 @@ int mosquitto_auth_plugin_init(void **user_data,
                                struct mosquitto_opt *opts,
                                int opt_count) {
 
-  auto  ptr = new im::plugin::CPluginMosq;
+  auto ptr = new im::plugin::CPluginMosq;
   *user_data = (void*)user_data;
   if (ptr->Init() == false) {
     // error

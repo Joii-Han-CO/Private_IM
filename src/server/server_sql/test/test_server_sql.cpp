@@ -59,6 +59,21 @@ void TestSetUserInfos(im::server_sql::CServerSql_User &sql) {
   }
 }
 
+void TestGetUserInfo(im::server_sql::CServerSql_User &sql) {
+  im::server_sql::pSSqlUserInfo info;
+  std::wstring err_msg;
+
+  base::b_async::Condition con;
+  auto func = [&info, &err_msg, &con]
+  (im::server_sql::pSSqlUserInfo ref_info, std::wstring err) {
+    con.NotifyOne();
+  };
+  sql.GetUserInfo(L"test_4726@gmail.com", L"",
+                  L"0g/4Yp7IzsWbZgK8+Ap77I/rzX4BY/wWv7xQAugo5+w=",
+                  func);
+  con.Wait();
+}
+
 void TestManger() {
 
 #pragma region Init
@@ -77,9 +92,7 @@ void TestManger() {
 #pragma endregion
 
   //TestSetUserInfos(sql);
-  auto user_info = sql.GetUserInfo(
-    L"test_4726@gmail.com", L"",
-    L"0g/4Yp7IzsWbZgK8+Ap77I/rzX4BY/wWv7xQAugo5+w=");
+  TestGetUserInfo(sql);
 
 
 #pragma region Release
