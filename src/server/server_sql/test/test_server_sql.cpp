@@ -3,19 +3,60 @@
 #include "im_server_sql.h"
 
 #include "base/debug.hpp"
+#include "im_ssl_base.h"
 
 
 #pragma region namespace
 namespace test {
 #pragma endregion
 
-void TestSetUserInfo(im::server_sql::CServerSql_User &sql) {
-  im::server_sql::SSqlUserInfo info;
+void TestSetUserInfo(im::server_sql::CServerSql_User &sql,
+                     im::server_sql::pSSqlUserInfo info) {
+  base::b_async::Condition con;
+  bool rc_code = 0;
+  std::wstring err_msg;
+  auto func = [&con, &rc_code, &err_msg] (bool suc, std::wstring err) {
+    rc_code = suc;
+    err_msg = err;
+    con.NotifyOne();
+  };
+  sql.SetUserInfo(info, func);
+  con.Wait();
 
-  info.email = L"test@gmail.com";
-  info.mobile = L"13111111111";
+  if (rc_code == true)
+    base::debug::OutPut("write user sucess");
+  else
+    base::debug::OutPut(L"write user failed, rc_code:%d, des:%S",
+                        rc_code, err_msg.c_str());
+}
 
-  sql.SetUserInfo(info.GetPtr());
+void TestSetUserInfos(im::server_sql::CServerSql_User &sql) {
+  srand((unsigned int)time(0));
+  std::wstring buf;
+  buf.resize(256);
+  auto info = std::make_shared<im::server_sql::SSqlUserInfo>();
+
+  for (int i = 0; i < 100; i++) {
+    swprintf_s((wchar_t *)buf.c_str(), buf.size(),
+               L"test_%d@gmail.com", rand() % 100000);
+    info->email = buf.c_str();
+
+    swprintf_s((wchar_t *)buf.c_str(), buf.size(),
+               L"test_%d", rand() % 10000);
+    info->name = buf.c_str();
+
+    swprintf_s((wchar_t *)buf.c_str(), buf.size(),
+               L"15912%06d", rand() % 1000000);
+    info->mobile = buf.c_str();
+
+    swprintf_s((wchar_t *)buf.c_str(), buf.size(),
+               L"123456%06d", rand() % 1000000);
+    std::string str_buf = base::Utf16ToUtf8(buf);
+    info->pwd_hash = base::Utf8ToUtf16(
+      im::ssl_base::GetStrSHA256(str_buf.c_str()));
+
+    TestSetUserInfo(sql, info);
+  }
 }
 
 void TestManger() {
@@ -35,7 +76,11 @@ void TestManger() {
   wait_cb.Wait();
 #pragma endregion
 
-  TestSetUserInfo(sql);
+  //TestSetUserInfos(sql);
+  auto user_info = sql.GetUserInfo(
+    L"test_4726@gmail.com", L"",
+    L"0g/4Yp7IzsWbZgK8+Ap77I/rzX4BY/wWv7xQAugo5+w=");
+
 
 #pragma region Release
   base::debug::WaitEnterGoon("Wait Enter Release");

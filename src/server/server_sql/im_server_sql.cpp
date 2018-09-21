@@ -119,7 +119,10 @@ bool CServerSql_User::UpdateTab() {
 
 #pragma region UserInfo
 
-bool CServerSql_User::SetUserInfo(pSSqlUserInfo info) {
+bool CServerSql_User::SetUserInfo(
+  pSSqlUserInfo info,
+  std::function<void(bool suc, std::wstring err)> callback) {
+
   if (info->email.empty() && info->mobile.empty()) {
     SetLastErr("e-mail and mobile at least one is not empty");
     return false;
@@ -129,10 +132,36 @@ bool CServerSql_User::SetUserInfo(pSSqlUserInfo info) {
     return false;
   }
 
-  // 写入数据库
+  // 异步...
+  auto func = [info, callback, this] () {
+    auto e_info = GetUserInfoBase(info->email, info->mobile, L"");
+    if (e_info != nullptr) {
+      if (callback)
+        callback(false, L"This user already exists");
+      return;
+    }
 
-
-
+    // 写入数据库
+    std::wstring sql = base::log::FormatStr(
+      L"insert into 'user_info' ('name', 'mobile', 'email', 'pwd_hash', 'permission') "
+      L"values('%s', '%s', '%s', '%s', %d);",
+      info->name.c_str(), info->mobile.c_str(),
+      info->email.c_str(), info->pwd_hash.c_str(), (int)info->permission);
+    int rc_code = 0;
+    std::string err_msg;
+    SqlExec(sql_ptr_, base::Utf16ToUtf8(sql), &rc_code, err_msg);
+    if (rc_code != SQLITE_OK) {
+      auto last_err = base::Utf8ToUtf16(base::log::FormatStr(
+        "insert date failed, rc_code:%d, des:%s",
+        rc_code, err_msg.c_str()));
+      if (callback)
+        callback(false, last_err);
+      return;
+    }
+    if (callback)
+      callback(true, L"");
+  };
+  AddTask(func);
   return true;
 }
 
@@ -141,23 +170,77 @@ pSSqlUserInfo CServerSql_User::GetUserInfo(std::wstring e_mail,
   return GetUserInfoBase(e_mail, mobile, std::wstring());
 }
 
-bool CServerSql_User::CheckPwd(std::wstring e_mail, std::wstring mobile,
-                               std::wstring pwd) {
-  auto info = GetUserInfoBase(e_mail, mobile, pwd);
-  if (info == nullptr)
-    return false;
-  return true;
+pSSqlUserInfo CServerSql_User::GetUserInfo(std::wstring e_mail,
+                                           std::wstring mobile,
+                                           std::wstring pwd) {
+  return GetUserInfoBase(e_mail, mobile, pwd);
 }
 
 pSSqlUserInfo CServerSql_User::GetUserInfoBase(std::wstring e_mail,
                                                std::wstring mobile,
                                                std::wstring pwd) {
-  if (e_mail.empty() || mobile.empty()) {
+  if (e_mail.empty() && mobile.empty()) {
     SetLastErr("e-mail and mobile at least one is not empty");
     return nullptr;
   }
 
-  return pSSqlUserInfo();
+  std::string u8_e_mail = base::Utf16ToUtf8(e_mail);
+  std::string u8_mobile = base::Utf16ToUtf8(mobile);
+  std::string u8_pwd = base::Utf16ToUtf8(pwd);
+  std::string sql =
+    "select name,email,mobile,pwd_hash,permission from user_info where ";
+  if (!u8_mobile.empty() && !u8_e_mail.empty()) {
+    sql += base::log::FormatStr("email='%s' and mobile='%s' limit 2;",
+                                u8_e_mail.c_str(), u8_mobile.c_str());
+  }
+  else if (u8_mobile.empty() && !u8_e_mail.empty()) {
+    sql += base::log::FormatStr("email='%s'  limit 1;",
+                                u8_e_mail.c_str());
+  }
+  else if (!u8_mobile.empty() && u8_e_mail.empty()) {
+    sql += base::log::FormatStr("mobile='%s'  limit 1;",
+                                u8_mobile.c_str());
+  }
+
+  // 执行查找命令，因为吐出的数据比较少...
+  char **res_ptr = nullptr;
+  int row = 0, col = 0;
+  char *err_msg = nullptr;
+  int rc = sqlite3_get_table(sql_ptr_, sql.c_str(),
+                             &res_ptr, &row, &col, &err_msg);
+  if (rc != SQLITE_OK) {
+    SetLastErr("run get table failed, rc_code:%d, des:%s", rc, err_msg);
+    return nullptr;
+  }
+  if (col != 5 || row != 1) {
+    SetLastErr("empty");
+    return nullptr;
+  }
+
+  std::string o_name, o_email, o_mobile, o_pwd;
+
+  // 校验密码
+  if (res_ptr[3 + col])
+    o_pwd = res_ptr[3 + col];
+  if (!u8_pwd.empty()) {
+    if (o_pwd != u8_pwd) {
+      SetLastErr("password wrong");
+      return nullptr;
+    }
+  }
+  auto ref_info = std::make_shared<SSqlUserInfo>();
+  if (res_ptr[0 + col])
+    ref_info->name = base::Utf8ToUtf16(res_ptr[0 + col]);
+  if (res_ptr[1 + col])
+    ref_info->email = base::Utf8ToUtf16(res_ptr[1 + col]);
+  if (res_ptr[2 + col])
+    ref_info->mobile = base::Utf8ToUtf16(res_ptr[2 + col]);
+  if (res_ptr[4 + col])
+    ref_info->permission = (ESqlUserPermission)atoi(res_ptr[4 + col]);
+
+  sqlite3_free_table(res_ptr);
+
+  return ref_info;
 }
 
 #pragma endregion

@@ -59,11 +59,16 @@ private:
 #pragma region UserInfo
 public:
   // 写入用户信息
-  bool SetUserInfo(pSSqlUserInfo info);
+  bool SetUserInfo(pSSqlUserInfo info,
+                   std::function<void(bool suc, std::wstring err)> callback);
 
-  // 获取用户信息，通过 e-mail 或者 手机号 其中之一获取用户信息
+  // 获取用户信息
+  //  如果 email 或者 mobile一个不为空，就用其中一个
+  //  如果两个都存在，则同时作为条件
   //  获取用户信息不会获取密码
   pSSqlUserInfo GetUserInfo(std::wstring e_mail, std::wstring mobile);
+  pSSqlUserInfo GetUserInfo(std::wstring e_mail, std::wstring mobile,
+                            std::wstring pwd);
 
   // 校验密码
   //  先通过e-mail或者手机号获取用户信息，再去比对密码的哈希

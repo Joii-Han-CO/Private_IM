@@ -115,6 +115,17 @@ Add_Definitions(-D_UNICODE)
 
 # 项目依赖
 target_link_libraries(${_lib_name} sql_base)
+target_link_libraries(${_test_name} ssl_base)
 target_link_libraries(${_test_name} ${_lib_name})
+
+target_link_libraries(${_test_name} debug
+  "${THRD_LIB_PATH}/openssl/d/libeay32.lib")
+target_link_libraries(${_test_name} debug
+  "${THRD_LIB_PATH}/openssl/d/ssleay32.lib")
+
+target_link_libraries(${_test_name} optimized
+  "${THRD_LIB_PATH}/openssl/s/libeay32.lib")
+target_link_libraries(${_test_name} optimized
+  "${THRD_LIB_PATH}/openssl/s/ssleay32.lib")
 
 cotire(${_lib_name} ${_test_name})
