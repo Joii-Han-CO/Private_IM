@@ -26,7 +26,8 @@ include_directories(${_lib_name}
                     ${_incldue}
                     ${PROJECT_SOURCE_DIR}
                     ${_include_dirs}
-                    ${THRD_LIB_PATH}/mosquitto/include)
+                    ${THRD_LIB_PATH}/mosquitto/include
+                    ${PROJECT_SOURCE_DIR}/../../lib/include)
 
 # 创建目录
 set(_inc_file
@@ -45,6 +46,8 @@ add_library(${_lib_name} SHARED
             ${_inc_file} ${_cpp_file})
 target_link_libraries(${_lib_name} LINK_PUBLIC ${_lib_dirs})
 
+target_link_libraries(${_lib_name} server_sql)
+  
 # 设置环境变量
 set(_compile_def IM_LIB)
 target_compile_definitions(${_lib_name}

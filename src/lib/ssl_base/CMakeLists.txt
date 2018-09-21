@@ -89,14 +89,9 @@ source_group("source" FILES ${_cpp_file})
 # add src files
 add_executable(${_test_name}
                ${_inc_file} ${_cpp_file})
-target_link_libraries(${_test_name} debug
-  "${THRD_LIB_PATH}/openssl/d/libeay32.lib")
-target_link_libraries(${_test_name} debug
-  "${THRD_LIB_PATH}/openssl/d/ssleay32.lib")
-
-target_link_libraries(${_test_name} optimized
+target_link_libraries(${_lib_name}
   "${THRD_LIB_PATH}/openssl/s/libeay32.lib")
-target_link_libraries(${_test_name} optimized
+target_link_libraries(${_lib_name}
   "${THRD_LIB_PATH}/openssl/s/ssleay32.lib")
 
 # 设置环境变量
