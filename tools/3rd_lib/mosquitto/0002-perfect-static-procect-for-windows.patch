@@ -1,0 +1,73 @@
+From bde0c8030fb5d04dcf00c518776ab8b21d34d853 Mon Sep 17 00:00:00 2001
+From: hanzishuang_home <hanzishuang1990@126.com>
+Date: Sat, 8 Sep 2018 10:50:01 +0800
+Subject: [PATCH 2/2] perfect static procect for windows
+
+---
+ CMakeLists.txt        |  7 +++++++
+ lib/CMakeLists.txt    |  3 +--
+ lib/cpp/mosquittopp.h | 10 +++++++---
+ 3 files changed, 15 insertions(+), 5 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 021752a..f82d003 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -8,6 +8,13 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 0)
+ 
+ project(mosquitto)
+ 
++if (WIN32)
++  set(CMAKE_C_FLAGS_DEBUG          "/D_DEBUG /MTd /Zi /Ob0 /Od /RTC1")
++  set(CMAKE_C_FLAGS_MINSIZEREL     "/MT /O1 /Ob1 /D NDEBUG")
++  set(CMAKE_C_FLAGS_RELEASE        "/MT /O2 /Ob2 /D NDEBUG")
++  set(CMAKE_C_FLAGS_RELWITHDEBINFO "/MT /Zi /O2 /Ob1 /D NDEBUG")
++endif()
++
+ cmake_minimum_required(VERSION 2.8)
+ # Only for version 3 and up. cmake_policy(SET CMP0042 NEW)
+ 
+diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
+index 5d44076..5cdaff4 100644
+--- a/lib/CMakeLists.txt
++++ b/lib/CMakeLists.txt
+@@ -122,7 +122,7 @@ if (${WITH_STATIC_LIBRARIES} STREQUAL ON)
+ 	target_link_libraries(libmosquitto_static ${LIBRARIES})
+ 
+ 	set_target_properties(libmosquitto_static PROPERTIES
+-		OUTPUT_NAME mosquitto
++		OUTPUT_NAME mosquitto_static
+ 		VERSION ${VERSION}
+ 	)
+ 
+@@ -135,4 +135,3 @@ install(FILES mosquitto.h DESTINATION "${INCLUDEDIR}")
+ if (UNIX AND NOT APPLE)
+ 	install(CODE "EXEC_PROGRAM(/sbin/ldconfig)")
+ endif (UNIX AND NOT APPLE)
+-
+diff --git a/lib/cpp/mosquittopp.h b/lib/cpp/mosquittopp.h
+index 38a5835..7de7e72 100644
+--- a/lib/cpp/mosquittopp.h
++++ b/lib/cpp/mosquittopp.h
+@@ -18,11 +18,15 @@ Contributors:
+ #define MOSQUITTOPP_H
+ 
+ #ifdef _WIN32
+-#	ifdef mosquittopp_EXPORTS
++# ifndef LIBMOSQUITTO_STATIC
++#	 ifdef mosquittopp_EXPORTS
+ #		define mosqpp_EXPORT  __declspec(dllexport)
+-#	else
++#	 else
+ #		define mosqpp_EXPORT  __declspec(dllimport)
+-#	endif
++#	 endif
++# else
++#	 define mosqpp_EXPORT
++# endif
+ #else
+ #	define mosqpp_EXPORT
+ #endif
+-- 
+2.13.1.windows.2
+

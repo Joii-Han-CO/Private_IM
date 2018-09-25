@@ -1,0 +1,43 @@
+From b11e6576bbf312d13c439d56fa6fdb2a6d20cafb Mon Sep 17 00:00:00 2001
+From: hanzishuang_home <hanzishuang1990@126.com>
+Date: Sat, 8 Sep 2018 09:44:50 +0800
+Subject: [PATCH 1/2] lib,cmake pthread fixed path
+
+---
+ lib/CMakeLists.txt | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
+index d537e77..5d44076 100644
+--- a/lib/CMakeLists.txt
++++ b/lib/CMakeLists.txt
+@@ -6,12 +6,7 @@ option(WITH_THREADING "Include client library threading support?" ON)
+ if (${WITH_THREADING} STREQUAL ON)
+ 	add_definitions("-DWITH_THREADING")
+ 	if (WIN32)
+-		if (CMAKE_CL_64)
+-			set (PTHREAD_LIBRARIES C:\\pthreads\\Pre-built.2\\lib\\x64\\pthreadVC2.lib)
+-		else (CMAKE_CL_64)
+-			set (PTHREAD_LIBRARIES C:\\pthreads\\Pre-built.2\\lib\\x86\\pthreadVC2.lib)
+-		endif (CMAKE_CL_64)
+-		set (PTHREAD_INCLUDE_DIR C:\\pthreads\\Pre-built.2\\include)
++    add_definitions("-DPTW32_STATIC_LIB")
+ 	else (WIN32)
+ 		find_library(LIBPTHREAD pthread)
+ 		if (LIBPTHREAD)
+@@ -101,6 +96,12 @@ set_target_properties(libmosquitto PROPERTIES
+ )
+ 
+ target_link_libraries(libmosquitto ${LIBRARIES})
++if(WIN32)
++  target_link_libraries(libmosquitto debug 
++    "${PTHREAD_INCLUDE_DIR}/bin/Win32_MSVC2015.Debug/pthread_lib.lib")
++  target_link_libraries(libmosquitto optimized 
++    "${PTHREAD_INCLUDE_DIR}/bin/Win32_MSVC2015.Release/pthread_lib.lib")
++endif()
+ 
+ set_target_properties(libmosquitto PROPERTIES
+ 	OUTPUT_NAME mosquitto
+-- 
+2.13.1.windows.2
+
