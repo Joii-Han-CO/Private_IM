@@ -38,7 +38,8 @@ source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
   ${_stdafx}.cpp
-  ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp)
+  ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp
+  ${PROJECT_SOURCE_DIR}/im_token.cpp)
 source_group("source" FILES ${_cpp_file})
 
 add_library(${_lib_name} ${_prj_lib_type}
