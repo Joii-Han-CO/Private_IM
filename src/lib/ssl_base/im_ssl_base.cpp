@@ -12,19 +12,7 @@ namespace im {
 namespace ssl_base {
 #pragma endregion
 
-std::vector<char> GetSHA256(const void *data, size_t len) {
-  std::vector<char> ref_val;
-  if (data == nullptr || len == 0)
-    return ref_val;
-  ref_val.resize(SHA256_DIGEST_LENGTH);
-
-  SHA256_CTX sha256;
-  SHA256_Init(&sha256);
-  SHA256_Update(&sha256, data, len);
-  SHA256_Final((unsigned char*)ref_val.data(), &sha256);
-
-  return ref_val;
-}
+#pragma region Base64
 
 std::string Base64Encode(IN void *data, IN size_t len) {
   BIO * bmem = NULL;
@@ -55,6 +43,26 @@ std::vector<char> Base64Dencode(IN const std::string &d) {
 
   return r;
 }
+
+#pragma endregion
+
+#pragma region SHA256
+
+std::vector<char> GetSHA256(const void *data, size_t len) {
+  std::vector<char> ref_val;
+  if (data == nullptr || len == 0)
+    return ref_val;
+  ref_val.resize(SHA256_DIGEST_LENGTH);
+
+  SHA256_CTX sha256;
+  SHA256_Init(&sha256);
+  SHA256_Update(&sha256, data, len);
+  SHA256_Final((unsigned char*)ref_val.data(), &sha256);
+
+  return ref_val;
+}
+
+#pragma endregion
 
 #pragma region namespace
 }
