@@ -64,6 +64,9 @@ private:
   // mqtt同步连接
   void Mqtt_Connect(const SMqttConnectInfo &info);
 
+  // mqtt断开连接
+  void Mqtt_Disconnect();
+
   // mqtt连接前，设置一些相关参数
   bool Mqtt_InitOpts(const SMqttConnectInfo &info);
 
@@ -89,8 +92,7 @@ private:
   mosquitto * mqtt_;
   bool is_connected = false;
   int loop_timeout_ = 0;
-  bool sync_disconnect_flag = false;
-  std::mutex sync_disconnect_lock_;
+  base::async::SyncVal<bool> sync_disconnect_flag_ = false;
 
   // 订阅成功的列表，用于回调
   std::map<int, std::function<void()>> map_sub_;
