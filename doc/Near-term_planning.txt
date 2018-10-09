@@ -1,3 +1,0 @@
-[mqtt]    client interface
-[server]  management process
-[users]   login
