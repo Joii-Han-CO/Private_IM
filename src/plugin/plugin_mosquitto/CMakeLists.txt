@@ -11,7 +11,7 @@ project(${_lib_name})
 set(_lib_folder "plugin")
 
 # C\C++ 包含源码路径
-set(_include_dirs )
+set(_include_dirs ${PROJECT_SOURCE_DIR}/../../)
 
 # C\C++ 包含库路径
 set(_lib_dirs )
@@ -25,17 +25,20 @@ set(_stdafx ${PROJECT_SOURCE_DIR}/stdafx)
 include_directories(${_lib_name}
                     ${_incldue}
                     ${PROJECT_SOURCE_DIR}
-                    ${_include_dirs})
+                    ${_include_dirs}
+                    ${THRD_LIB_PATH}/mosquitto/include)
 
 # 创建目录
 set(_inc_file
   ${_stdafx}.h
-  ${_incldue}/${_namepace}_${_lib_name}.h)
+  ${_incldue}/${_namepace}_${_lib_name}.h
+  ${PROJECT_SOURCE_DIR}/plugin_mosq.h)
 source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
   ${_stdafx}.cpp
-  ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp)
+  ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp
+  ${PROJECT_SOURCE_DIR}/plugin_mosq.cpp)
 source_group("source" FILES ${_cpp_file})
 
 add_library(${_lib_name} SHARED
