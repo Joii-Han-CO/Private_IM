@@ -60,3 +60,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/server/server_main/)
 
 # net_communication
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/net_communication/)
+
+# plugin_mosquitto
+add_subdirectory(${PROJECT_SOURCE_DIR}/plugin/plugin_mosquitto/)
