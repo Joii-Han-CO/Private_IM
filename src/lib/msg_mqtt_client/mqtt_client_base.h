@@ -24,6 +24,10 @@ typedef std::function<void(EMqttOnlineStatus status)> FUNC_StatusChange;
 struct SMqttConnectInfo {
   std::string host;
   int port = 1883;
+
+  std::string user_name;
+  std::string user_pwd;
+
   int keepalive = 30;
   int max_inflight_msg = -1;  // 如果离线，最大消息数。默认-1（mosquitto 默认为20）
   int loop_timeout = 0;   // 每次消息循环的超时时间

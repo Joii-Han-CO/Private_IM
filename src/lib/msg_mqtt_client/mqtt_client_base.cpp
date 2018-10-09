@@ -205,6 +205,14 @@ bool CMqttClientBase::Mqtt_InitOpts(const SMqttConnectInfo &info) {
     SetLastErrAndLog("[Mqtt] set max in flight message failed");
     return false;
   }
+  if (info.user_name.empty() == false && info.user_pwd.empty() == false) {
+    if (mosquitto_username_pw_set(mqtt_,
+                                  info.user_name.c_str(),
+                                  info.user_pwd.c_str()) != MOSQ_ERR_SUCCESS) {
+      SetLastErrAndLog("[Mqtt] set user and possword failed");
+      return false;
+    }
+  }
 
   mosquitto_subscribe_callback_set(mqtt_, SSub_Cb);
   mosquitto_message_callback_set(mqtt_, SMsg_Cb);
