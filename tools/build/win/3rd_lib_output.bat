@@ -9,12 +9,14 @@ xcopy /r /y "%im_lib_src%\pthread-win32\bin\Win32_MSVC2015.Release\pthread_lib.l
 
 :: mosquitto
 xcopy /r /y "%im_lib_src%\mosquitto\o_win\src/release\mosquitto.exe" %im_3rd_lib%\mosquitto\
+xcopy /r /y "%im_lib_src%\mosquitto\mosquitto.conf" %im_3rd_lib%\mosquitto\
 xcopy /r /y "%im_lib_src%\mosquitto\o_win\lib/release\mosquitto.dll" %im_3rd_lib%\mosquitto\
 xcopy /r /y "%im_lib_src%\mosquitto\o_win\lib/release\mosquitto.lib" %im_3rd_lib%\mosquitto\
 xcopy /r /y "%im_lib_src%\mosquitto\o_win\client/release\mosquitto_pub.exe" %im_3rd_lib%\mosquitto\
 xcopy /r /y "%im_lib_src%\mosquitto\o_win\client/release\mosquitto_sub.exe" %im_3rd_lib%\mosquitto\
 
 xcopy /r /y "%im_lib_src%\mosquitto\lib\mosquitto.h" %im_3rd_lib%\mosquitto\include\
+xcopy /r /y "%im_lib_src%\mosquitto\lib\mosquitto_plugin.h" %im_3rd_lib%\mosquitto\include\
 
 
 :: protobuf
