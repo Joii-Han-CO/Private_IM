@@ -38,15 +38,12 @@ set(_cpp_file
   ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp)
 source_group("source" FILES ${_cpp_file})
 
-add_library(${_lib_name} ${_prj_lib_type}
+add_library(${_lib_name} SHARED
             ${_inc_file} ${_cpp_file})
 target_link_libraries(${_lib_name} LINK_PUBLIC ${_lib_dirs})
 
 # 设置环境变量
 set(_compile_def IM_LIB)
-if (${_prj_lib_type} STREQUAL "STATIC")
-  set(_compile_def ${_compile_def} IM_STATIC)
-endif()
 target_compile_definitions(${_lib_name}
                            PRIVATE
                            ${_compile_def})
