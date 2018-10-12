@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <string>
 #include <mutex>
+#include <iostream>
 #include "log.hpp"
 #include "character_conversion.hpp"
 
@@ -41,6 +42,30 @@ inline void OutputLogInfo(const base::log::SBaseLog &l) {
 inline void WaitEnterGoon(const char *d) {
   OutPut(d);
   getchar();
+}
+
+#pragma endregion
+
+// 一些生成随机数的方法
+#pragma region Rand
+
+inline void SetRand() {
+  srand((unsigned int)time(0));
+}
+
+inline int GetRandInt(int begin, int end) {
+  int i = rand();
+  i = i % (end - begin);
+  i += begin;
+  return i;
+}
+
+// 填充随机数
+inline void FillingRand(void *data, int len) {
+  unsigned char *d = (unsigned char*)data;
+  for (int i = 0; i < len; i++) {
+    d[i] = (unsigned char)rand();
+  }
 }
 
 #pragma endregion
