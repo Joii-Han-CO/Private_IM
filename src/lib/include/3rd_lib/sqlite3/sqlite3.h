@@ -2777,7 +2777,7 @@ SQLITE_API sqlite3_int64 sqlite3_memory_highwater(int resetFlag);
 ** internally and without recourse to the [sqlite3_vfs] xRandomness
 ** method.
 */
-SQLITE_API void sqlite3_randomness(int N, void *P);
+SQLITE_API void sqlite3im_randomness(int N, void *P);
 
 /*
 ** CAPI3REF: Compile-Time Authorization Callbacks
@@ -7093,7 +7093,7 @@ SQLITE_API int sqlite3_mutex_notheld(sqlite3_mutex*);
 #define SQLITE_MUTEX_STATIC_MEM       3  /* sqlite3_malloc() */
 #define SQLITE_MUTEX_STATIC_MEM2      4  /* NOT USED */
 #define SQLITE_MUTEX_STATIC_OPEN      4  /* sqlite3BtreeOpen() */
-#define SQLITE_MUTEX_STATIC_PRNG      5  /* sqlite3_randomness() */
+#define SQLITE_MUTEX_STATIC_PRNG      5  /* sqlite3im_randomness() */
 #define SQLITE_MUTEX_STATIC_LRU       6  /* lru page list */
 #define SQLITE_MUTEX_STATIC_LRU2      7  /* NOT USED */
 #define SQLITE_MUTEX_STATIC_PMEM      7  /* sqlite3PageMalloc() */

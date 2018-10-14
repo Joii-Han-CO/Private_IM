@@ -4,14 +4,12 @@
 #include <vector>
 #include <memory>
 
-
 #pragma region Util
 
 struct rsa_st;
 typedef struct rsa_st RSA;
 
 #pragma endregion
-
 
 #pragma region
 namespace im {
@@ -31,6 +29,9 @@ std::vector<char> Base64Dencode(IN const std::string &d);
 // 获取一段数据的sha256值
 std::vector<char> GetSHA256(const void *data, size_t len);
 
+// 使用 sha256 对比两块数据是否相同
+bool CheckoutBuf_SHA256(const void *d1, const void *d2, size_t len);
+
 // 获取数据sha256的base64编码值
 inline std::string GetStrSHA256(const char* str) {
   size_t len = strlen(str);
@@ -38,7 +39,85 @@ inline std::string GetStrSHA256(const char* str) {
   return Base64Encode(vec.data(), vec.size());
 }
 
+class CheckoutSHA256 {
+public:
+  // 输入需要存储的缓冲大小
+  CheckoutSHA256(int bufsize);
+  CheckoutSHA256(void * buf, int size);
+
+  // 获取buffer指针
+  void *GetBuffer();
+
+  // 获取buffer长度
+  int GetBufferSize();
+
+  // 获取整个buffer
+  void *GetAllBuffer();
+
+  // 获取整个buffer的长度
+  int GetAllBufferSize();
+
+  // 获取可能的最小缓冲大小
+  static int GetMinBufferSize();
+
+  // 通过buffer更新sha256
+  void UpdateSha256();
+
+  // 校验当前的数据是否匹配
+  static bool CheckoutSha256(const void *d);
+  bool CheckoutSha256();
+private:
+  std::vector<char> buf_;
+  void *b_;
+  int b_size_;
+};
+
 #pragma endregion
+
+// 加密模块的基类
+class DEBase:public base::error::LastError {
+public:
+  virtual ~DEBase() {};
+protected:
+  int DETemp(IN const void *in, IN  int in_len,
+             OUT void *out, IN int out_len,
+             IN int block_size,
+             IN std::function<int(const void *in, void *out)> cell) {
+    if (in == nullptr || in_len == 0) {
+      SetLastErr("in parameter error");
+      return -1;
+    }
+    if (out == nullptr || out_len == 0) {
+      SetLastErr("out parameter error");
+      return -1;
+    }
+
+    int es_out_len = 0;
+    int count = in_len / block_size;
+    char *tmp_i = (char*)in, *tmp_o = (char*)out;
+    int ref_len;
+    for (int i = 0; i < count; i++) {
+      ref_len = cell(tmp_i, tmp_o);
+      if (ref_len <= 0)
+        return -1;
+      tmp_i = &(tmp_i[block_size]);
+      tmp_o = &(tmp_o[ref_len]);
+      es_out_len += ref_len;
+    }
+
+    int last_block = in_len % block_size;
+    if (last_block != 0) {
+      std::vector<char> tmp_buf;
+      tmp_buf.resize(block_size);
+      memcpy_s(tmp_buf.data(), tmp_buf.size(), tmp_i, last_block);
+      ref_len = cell(tmp_buf.data(), tmp_o);
+      if (ref_len < 0)
+        return -1;
+      es_out_len += ref_len;
+    }
+    return es_out_len;
+  }
+};
 
 #pragma region RSA
 
@@ -84,6 +163,7 @@ private:
   RSA *rsa_ = nullptr;
   int rsa_block_size_ = 0;
 };
+typedef std::shared_ptr<CRSAED> pCRSAED;
 
 #pragma endregion
 
@@ -95,7 +175,7 @@ const int g_aes_block_size_ = 16;
 
 // 使用AES加密
 //  AES加密可以不对齐，但是解密需要对齐
-class CAESED: public base::error::LastError {
+class CAESED: public DEBase {
 public:
 
   // 密钥根据 g_aes_key_size_ 来决定长度
@@ -109,60 +189,57 @@ public:
                OUT void *out, IN int out_len);
   bool Decrypt(IN const void *in, IN int in_len, IN void *cbc_vi,
                OUT void *out, IN int out_len);
+
+  // 加密数据
+  //  数据中间插入随机数...
+  int GetEncryptSize_Ex(int buf_size);
+  bool Encrypt_Ex(IN const void *in, IN int in_len, IN void *cbc_vi,
+                  OUT void *out, IN int out_len);
+  bool Decrypt_Ex(IN const void *in, IN int in_len, IN void *cbc_vi,
+                  OUT void *out, IN int out_len);
+
+  std::vector<char> GetKey();
 private:
   std::vector<char> key_;
 };
+typedef std::shared_ptr<CAESED> pCAESED;
 
 #pragma endregion
 
 #pragma region Token
+// 业务相关
 
-// 私钥信息
-struct STokenPrivateKey {
-  std::vector<char> k;
-};
-typedef std::shared_ptr<STokenPrivateKey> pSTokenPrivateKey;
+const unsigned int g_token_version = 1;
 
-// 公钥信息
-struct STokenPublicKey {
-  std::vector<char> k;
-};
-typedef std::shared_ptr<STokenPublicKey> pSTokenPublicKey;
-
-// 成对的...
-struct STokenKey {
-  pSTokenPrivateKey pri;
-  pSTokenPublicKey pub;
-};
-typedef std::shared_ptr<STokenKey> pSTokenKey;
-
-class CTokenPrivate: public base::error::LastError {
+class CToken: public DEBase {
 public:
+  CToken();
 
-  // 生成key
-  bool GenerateKey(STokenPublicKey &pub_key);
+  // 交换公钥私钥
+  std::vector<char> GetPublicKey();
+  bool SetPublicKey(std::vector<char> &data);
 
-  // 加密数据
-  //  使用C接口，因为在某些情况下加解密可以使用同一个缓冲区
-  bool Encrypt(void* in, size_t in_size, void *out, size_t out_size);
-  bool Decrypt(void* in, size_t in_size, void *out, size_t out_size);
+  int GetEncryptSize(int bufsize);
+
+  // 加解密数据
+  //  解密时无法预估数据长度，因此设计成输出buff，由用户处理
+  int Encrypt(IN const void *in, IN int in_len,
+              OUT void *out, IN int out_len);
+  int Decrypt(IN const void *in, IN int in_len,
+              OUT void **out, IN int *out_len);
+  void ReleaseDecryptBuffer(IN void *out, IN int out_len);
 
 private:
-  pSTokenKey key_;
+  struct STokenKey {
+    pCRSAED a;
+    pCAESED s;
+    std::vector<char> vi;
+  };
 
-  RSA *rsa_ = nullptr;
+  void InitPrivateKey(STokenKey &key);
 
-};
-
-class CTokenPublic:public base::error::LastError {
-public:
-  bool InitKey(const STokenPublicKey &key);
-
-  bool Encrypt(void* in, size_t in_size, void *out, size_t out_size);
-  bool Decrypt(void* in, size_t in_size, void *out, size_t out_size);
-
-private:
-  RSA *rsa_ = nullptr;
+  STokenKey pub_;
+  STokenKey pri_;
 };
 
 #pragma endregion

@@ -499,7 +499,7 @@ typedef int (*sqlite3_loadext_entry)(
 #define sqlite3_result_zeroblob        sqlite3_api->result_zeroblob
 #define sqlite3_result_error_code      sqlite3_api->result_error_code
 #define sqlite3_test_control           sqlite3_api->test_control
-#define sqlite3_randomness             sqlite3_api->randomness
+#define sqlite3im_randomness             sqlite3_api->randomness
 #define sqlite3_context_db_handle      sqlite3_api->context_db_handle
 #define sqlite3_extended_result_codes  sqlite3_api->extended_result_codes
 #define sqlite3_limit                  sqlite3_api->limit
