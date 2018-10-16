@@ -71,3 +71,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/server/server_sql/)
 
 # ssl_base
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/ssl_base/)
+
+# login
+add_subdirectory(${PROJECT_SOURCE_DIR}/client/login/)
