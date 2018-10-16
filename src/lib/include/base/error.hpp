@@ -19,7 +19,7 @@ public:
 protected:
   template<typename ... T1>
   void SetLastErr(const wchar_t *sz, T1 ... args) {
-    last_error_ = FormatStr(sz, args...);
+    last_error_ = base::log::FormatStr(sz, args...);
   }
   template<typename ... T1>
   void SetLastErr(const char *sz, T1 ... args) {

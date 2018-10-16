@@ -9,9 +9,11 @@ git clone https://github.com/openssl/openssl.git
 git clone https://github.com/madler/zlib.git
 git clone https://github.com/eclipse/mosquitto.git
 git clone https://github.com/google/protobuf.git
+git clone https://github.com/brofield/simpleini.git
 cd protobuf\third_party
 git clone https://github.com/google/benchmark.git
 git clone https://github.com/google/googletest.git
+
 
 :: build
 
@@ -67,7 +69,8 @@ cmake -G "Visual Studio 15 2017" ./../cmake -Dprotobuf_BUILD_TESTS=OFF -DZLIB_LI
 devenv.com "protobuf.sln" /Build Debug
 devenv.com "protobuf.sln" /Build Release
 
-
-
+:: simpleini
+cd /d %im_lib_src%\simpleini
+git checkout 4.17
 
 

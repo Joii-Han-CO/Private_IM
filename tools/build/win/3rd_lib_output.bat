@@ -61,3 +61,6 @@ xcopy /r /y "%im_lib_src%\protobuf\o_win\Debug\libprotobufd.lib" %im_3rd_lib%\pr
 mkdir %im_lib_src%\protobuf\include
 xcopy /s/y/i/f "%im_lib_src%\protobuf\src\google\*.h" "%im_3rd_lib%\protobuf\include\google"
 
+:: simpleini
+mkdir %im_lib_src%\simpleini\include
+xcopy /s/y/i/f "%im_lib_src%\simpleini\SimpleIni.h" "%im_3rd_lib%\simpleini\include\"

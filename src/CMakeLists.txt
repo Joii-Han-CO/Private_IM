@@ -74,3 +74,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib/ssl_base/)
 
 # login
 add_subdirectory(${PROJECT_SOURCE_DIR}/client/login/)
+
+# config
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/config/)
