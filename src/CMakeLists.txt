@@ -77,3 +77,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/client/login/)
 
 # config
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/config/)
+
+# log
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/log/)
