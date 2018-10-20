@@ -26,7 +26,8 @@ include_directories(${_lib_name}
                     ${_incldue}
                     ${PROJECT_SOURCE_DIR}
                     ${_include_dirs}
-                    ${PROJECT_SOURCE_DIR}/../../lib/include/)
+                    ${PROJECT_SOURCE_DIR}/../../lib/include/
+                    ${PROJECT_SOURCE_DIR}/../../)
 
 # 创建目录
 set(_inc_file
@@ -114,5 +115,7 @@ Add_Definitions(-D_UNICODE)
 
 # 项目依赖
 target_link_libraries(${_test_name} ${_lib_name})
+target_link_libraries(${_lib_name} config)
+target_link_libraries(${_lib_name} msg_mqtt_client)
 
 cotire(${_lib_name} ${_test_name})
