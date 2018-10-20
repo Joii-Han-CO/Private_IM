@@ -24,6 +24,7 @@ public:
 private:
   pSConfigData config_;
 };
+typedef std::shared_ptr<CConfig> pCConfig;
 
 #pragma region
 }
