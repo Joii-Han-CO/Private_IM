@@ -1,10 +1,17 @@
 ﻿#pragma once
 #include <memory>
-#include <mosquitto.h>
 #include "base/log.hpp"
 #include "base/error.hpp"
 #include "base/task.hpp"
 #include "base/async.hpp"
+
+#pragma region define
+
+struct mosquitto;
+struct mosquitto_message;
+
+#pragma endregion
+
 
 #pragma region
 namespace im {
