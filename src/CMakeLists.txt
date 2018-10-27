@@ -80,3 +80,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib/config/)
 
 # log
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/log/)
+
+# plugin_py
+add_subdirectory(${PROJECT_SOURCE_DIR}/plugin/plugin_py/)
