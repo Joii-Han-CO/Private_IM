@@ -7,12 +7,13 @@
 namespace test {
 #pragma endregion
 
-
 #pragma region namespace
 }
 #pragma endregion
 
 int main() {
+
+  im::log::CLog::Get()->Init();
 
   return 0;
 }

@@ -2,6 +2,9 @@
 #include <time.h>
 #include <ctime>
 #include <chrono>
+#include <string>
+#include <iomanip>
+#include <sstream>
 
 
 #pragma region
@@ -37,6 +40,24 @@ public:
 private:
   local_time::time_point val_;
 };
+
+inline std::string PrintTime(const std::string &out_buf) {
+  auto n = local_time::now();
+  auto ms = n.time_since_epoch();
+  auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(ms).count();
+  auto const msecs = diff % 1000;
+  std::time_t t = local_time::to_time_t(n);
+  std::stringstream ss;
+
+#ifdef WIN32
+  tm tm_l = {0};
+  auto err_n = localtime_s(&tm_l, &t);
+  ss << std::put_time(&tm_l, out_buf.c_str());
+#else
+  ss << std::put_time(localtime(&t), out_buf.c_str());
+#endif // WIN32
+  return ss.str();
+}
 
 #pragma region
 }
