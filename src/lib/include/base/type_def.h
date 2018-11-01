@@ -24,3 +24,8 @@
 #else
   #define IM_LIB_EXP
 #endif
+
+#ifndef UCHAR
+typedef unsigned char UCHAR;
+#endif
+
