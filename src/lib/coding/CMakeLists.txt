@@ -49,7 +49,7 @@ add_library(${_lib_name} ${_prj_lib_type}
 target_link_libraries(${_lib_name} LINK_PUBLIC ${_lib_dirs})
 
 # 设置环境变量
-set(_compile_def IM_LIB)
+set(_compile_def IM_LIB PRJ_NAME="${_lib_name}")
 if (${_prj_lib_type} STREQUAL "STATIC")
   set(_compile_def ${_compile_def} IM_STATIC)
 endif()

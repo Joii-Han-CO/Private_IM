@@ -49,7 +49,7 @@ target_link_libraries(${_lib_name} LINK_PUBLIC ${_lib_dirs})
 target_link_libraries(${_lib_name} server_sql)
   
 # 设置环境变量
-set(_compile_def IM_LIB)
+set(_compile_def IM_LIB PRJ_NAME="${_lib_name}")
 target_compile_definitions(${_lib_name}
                            PRIVATE
                            ${_compile_def})

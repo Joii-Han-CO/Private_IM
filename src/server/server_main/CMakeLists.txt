@@ -40,7 +40,11 @@ source_group("source" FILES ${_cpp_file})
 
 add_executable(${_lib_name}
                ${_inc_file} ${_cpp_file})
-
+               
+set(_compile_def PRJ_NAME="${_lib_name}")
+target_compile_definitions(${_lib_name}
+                           PRIVATE
+                           ${_compile_def})
 # 设置工程目录
 set_target_properties(${_lib_name} PROPERTIES FOLDER
                       ${_lib_folder})

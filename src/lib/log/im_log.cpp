@@ -94,7 +94,7 @@ std::string CLog::MakeHeader(base::log::EBaseLogType t,
     "[%s],[%s],[%s-%d]:%s\n";
 
   auto str_type = base::log::GetBaseLogTypeStr(t);
-  auto str_modle = "";  // 获取当前模块
+  auto str_modle = PRJ_NAME;  // 获取当前模块
   return base::log::FormatStr(base_format, str_type, str_modle,
                               func_name, line_num, "%s");
 }
