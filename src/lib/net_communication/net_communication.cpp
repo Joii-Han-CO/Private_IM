@@ -199,7 +199,7 @@ void CNetCom::LogCallabck(const base::log::SBaseLog &func) {
 void CNetCom::HandleAccept(const boost::system::error_code &error) {
   // 这里是否考虑同步...
   if (error) {
-    PrintErro("[net]--accept error,des:%d", error.message().c_str());
+    MPrintErro("[net]--accept error,des:%d", error.message().c_str());
     return;
   }
   NetListener();
@@ -208,7 +208,7 @@ void CNetCom::HandleAccept(const boost::system::error_code &error) {
 void CNetCom::HandleConnect(const boost::system::error_code &error) {
   // 这里是否考虑同步...
   if (error) {
-    PrintErro("[net]--accept error,des:%d", error.message().c_str());
+    MPrintErro("[net]--accept error,des:%d", error.message().c_str());
     return;
   }
   NetConnected();

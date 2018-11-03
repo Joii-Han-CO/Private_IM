@@ -186,7 +186,7 @@ void CMqttClientBase::Mqtt_Connect(const SMqttConnectInfo &info) {
 // mqtt断开连接
 void CMqttClientBase::Mqtt_Disconnect() {
   if (mqtt_ == nullptr) {
-    PrintWarn("[Mqtt] not connected, mqtt_ == nullptr");
+    MPrintWarn("[Mqtt] not connected, mqtt_ == nullptr");
     return;
   }
 
@@ -228,12 +228,12 @@ void CMqttClientBase::Mqtt_MsgLoop() {
   while (true) {
     if (sync_disconnect_flag_.Get()) {
       Mqtt_Disconnect();
-      PrintInfo("[mqtt]--exit loop");
+      MPrintInfo("[mqtt]--exit loop");
       break;
     }
     i_ref = mosquitto_loop(mqtt_, loop_timeout_, 1);
     if (i_ref != MOSQ_ERR_SUCCESS) {
-      PrintErro("mosquitto_loop is failed");
+      MPrintErro("mosquitto_loop is failed");
       break;
     }
   }
@@ -279,19 +279,19 @@ void CMqttClientBase::SMsg_Cb(mosquitto *mosq, void *obj,
 }
 void CMqttClientBase::Msg_Cb(const mosquitto_message *message) {
   if (message == nullptr) {
-    PrintWarn("[Mqtt] message failed, message is null");
+    MPrintWarn("[Mqtt] message failed, message is null");
     return;
   }
   if (message->topic == nullptr || message->topic[0] == '\0') {
-    PrintWarn("[Mqtt] message failed, topic is null");
+    MPrintWarn("[Mqtt] message failed, topic is null");
     return;
   }
   if (message->payloadlen <= 0) {
-    PrintWarn("[Mqtt] message failed, data size is 0");
+    MPrintWarn("[Mqtt] message failed, data size is 0");
     return;
   }
   if (message->payload == nullptr) {
-    PrintWarn("[Mqtt] message failed, payload is null");
+    MPrintWarn("[Mqtt] message failed, payload is null");
     return;
   }
 
@@ -302,7 +302,7 @@ void CMqttClientBase::Msg_Cb(const mosquitto_message *message) {
 
   auto it = map_msg_.find(topic);
   if (it == map_msg_.end()) {
-    PrintWarn(
+    MPrintWarn(
       "[Mqtt] message failed, No corresponding callback found");
     return;
   }
@@ -322,7 +322,7 @@ void CMqttClientBase::SPub_Cb(mosquitto *mosq, void *obj, int data) {
 void CMqttClientBase::Pub_Cb(int data) {
   auto it = map_pub_.find(data);
   if (it == map_pub_.end()) {
-    PrintWarn("[Mqtt] publish failed, No corresponding callback found");
+    MPrintWarn("[Mqtt] publish failed, No corresponding callback found");
     return;
   }
   if (it->second)

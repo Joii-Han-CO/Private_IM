@@ -119,11 +119,11 @@ protected:
   if (func_) \
     LogPrintLog(type, __FUNCTION__, __FILE__, __LINE__, \
       base::format::FormatStr(log_str, ##__VA_ARGS__).c_str());
-#define PrintInfo(log_str, ...) \
+#define MPrintInfo(log_str, ...) \
   PrintLog(base::log::EBaseLogType::info, log_str, ##__VA_ARGS__)
-#define PrintWarn(log_str, ...) \
+#define MPrintWarn(log_str, ...) \
   PrintLog(base::log::EBaseLogType::warn, log_str, ##__VA_ARGS__)
-#define PrintErro(log_str, ...) \
+#define MPrintErro(log_str, ...) \
   PrintLog(base::log::EBaseLogType::erro, log_str, ##__VA_ARGS__)
 
 #pragma endregion

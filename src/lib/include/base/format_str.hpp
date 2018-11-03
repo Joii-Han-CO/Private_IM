@@ -28,6 +28,27 @@ cus_string FormatStr(const cus_char *sz, T1 ...t) {
   return fmt.str();
 };
 
+inline std::wstring GetTemplateStr(std::string s, const wchar_t *sz) {
+  return base::Utf8ToUtf16(s);
+}
+inline std::string GetTemplateStr(std::string s, const char *sz) {
+  return s;
+}
+
+inline std::string GetStr_Utf8(const std::string &s) {
+  return s;
+}
+inline std::string GetStr_Utf8(const std::wstring &s) {
+  return base::Utf16ToUtf8(s);
+}
+
+inline std::string GetStr_Gbk(const std::string &s) {
+  return s;
+}
+inline std::string GetStr_Gbk(const std::wstring &s) {
+  return base::Utf16ToGB2312(s);
+}
+
 #pragma region namespace
 }
 }

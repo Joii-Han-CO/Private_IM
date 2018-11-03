@@ -28,7 +28,7 @@ protected:
 
 #define SetLastErrAndLog(log_str, ...) \
   SetLastErr(log_str, ##__VA_ARGS__); \
-  PrintErro(log_str, ##__VA_ARGS__);
+  MPrintErro(log_str, ##__VA_ARGS__);
 
 protected:
   std::wstring last_error_;

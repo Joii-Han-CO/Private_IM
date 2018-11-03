@@ -3,11 +3,16 @@
 #include <string>
 #include <memory>
 #include <fstream>
+#include <mutex>
 
 #include "base/task.hpp"
 #include "base/log.hpp"
 #include "base/format_str.hpp"
 
+// 同步写标示
+//  1 异步写
+//  0 同步写
+#define LogASyncWrite 1
 
 #pragma region
 namespace im {
@@ -28,7 +33,11 @@ struct SLog_InitArgs {
 typedef std::shared_ptr<SLog_InitArgs> pSLog_InitArgs;
 
 // 单例的Log
-class CLog: public base::b_async::Task {
+class CLog
+#if LogASyncWrite
+  : public base::b_async::Task
+#endif
+{
 private:
   CLog();
 public:
@@ -45,24 +54,30 @@ public:
              const cus_char *sz, T1 ... args) {
     if (sz == nullptr || sz[0] == '\0')
       return;
-
-    // 格式化变量...
-    auto body_str = base::format::FormatStr(sz, args ...);
-    if (body_str.empty())
+    if (!FilterType(t))
       return;
 
-    auto header_str = MakeHeader(t, prj_name, source_file,
-                                 func_name, line_num);
-    auto header_str2 = GetTemplateStr(header_str, sz);
+    std::string header_str = MakeHeader(t, prj_name, source_file,
+                                        func_name, line_num);
+#if LogASyncWrite
+    AddTask([this, header_str, sz, args...]() {
+#endif
+      // 格式化变量...
+      auto body_str = base::format::FormatStr(sz, args ...);
+      if (body_str.empty())
+        return;
 
-    auto log_str = base::format::FormatStr(header_str2.c_str(),
-                                           body_str.c_str());
+      std::string log_str =
+        header_str + "]:" + base::format::GetStr_Utf8(body_str) + "\n";
 
-    OutPutBase(log_str);
+      OutPutBase(log_str);
+#if LogASyncWrite
+    });
+#endif
   }
 
 private:
-  void OutPutBase(const std::wstring &d);
+  bool FilterType(base::log::EBaseLogType t);
   void OutPutBase(const std::string &d);
 
   std::string MakeHeader(base::log::EBaseLogType t,
@@ -73,9 +88,6 @@ private:
 
   void PrintHeader();
 
-  std::wstring GetTemplateStr(std::string s, const wchar_t *sz);
-  std::string GetTemplateStr(std::string s, const char *sz);
-
   bool is_init_ = false;
   std::shared_ptr<std::ofstream> file_;
 
@@ -83,19 +95,24 @@ private:
   bool print_info_ = false;
   bool print_warn_ = true;
   bool print_erro_ = true;
+
+#if !LogASyncWrite
+  std::mutex write_log_sync_;
+#endif
+
 };
 
 #define _PrintBase(type, sz, ...) \
   im::log::CLog::Get()->Print(type, PRJ_NAME,\
                               __FILE__, __FUNCTION__, __LINE__, \
                               sz, ##__VA_ARGS__);
-#define PrintBaseDbg(sz, ...) \
+#define PrintLogDbg(sz, ...) \
   _PrintBase(base::log::EBaseLogType::dbg, sz, ##__VA_ARGS__)
-#define PrintBaseInfo(sz, ...) \
+#define PrintLogInfo(sz, ...) \
   _PrintBase(base::log::EBaseLogType::info, sz, ##__VA_ARGS__)
-#define PrintBaseWarn(sz, ...) \
+#define PrintLogWarn(sz, ...) \
   _PrintBase(base::log::EBaseLogType::warn, sz, ##__VA_ARGS__)
-#define PrintBaseErro(sz, ...) \
+#define PrintLogErro(sz, ...) \
   _PrintBase(base::log::EBaseLogType::erro, sz, ##__VA_ARGS__)
 
 #pragma region

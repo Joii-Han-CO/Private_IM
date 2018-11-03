@@ -41,11 +41,8 @@ private:
   local_time::time_point val_;
 };
 
-inline std::string PrintTime(const std::string &out_buf) {
+inline std::string PrintTime() {
   auto n = local_time::now();
-  auto ms = n.time_since_epoch();
-  auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(ms).count();
-  auto const msecs = diff % 1000;
   std::time_t t = local_time::to_time_t(n);
   std::stringstream ss;
 
@@ -54,12 +51,37 @@ inline std::string PrintTime(const std::string &out_buf) {
   auto err_n = localtime_s(&tm_l, &t);
   if (err_n != 0)
     return "";
-  ss << std::put_time(&tm_l, out_buf.c_str());
+  ss << std::put_time(&tm_l, "%Y_%m_%d-%H_%M_%S");
 #else
   ss << std::put_time(localtime(&t), out_buf.c_str());
 #endif // WIN32
+
+  std::chrono::milliseconds ms =
+    std::chrono::duration_cast<std::chrono::milliseconds>(
+      n.time_since_epoch());
+
+  ss << "_" << std::setw(3) << std::setfill('0') << (ms.count() % 1000);
   return ss.str();
 }
+
+// Î¢Ãë ¼ÆÊ±...
+class Timer_ms {
+public:
+  Timer_ms() {
+    start_ = local_time::now();
+  }
+
+  long long End() {
+    auto end = local_time::now();
+    auto duration =
+      std::chrono::duration_cast<std::chrono::microseconds>(end - start_);
+
+    return duration.count();
+  }
+
+private:
+  std::chrono::time_point<local_time> start_;
+};
 
 #pragma region
 }
