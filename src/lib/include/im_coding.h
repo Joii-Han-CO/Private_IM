@@ -2,6 +2,8 @@
 #include "base/type_def.h"
 
 #include <string>
+#include <boost/format.hpp>
+
 
 // 处理文本\数据编码的库...
 
@@ -27,7 +29,6 @@ std::wstring Coding_UTF8(const char *buf, int size);
 ECodingFileType GetCoding_U8(const char *path);
 
 ECodingFileType GetCoding(const wchar_t *path);
-
 
 #pragma region
 }

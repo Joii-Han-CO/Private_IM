@@ -2,6 +2,7 @@
 #include "test_coding.h"
 #include "im_coding.h"
 #include "base/debug.hpp"
+#include "base/format_str.hpp"
 
 #include <map>
 
@@ -32,12 +33,18 @@ void TestCoding() {
   }
 }
 
+void TestFormat() {
+  auto ref1 = base::format::FormatStr("%1%, %2%, %3%", 1, 2, "abc");
+  auto ref2 = base::format::FormatStr(L"%1%, %2%, %3%", 1, 2, L"abc");
+}
+
 #pragma region namespace
 }
 #pragma endregion
 
 int main() {
-  test::TestCoding();
+  //test::TestCoding();
+  test::TestFormat();
 
   system("pause");
   return 0;

@@ -29,3 +29,7 @@
 typedef unsigned char UCHAR;
 #endif
 
+#include <string>
+#define cus_string std::basic_string<cus_char, \
+                                     std::char_traits<cus_char>, \
+                                     std::allocator<cus_char>>

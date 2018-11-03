@@ -94,7 +94,7 @@ std::string CLog::MakeHeader(base::log::EBaseLogType t,
     "[%s],[%s],[%s-%d]:%s\n";
 
   auto str_type = base::log::GetBaseLogTypeStr(t);
-  return base::log::FormatStr(base_format, str_type, prj_name,
+  return base::format::FormatStr(base_format, str_type, prj_name,
                               func_name, line_num, "%s");
 }
 

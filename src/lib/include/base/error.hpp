@@ -19,11 +19,11 @@ public:
 protected:
   template<typename ... T1>
   void SetLastErr(const wchar_t *sz, T1 ... args) {
-    last_error_ = base::log::FormatStr(sz, args...);
+    last_error_ = base::format::FormatStr(sz, args...);
   }
   template<typename ... T1>
   void SetLastErr(const char *sz, T1 ... args) {
-    last_error_ = base::GB2312ToUtf16(base::log::FormatStr(sz, args...));
+    last_error_ = base::GB2312ToUtf16(base::format::FormatStr(sz, args...));
   }
 
 #define SetLastErrAndLog(log_str, ...) \

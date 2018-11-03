@@ -2,6 +2,7 @@
 #include <string>
 #include <functional>
 #include "character_conversion.hpp"
+#include "format_str.hpp"
 
 #pragma region namespace
 namespace base {
@@ -10,37 +11,10 @@ namespace log {
 
 #pragma region Format
 
-template<typename ... T1>
-inline std::string FormatStr(const char *sz, T1 ... args) {
-  if (sz == nullptr || sz[0] == '\0')
-    return "";
-  std::string rf;
-  auto bufsize = snprintf(nullptr, 0, sz, args...);
-  if (bufsize == 0)
-    return "";
-  rf.resize(bufsize + 1);
-  snprintf((char*)rf.c_str(), rf.size(), sz, args...);
-  return rf.c_str();    // 重新构造，因为有可能分配了太长的字符串...
-};
-
 #define LOG_BASE_IS_SAME(T) std::is_same<T1, T>::value
 
 inline void CountAgrsSizeC(int &size, std::string arg) {
   size += arg.size();
-};
-
-template<typename ... T1>
-inline std::wstring FormatStr(const wchar_t *sz, T1 ... args) {
-  if (sz == nullptr || sz[0] == '\0')
-    return L"";
-  std::wstring rf;
-  const int black_size = 256;
-  for (int i = 1; i <= 16; i++) {
-    rf.resize(i * black_size);
-    if (swprintf((wchar_t*)rf.c_str(), rf.size(), sz, args...) != -1)
-      return rf;
-  }
-  return L"";
 };
 
 #pragma endregion
@@ -144,7 +118,7 @@ protected:
 #define PrintLog(type, log_str, ...) \
   if (func_) \
     LogPrintLog(type, __FUNCTION__, __FILE__, __LINE__, \
-      base::log::FormatStr(log_str, ##__VA_ARGS__).c_str());
+      base::format::FormatStr(log_str, ##__VA_ARGS__).c_str());
 #define PrintInfo(log_str, ...) \
   PrintLog(base::log::EBaseLogType::info, log_str, ##__VA_ARGS__)
 #define PrintWarn(log_str, ...) \

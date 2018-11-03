@@ -6,6 +6,7 @@
 
 #include "base/task.hpp"
 #include "base/log.hpp"
+#include "base/format_str.hpp"
 
 
 #pragma region
@@ -46,7 +47,7 @@ public:
       return;
 
     // 格式化变量...
-    auto body_str = base::log::FormatStr(sz, args ...);
+    auto body_str = base::format::FormatStr(sz, args ...);
     if (body_str.empty())
       return;
 
@@ -54,7 +55,8 @@ public:
                                  func_name, line_num);
     auto header_str2 = GetTemplateStr(header_str, sz);
 
-    auto log_str = base::log::FormatStr(header_str2.c_str(), body_str.c_str());
+    auto log_str = base::format::FormatStr(header_str2.c_str(),
+                                           body_str.c_str());
 
     OutPutBase(log_str);
   }

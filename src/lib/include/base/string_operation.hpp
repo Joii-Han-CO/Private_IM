@@ -9,10 +9,6 @@ namespace base {
 
 #pragma region 解析参数
 
-#define cus_string \
-  std::basic_string<cus_char, std::char_traits<cus_char>, \
-    std:: allocator<cus_char>>
-
 template<typename cus_char>
 inline std::vector<cus_string> ArgsToVec(int argc, cus_char* argv[]) {
   std::vector<cus_string> vec_ref;

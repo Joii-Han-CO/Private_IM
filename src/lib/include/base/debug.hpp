@@ -17,14 +17,14 @@ std::mutex g_output_sync_;
 template<typename ... T1>
 inline void OutPut(const char *sz, T1 ... args) {
   std::unique_lock<std::mutex> lock(g_output_sync_);
-  auto d = base::log::FormatStr(sz, args...);
+  auto d = base::format::FormatStr(sz, args...);
   std::cout << d.c_str() << std::endl;
 }
 
 template<typename ... T1>
 inline void OutPut(const wchar_t *sz, T1 ... args) {
   std::unique_lock<std::mutex> lock(g_output_sync_);
-  auto d = base::log::FormatStr(sz, args...);
+  auto d = base::format::FormatStr(sz, args...);
   std::wcout << d.c_str() << std::endl;
 }
 

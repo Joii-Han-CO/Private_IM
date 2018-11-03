@@ -34,7 +34,7 @@ bool CServerSql_User::Init(
     int rc = sqlite3_open16((const void*)db_path.c_str(), &sql_ptr_);
     if (rc != SQLITE_OK || sql_ptr_ == nullptr) {
       const char *err_msg = sqlite3_errmsg(sql_ptr_);
-      last_err = base::Utf8ToUtf16(base::log::FormatStr(
+      last_err = base::Utf8ToUtf16(base::format::FormatStr(
         "open sqlite db file failed, rc_code:%d, sqlite ptr:%X, des:%s",
         rc, sql_ptr_, err_msg));
       if (sql_ptr_)
@@ -74,7 +74,7 @@ bool CServerSql_User::CheckSql(std::wstring &last_err) {
   int rc = sqlite3_get_table(sql_ptr_, "select * from sqlite_master",
                              &sql_res, &row, &col, &err_msg);
   if (rc != SQLITE_OK) {
-    last_err = base::Utf8ToUtf16(base::log::FormatStr(
+    last_err = base::Utf8ToUtf16(base::format::FormatStr(
       "get sqlite table failed, rc_code:%d, des:%s", rc, err_msg));
     return false;
   }
@@ -102,7 +102,7 @@ bool CServerSql_User::CreateSqlTab(std::wstring &last_err) {
     "  permission int\n"
     ");";
   if (SqlExec(sql_ptr_, sql, &rc_code, err_msg) == false) {
-    last_err = base::Utf8ToUtf16(base::log::FormatStr(
+    last_err = base::Utf8ToUtf16(base::format::FormatStr(
       "create table user_info failed, rc_code:%d, des:%s",
       rc_code, err_msg.c_str()));
     return false;
@@ -142,7 +142,7 @@ bool CServerSql_User::SetUserInfo(
     }
 
     // 写入数据库
-    std::wstring sql = base::log::FormatStr(
+    std::wstring sql = base::format::FormatStr(
       L"insert into 'user_info' ('name', 'mobile', 'email', 'pwd_hash', 'permission') "
       L"values('%s', '%s', '%s', '%s', %d);",
       info->name.c_str(), info->mobile.c_str(),
@@ -151,7 +151,7 @@ bool CServerSql_User::SetUserInfo(
     std::string err_msg;
     SqlExec(sql_ptr_, base::Utf16ToUtf8(sql), &rc_code, err_msg);
     if (rc_code != SQLITE_OK) {
-      auto last_err = base::Utf8ToUtf16(base::log::FormatStr(
+      auto last_err = base::Utf8ToUtf16(base::format::FormatStr(
         "insert date failed, rc_code:%d, des:%s",
         rc_code, err_msg.c_str()));
       if (callback)
@@ -201,15 +201,15 @@ pSSqlUserInfo CServerSql_User::GetUserInfoBase(std::wstring e_mail,
   std::string sql =
     "select name,email,mobile,pwd_hash,permission from user_info where ";
   if (!u8_mobile.empty() && !u8_e_mail.empty()) {
-    sql += base::log::FormatStr("email='%s' and mobile='%s' limit 2;",
+    sql += base::format::FormatStr("email='%s' and mobile='%s' limit 2;",
                                 u8_e_mail.c_str(), u8_mobile.c_str());
   }
   else if (u8_mobile.empty() && !u8_e_mail.empty()) {
-    sql += base::log::FormatStr("email='%s'  limit 1;",
+    sql += base::format::FormatStr("email='%s'  limit 1;",
                                 u8_e_mail.c_str());
   }
   else if (!u8_mobile.empty() && u8_e_mail.empty()) {
-    sql += base::log::FormatStr("mobile='%s'  limit 1;",
+    sql += base::format::FormatStr("mobile='%s'  limit 1;",
                                 u8_mobile.c_str());
   }
 
