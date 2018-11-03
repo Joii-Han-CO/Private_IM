@@ -39,7 +39,7 @@ public:
 
   // 模板只能写在这里
   template <typename cus_char, typename ... T1>
-  void Print(base::log::EBaseLogType t,
+  void Print(base::log::EBaseLogType t, const char *prj_name,
              const char *source_file, const char *func_name, int line_num,
              const cus_char *sz, T1 ... args) {
     if (sz == nullptr || sz[0] == '\0')
@@ -50,7 +50,8 @@ public:
     if (body_str.empty())
       return;
 
-    auto header_str = MakeHeader(t, source_file, func_name, line_num);
+    auto header_str = MakeHeader(t, prj_name, source_file,
+                                 func_name, line_num);
     auto header_str2 = GetTemplateStr(header_str, sz);
 
     auto log_str = base::log::FormatStr(header_str2.c_str(), body_str.c_str());
@@ -63,7 +64,7 @@ private:
   void OutPutBase(const std::string &d);
 
   std::string MakeHeader(base::log::EBaseLogType t,
-                         const char *source_file,
+                         const char *prj_name, const char *source_file,
                          const char *func_name, int line_num);
 
   bool WriteLog(base::log::EBaseLogType t);
@@ -83,7 +84,7 @@ private:
 };
 
 #define _PrintBase(type, sz, ...) \
-  im::log::CLog::Get()->Print(type, \
+  im::log::CLog::Get()->Print(type, PRJ_NAME,\
                               __FILE__, __FUNCTION__, __LINE__, \
                               sz, ##__VA_ARGS__);
 #define PrintBaseDbg(sz, ...) \

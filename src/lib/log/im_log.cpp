@@ -88,14 +88,13 @@ void CLog::OutPutBase(const std::string &d) {
 }
 
 std::string CLog::MakeHeader(base::log::EBaseLogType t,
-                             const char * source_file,
+                             const char *prj_name, const char * source_file,
                              const char * func_name, int line_num) {
   const char *base_format =
     "[%s],[%s],[%s-%d]:%s\n";
 
   auto str_type = base::log::GetBaseLogTypeStr(t);
-  auto str_modle = PRJ_NAME;  // 获取当前模块
-  return base::log::FormatStr(base_format, str_type, str_modle,
+  return base::log::FormatStr(base_format, str_type, prj_name,
                               func_name, line_num, "%s");
 }
 
