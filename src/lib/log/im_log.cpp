@@ -4,6 +4,7 @@
 #include "base/character_conversion.hpp"
 #include "base/system.hpp"
 #include "base/path.hpp"
+#include "base/debug.hpp"
 
 
 #pragma region namespace
@@ -79,6 +80,9 @@ bool CLog::FilterType(base::log::EBaseLogType t) {
 }
 
 void CLog::OutPutBase(const std::string &d) {
+  if (print_ctrl_)
+    base::debug::OutPut(d.c_str());
+
   // 写入日志...
   if (!file_)
     return;

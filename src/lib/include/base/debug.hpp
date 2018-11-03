@@ -12,18 +12,21 @@ namespace debug {
 
 #pragma region OutputInfo
 
-std::mutex g_output_sync_;
+inline std::mutex &GetGlobalOutputSync() {
+  static std::mutex output_sync;
+  return output_sync;
+}
 
 template<typename ... T1>
 inline void OutPut(const char *sz, T1 ... args) {
-  std::unique_lock<std::mutex> lock(g_output_sync_);
+  std::unique_lock<std::mutex> lock(GetGlobalOutputSync());
   auto d = base::format::FormatStr(sz, args...);
   std::cout << d.c_str() << std::endl;
 }
 
 template<typename ... T1>
 inline void OutPut(const wchar_t *sz, T1 ... args) {
-  std::unique_lock<std::mutex> lock(g_output_sync_);
+  std::unique_lock<std::mutex> lock(GetGlobalOutputSync());
   auto d = base::format::FormatStr(sz, args...);
   std::wcout << d.c_str() << std::endl;
 }
