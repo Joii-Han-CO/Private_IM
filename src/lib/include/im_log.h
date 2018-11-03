@@ -115,6 +115,17 @@ private:
 #define PrintLogErro(sz, ...) \
   _PrintBase(base::log::EBaseLogType::erro, sz, ##__VA_ARGS__)
 
+// 测试中，直接调用该函数
+inline void InitTestLog() {
+  im::log::SLog_InitArgs log_args;
+  log_args.print_dbg = true;
+  log_args.print_info = true;
+  log_args.print_warn = true;
+  log_args.print_erro = true;
+
+  im::log::CLog::Get()->Init(&log_args);
+}
+
 #pragma region
 }
 }
