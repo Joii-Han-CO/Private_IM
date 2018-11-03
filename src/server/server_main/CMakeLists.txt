@@ -23,7 +23,7 @@ set(_stdafx ${PROJECT_SOURCE_DIR}/stdafx)
 
 # 源码包含目录
 include_directories(${_lib_name}
-                    ${_incldue}
+                    ${_prj_include_dir}
                     ${PROJECT_SOURCE_DIR}
                     ${_include_dirs})
 

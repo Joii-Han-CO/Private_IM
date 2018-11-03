@@ -38,6 +38,11 @@ set(_prj_lib_type STATIC)
 
 set(CMAKE_BUILD_TYPE "Debug")
 
+# 一些全局的引用路径
+set(_prj_include_dir ${Boost_INCLUDE_DIRS}
+                     ${PROJECT_SOURCE_DIR}
+                     ${PROJECT_SOURCE_DIR}/lib/include)
+
 # Link时候的各种库
 set(_sys_lib )
 if (CMAKE_SYSTEM_NAME MATCHES "Darwin")

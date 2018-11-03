@@ -23,11 +23,11 @@ set(_stdafx ${PROJECT_SOURCE_DIR}/stdafx)
 
 # 源码包含目录
 include_directories(${_lib_name}
+                    ${_prj_include_dir}
                     ${_incldue}
                     ${PROJECT_SOURCE_DIR}
                     ${_include_dirs}
-                    ${THRD_LIB_PATH}/mosquitto/include
-                    ${PROJECT_SOURCE_DIR}/../../lib/include)
+                    ${THRD_LIB_PATH}/mosquitto/include)
 
 # 创建目录
 set(_inc_file

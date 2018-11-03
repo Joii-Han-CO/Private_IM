@@ -24,6 +24,7 @@ set(_stdafx ${PROJECT_SOURCE_DIR}/stdafx)
 
 # 源码包含目录
 include_directories(${_lib_name}
+                    ${_prj_include_dir}
                     ${_incldue}
                     ${_incldue_src}
                     ${PROJECT_SOURCE_DIR}
@@ -72,7 +73,8 @@ project(${_test_name})
 set(_stdafx ${PROJECT_SOURCE_DIR}/test/stdafx)
 
 # 源码包含目录
-include_directories(${_test_name} ${_incldue})
+include_directories(${_test_name} ${_prj_include_dir}
+                                  ${_incldue})
 
 # 创建目录
 set(_inc_file
