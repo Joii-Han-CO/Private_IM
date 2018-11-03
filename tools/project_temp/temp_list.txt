@@ -1,5 +1,4 @@
 lib.h-->src\$(--prj_folder--)\include\im_$(--prj_name--).h
-lib.hpp-->src\$(--prj_folder--)\include\im_$(--prj_name--).hpp
 lib.cpp-->src\$(--prj_folder--)\$(--prj_name--)\im_$(--prj_name--).cpp
 stdafx.h-->src\$(--prj_folder--)\$(--prj_name--)\stdafx.h
 stdafx.cpp-->src\$(--prj_folder--)\$(--prj_name--)\stdafx.cpp

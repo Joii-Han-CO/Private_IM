@@ -23,15 +23,14 @@ set(_stdafx ${PROJECT_SOURCE_DIR}/stdafx)
 
 # 源码包含目录
 include_directories(${_lib_name}
-                    ${_incldue}
+                    ${_prj_include_dir}
                     ${PROJECT_SOURCE_DIR}
                     ${_include_dirs})
 
 # 创建目录
 set(_inc_file
   ${_stdafx}.h
-  ${_incldue}/${_namepace}_${_lib_name}.h
-  ${_incldue}/${_namepace}_${_lib_name}.hpp)
+  ${_incldue}/${_namepace}_${_lib_name}.h)
 source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
@@ -44,7 +43,7 @@ add_library(${_lib_name} ${_prj_lib_type}
 target_link_libraries(${_lib_name} LINK_PUBLIC ${_lib_dirs})
 
 # 设置环境变量
-set(_compile_def IM_LIB)
+set(_compile_def IM_LIB PRJ_NAME="${_lib_name}")
 if (${_prj_lib_type} STREQUAL "STATIC")
   set(_compile_def ${_compile_def} IM_STATIC)
 endif()
