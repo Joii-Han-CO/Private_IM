@@ -139,5 +139,6 @@ if (WIN32)
 else()
 
 endif()
+target_link_libraries(${_test_name} log)
 
 cotire(${_lib_name} ${_test_name})

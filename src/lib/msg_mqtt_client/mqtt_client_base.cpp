@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include <mosquitto.h>
 #include "mqtt_client_base.h"
+#include "im_log.h"
 
 #pragma region
 namespace im {
@@ -37,7 +38,11 @@ private:
 };
 }
 
-CMqttClientBase::CMqttClientBase(base::log::LogCallback func):
+CMqttClientBase::CMqttClientBase():
+  base::log::Log(std::bind(&CMqttClientBase::OutputLog,
+                           this, std::placeholders::_1)) {}
+
+CMqttClientBase::CMqttClientBase(base::log::LogCallback func) :
   base::log::Log(func) {}
 
 CMqttClientBase::~CMqttClientBase() {
@@ -328,6 +333,10 @@ void CMqttClientBase::Pub_Cb(int data) {
   if (it->second)
     it->second();
   map_pub_.erase(data);
+}
+
+void CMqttClientBase::OutputLog(const base::log::SBaseLog & l) {
+  im::log::CLog::Get()->Print(l.type, PRJ_NAME, l.file, l.func, l.line, l.log);
 }
 
 #pragma endregion

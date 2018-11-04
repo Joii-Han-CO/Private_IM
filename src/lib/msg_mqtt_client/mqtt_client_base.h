@@ -48,6 +48,7 @@ class CMqttClientBase:
   public virtual base::b_async::Task {
 
 public:
+  CMqttClientBase();
   CMqttClientBase(base::log::LogCallback func);
   virtual ~CMqttClientBase();
 
@@ -96,6 +97,9 @@ private:
 
   static void SPub_Cb(mosquitto *mosq, void *obj, int data);
   void Pub_Cb(int data);
+
+  // 日志输出到日志里
+  void OutputLog(const base::log::SBaseLog &l);
 
 private:
   FUNC_StatusChange cb_status_change_ = nullptr;
