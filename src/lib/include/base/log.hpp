@@ -20,7 +20,7 @@ inline std::string FormatStr(const char *sz, T1 ... args) {
     return "";
   rf.resize(bufsize + 1);
   snprintf((char*)rf.c_str(), rf.size(), sz, args...);
-  return rf;
+  return rf.c_str();    // 重新构造，因为有可能分配了太长的字符串...
 };
 
 #define LOG_BASE_IS_SAME(T) std::is_same<T1, T>::value
@@ -46,6 +46,7 @@ inline std::wstring FormatStr(const wchar_t *sz, T1 ... args) {
 #pragma endregion
 
 enum class EBaseLogType {
+  dbg,
   info,
   warn,
   erro,
@@ -59,6 +60,21 @@ struct SBaseLog {
   int line = 0;
   const wchar_t *log = nullptr;
 };
+
+inline const char *GetBaseLogTypeStr(EBaseLogType t) {
+  switch (t) {
+  case base::log::EBaseLogType::dbg:
+    return "_dbg";
+  case base::log::EBaseLogType::info:
+    return "info";
+  case base::log::EBaseLogType::warn:
+    return "warn";
+  case base::log::EBaseLogType::erro:
+    return "erro";
+  default:
+    return "";
+  }
+}
 
 typedef std::function<void(const SBaseLog &)> LogCallback;
 

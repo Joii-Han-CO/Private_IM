@@ -52,6 +52,8 @@ inline std::string PrintTime(const std::string &out_buf) {
 #ifdef WIN32
   tm tm_l = {0};
   auto err_n = localtime_s(&tm_l, &t);
+  if (err_n != 0)
+    return "";
   ss << std::put_time(&tm_l, out_buf.c_str());
 #else
   ss << std::put_time(localtime(&t), out_buf.c_str());

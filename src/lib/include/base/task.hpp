@@ -25,7 +25,7 @@ protected:
     con_v_.notify_all();
   };
   void WaitTask() {
-    if (thread_->joinable())
+    if (thread_ && thread_->joinable())
       thread_->join();
   }
 

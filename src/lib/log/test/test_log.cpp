@@ -12,8 +12,10 @@ namespace test {
 #pragma endregion
 
 int main() {
-
   im::log::CLog::Get()->Init();
+
+  PrintBaseDbg("Test Log %s - %d", "1", 1);
+  PrintBaseDbg("Test Log %s - %d", "1", 1);
 
   return 0;
 }
