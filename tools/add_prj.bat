@@ -1,5 +1,5 @@
 echo off
-set name=msg_mqtt_client
+set name=coding
 set folder=lib
 set s_path=E:\code\Private_IM
 

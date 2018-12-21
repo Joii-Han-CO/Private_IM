@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 3.0)
 #编译Proto
 if (CMAKE_SYSTEM_NAME MATCHES "Windows")
   execute_process(COMMAND
-    "${THRD_LIB_PATH}/protobuf/o_win/Release/protoc"
+    "${THRD_LIB_PATH}/protobuf/lib/release_mt/protoc"
     "-I=${PROJECT_SOURCE_DIR}/lib/msg_proto/protobuf"
     "--cpp_out=${PROJECT_SOURCE_DIR}/lib/msg_proto/proto_class"
     "${PROJECT_SOURCE_DIR}/lib/msg_proto/protobuf/msg.proto")
@@ -133,17 +133,17 @@ target_link_libraries(${_lib_name}_test ${_lib_name})
 
 # D|R下不同的库
 target_link_libraries(${_lib_name}_test debug 
-  "${THRD_LIB_PATH}/protobuf/Debug/libprotobufd.lib")
+  "${THRD_LIB_PATH}/protobuf/lib/debug_mt/libprotobufd.lib")
 target_link_libraries(${_lib_name}_test debug 
-  "${THRD_LIB_PATH}/protobuf/Debug/libprotobuf-lited.lib")
+  "${THRD_LIB_PATH}/protobuf/lib/debug_mt/libprotobuf-lited.lib")
 target_link_libraries(${_lib_name}_test debug 
-  "${THRD_LIB_PATH}/protobuf/Debug/libprotocd.lib")
+  "${THRD_LIB_PATH}/protobuf/lib/debug_mt/libprotocd.lib")
 
 target_link_libraries(${_lib_name}_test optimized 
-  "${THRD_LIB_PATH}/protobuf/Release/libprotobuf.lib")
+  "${THRD_LIB_PATH}/protobuf/lib/release_mt/libprotobuf.lib")
 target_link_libraries(${_lib_name}_test optimized 
-  "${THRD_LIB_PATH}/protobuf/Release/libprotobuf-lite.lib")
+  "${THRD_LIB_PATH}/protobuf/lib/release_mt/libprotobuf-lite.lib")
 target_link_libraries(${_lib_name}_test optimized 
-  "${THRD_LIB_PATH}/protobuf/Release/libprotoc.lib")
+  "${THRD_LIB_PATH}/protobuf/lib/release_mt/libprotoc.lib")
 
 cotire(${_lib_name} ${_lib_name}_test)

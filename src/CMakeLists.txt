@@ -24,17 +24,18 @@ set(_namepace "im")
 if (CMAKE_SYSTEM_NAME MATCHES "Windows")
   add_compile_options("/WX")
   link_directories(${_test_name} ${Boost_LIBRARY_DIRS})
-  set(CMAKE_CXX_FLAGS_DEBUG_INIT          "/D_DEBUG /MTd /Zi /Ob0 /Od /RTC1")
-  set(CMAKE_CXX_FLAGS_MINSIZEREL_INIT     "/MT /O1 /Ob1 /D NDEBUG")
-  set(CMAKE_CXX_FLAGS_RELEASE_INIT        "/MT /O2 /Ob2 /D NDEBUG")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "/MT /Zi /O2 /Ob1 /D NDEBUG")
+  add_compile_options("$<$<CONFIG:RELEASE>:/MT>")
+  add_compile_options("$<$<CONFIG:DEBUG>:/MTd>")
 else()
   add_compile_options(-std=c++11)
 endif()
 
-# 输出动态库，还是静态库
-#set(_prj_lib_type SHARED)
-set(_prj_lib_type STATIC)
+option(WITH_STATIC "" ON)
+if (${WITH_STATIC} STREQUAL ON)
+  set(_prj_lib_type STATIC)
+else (${WITH_STATIC} STREQUAL ON) 
+  set(_prj_lib_type STATIC)
+endif (${WITH_STATIC} STREQUAL ON)
 
 set(CMAKE_BUILD_TYPE "Debug")
 
@@ -73,9 +74,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib/sql_base/)
 
 # server_sql
 add_subdirectory(${PROJECT_SOURCE_DIR}/server/server_sql/)
-
-# ssl_base
-add_subdirectory(${PROJECT_SOURCE_DIR}/lib/ssl_base/)
 
 # login
 add_subdirectory(${PROJECT_SOURCE_DIR}/client/login/)

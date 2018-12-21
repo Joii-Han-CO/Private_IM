@@ -1,19 +1,11 @@
 ﻿#pragma once
 #include "base/type_def.h"
 #include <string>
+#include <vector>
 #include <functional>
 #include "im_config.h"
+#include "mqtt_client_base.h"
 #include "base/error.hpp"
-
-
-#pragma region define
-
-namespace im {
-class CMqttClientBase;
-typedef std::shared_ptr<CMqttClientBase> pCMqttClientBase;
-}
-
-#pragma endregion
 
 
 #pragma region
@@ -27,31 +19,37 @@ namespace login {
   //////////////////////////////////////////////////////////////////////////
 
 // 异步完成回调
-typedef std::function<void(bool)> LoginFuncResult;
+typedef std::function<void(bool)> Func_LoginResult;
 
 class Login: public base::error::LastError {
 public:
-  Login();
+  Login(im::FUNC_StatusChange func_mqtt_status);
   ~Login();
 
 public:
   // 全局初始化(部分异步处理)
-  bool Init(LoginFuncResult func_done);
-#pragma region Init
+  //  密码部分使用sha256,因此传入string就可以了
+  bool Init(std::wstring user_name, std::string user_pwd,
+            Func_LoginResult func_done);
 
 private:
-  bool InitMqtt();
+  bool InitMqtt(std::wstring user_name, std::string user_pwd);
 
-#pragma endregion
+  void MqttStatus(im::EMqttOnlineStatus status);
+
+  // 登陆成功之后订阅
+  void SubLoginChannel();
+  void SubLoginChannelFinished();
+
+  void LoginMsg(std::vector<char> data);
 
 public:
-  // 设置用户名密码
-  bool SetUserName(std::wstring name, std::wstring pwd,
-                   LoginFuncResult func_done);
 
 private:
   im::config::pCConfig global_config_; // 全局配置
   im::pCMqttClientBase mqtt_client_;
+
+  im::FUNC_StatusChange func_mqtt_status_;  // mqtt 状态更新
 };
 
 #pragma region

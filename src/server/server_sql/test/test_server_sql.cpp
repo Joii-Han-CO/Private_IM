@@ -3,7 +3,6 @@
 #include "im_server_sql.h"
 
 #include "base/debug.hpp"
-#include "im_ssl_base.h"
 
 
 #pragma region namespace
@@ -52,8 +51,6 @@ void TestSetUserInfos(im::server_sql::CServerSql_User &sql) {
     swprintf_s((wchar_t *)buf.c_str(), buf.size(),
                L"123456%06d", rand() % 1000000);
     std::string str_buf = base::Utf16ToUtf8(buf);
-    info->pwd_hash = base::Utf8ToUtf16(
-      im::ssl_base::GetStrSHA256(str_buf.c_str()));
 
     TestSetUserInfo(sql, info);
   }

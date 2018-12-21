@@ -64,6 +64,19 @@ std::wstring CConfig::GetVal(const std::wstring &tag,
   return config_->ini.GetValue(tag.c_str(), key.c_str(), L"");
 }
 
+std::string CConfig::GetValA(const std::wstring & tag,
+                             const std::wstring & key) {
+  return base::Utf16ToUtf8(GetVal(tag, key));
+}
+
+int CConfig::GetVal_Int(const std::wstring & tag,
+                        const std::wstring & key) {
+  auto v = GetVal(tag, key);
+  if (v.empty())
+    return 0;
+  return _wtoi(v.c_str());
+}
+
 bool CConfig::SetVal(const std::wstring &tag, const std::wstring &key,
                      std::wstring &val) {
   if (config_ == nullptr) {

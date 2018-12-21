@@ -2,6 +2,20 @@
 :: set environmental variable
 set_env.bat
 
+:: pthread
+cd %im_lib_src%/pthread-win32
+:: 手动编译
+::    升级vs版本
+::    输出MT版本库
+
+:: openssl
+
+:: mosquitto
+cd %im_lib_src%/mosquitto
+cmake 
+
+exit
+
 :: get source code
 cd /d %im_lib_src%
 git clone https://github.com/GerHobbelt/pthread-win32.git

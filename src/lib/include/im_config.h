@@ -17,7 +17,11 @@ typedef std::shared_ptr<SConfigData> pSConfigData;
 class CConfig: public base::error::LastError {
 public:
   bool Init(const std::wstring &path);
+
   std::wstring GetVal(const std::wstring &tag, const std::wstring &key);
+  std::string GetValA(const std::wstring &tag, const std::wstring &key);
+  int GetVal_Int(const std::wstring &tag, const std::wstring &key);
+
   bool SetVal(const std::wstring &tag, const std::wstring &key,
               std::wstring &val);
 

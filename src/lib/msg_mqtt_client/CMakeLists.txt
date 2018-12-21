@@ -43,7 +43,7 @@ set(_cpp_file
 source_group("source" FILES ${_cpp_file})
 
 set(_mqtt_client
-  ${PROJECT_SOURCE_DIR}/mqtt_client_base.h
+  ${_incldue}/mqtt_client_base.h
   ${PROJECT_SOURCE_DIR}/mqtt_client_base.cpp)
 source_group("mqtt_client" FILES ${_mqtt_client})
 
@@ -125,17 +125,20 @@ Add_Definitions(-D_UNICODE)
 # 项目依赖
 target_link_libraries(${_test_name} ${_lib_name})
 if (WIN32)
-  target_link_libraries(${_test_name} debug
-    "${THRD_LIB_PATH}/mosquitto/debug/mosquitto_static.lib")
-  target_link_libraries(${_test_name} debug
-    "${THRD_LIB_PATH}/pthread-win32/debug/pthread_lib.lib")
+  target_link_libraries(${_lib_name} debug
+    "${THRD_LIB_PATH}/mosquitto/lib/debug_mt/mosquitto_static.lib")
+  target_link_libraries(${_lib_name} debug
+    "${THRD_LIB_PATH}/pthread-win32/lib/debug_mt/pthread_lib.lib")
 
-  target_link_libraries(${_test_name} optimized
-    "${THRD_LIB_PATH}/mosquitto/mosquitto_static.lib")
-  target_link_libraries(${_test_name} optimized
-    "${THRD_LIB_PATH}/pthread-win32/pthread_lib.lib")
-  target_link_libraries(${_test_name}
-    ws2_32.lib)
+  target_link_libraries(${_lib_name} optimized
+    "${THRD_LIB_PATH}/mosquitto/lib/debug_mt/mosquitto_static.lib")
+  target_link_libraries(${_lib_name} optimized
+    "${THRD_LIB_PATH}/pthread-win32/lib/debug_mt/pthread_lib.lib")
+  
+  target_link_libraries(${_lib_name}
+    "${THRD_LIB_PATH}/openssl/v1_1_0j/libcrypto.lib"
+    "${THRD_LIB_PATH}/openssl/v1_1_0j/libssl.lib")
+  target_link_libraries(${_lib_name} Crypt32.lib ws2_32.lib)
 else()
 
 endif()

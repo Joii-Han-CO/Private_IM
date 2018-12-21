@@ -9,7 +9,6 @@ namespace gv {
 
 const std::wstring g_global_config_file_path = L"global.config";
 
-
 #pragma region
 }
 }
