@@ -30,6 +30,7 @@ include_directories(${_lib_name}
 # 创建目录
 set(_inc_file
   ${_stdafx}.h
+  ${_incldue}/im_mqtt.h
   ${_incldue}/base/character_conversion.hpp
   ${_incldue}/base/debug.hpp
   ${_incldue}/base/error.hpp
@@ -39,16 +40,12 @@ set(_inc_file
 source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
-  ${_stdafx}.cpp)
+  ${_stdafx}.cpp
+  ${PROJECT_SOURCE_DIR}/mqtt_base.cpp)
 source_group("source" FILES ${_cpp_file})
 
-set(_mqtt_client
-  ${_incldue}/mqtt_client_base.h
-  ${PROJECT_SOURCE_DIR}/mqtt_client_base.cpp)
-source_group("mqtt_client" FILES ${_mqtt_client})
-
 add_library(${_lib_name} ${_prj_lib_type}
-            ${_inc_file} ${_cpp_file} ${_mqtt_client})
+            ${_inc_file} ${_cpp_file})
 target_link_libraries(${_lib_name} LINK_PUBLIC ${_lib_dirs})
 
 # 设置环境变量

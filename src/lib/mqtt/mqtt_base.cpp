@@ -1,6 +1,6 @@
 ﻿#include "stdafx.h"
 #include <mosquitto.h>
-#include "mqtt_client_base.h"
+#include "im_mqtt.h"
 #include "im_log.h"
 
 #pragma region
