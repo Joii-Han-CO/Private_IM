@@ -1,6 +1,5 @@
 ﻿#include "stdafx.h"
 #include "im_config.h"
-#include "im_config.h"
 #include <SimpleIni.h>
 
 

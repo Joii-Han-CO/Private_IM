@@ -17,7 +17,7 @@ set(_include_dirs )
 set(_lib_dirs )
 
 # /src/include
-set(_incldue ${PROJECT_SOURCE_DIR}/../include/)
+set(_incldue ${PROJECT_SOURCE_DIR}/../../include/server/)
 
 set(_stdafx ${PROJECT_SOURCE_DIR}/stdafx)
 

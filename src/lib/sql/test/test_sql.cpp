@@ -1,12 +1,19 @@
-﻿#pragma once
-#include <iostream>
+﻿#include "stdafx.h"
+#include "test_sql.h"
+#include "im_sql.h"
+
 
 #pragma region namespace
 namespace test {
 #pragma endregion
 
-void TestNC(int argc, char *argv[]);
 
 #pragma region namespace
 }
 #pragma endregion
+
+int main() {
+
+
+  return 0;
+}

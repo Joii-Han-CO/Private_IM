@@ -5,10 +5,10 @@ cmake_minimum_required (VERSION 3.0)
 # Lib
 
 # 工程名
-set(_lib_name "net_communication")
+set(_lib_name "client_login")
 project(${_lib_name})
 
-set(_lib_folder "lib")
+set(_lib_folder "client")
 
 # C\C++ 包含源码路径
 set(_include_dirs )
@@ -17,26 +17,26 @@ set(_include_dirs )
 set(_lib_dirs )
 
 # /src/include
-set(_incldue ${PROJECT_SOURCE_DIR}/../include/)
+set(_incldue ${PROJECT_SOURCE_DIR}/../../include/client/)
 
 set(_stdafx ${PROJECT_SOURCE_DIR}/stdafx)
 
 # 源码包含目录
 include_directories(${_lib_name}
                     ${_prj_include_dir}
+                    ${_incldue}
                     ${PROJECT_SOURCE_DIR}
-                    ${_include_dirs}
-                    ${Boost_INCLUDE_DIRS})
+                    ${_include_dirs})
 
 # 创建目录
 set(_inc_file
   ${_stdafx}.h
-  ${PROJECT_SOURCE_DIR}/net_communication.h)
+  ${_incldue}/${_namepace}_${_lib_name}.h)
 source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
   ${_stdafx}.cpp
-  ${PROJECT_SOURCE_DIR}/net_communication.cpp)
+  ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp)
 source_group("source" FILES ${_cpp_file})
 
 add_library(${_lib_name} ${_prj_lib_type}
@@ -63,7 +63,7 @@ set_target_properties(${_lib_name} PROPERTIES
 
 
 ################################################################
-# Test1
+# Test
 
 set(_test_name ${_lib_name}_test)
 project(${_test_name})
@@ -71,7 +71,8 @@ project(${_test_name})
 set(_stdafx ${PROJECT_SOURCE_DIR}/test/stdafx)
 
 # 源码包含目录
-include_directories(${_test_name} ${_prj_include_dir})
+include_directories(${_test_name} ${_prj_include_dir}
+                                  ${_incldue})
 
 # 创建目录
 set(_inc_file
@@ -81,8 +82,7 @@ source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
   ${_stdafx}.cpp
-  ${PROJECT_SOURCE_DIR}/test/test_${_lib_name}.cpp
-  ${PROJECT_SOURCE_DIR}/test/test_transmission.cpp)
+  ${PROJECT_SOURCE_DIR}/test/test_${_lib_name}.cpp)
 source_group("source" FILES ${_cpp_file})
 
 # add src files
@@ -95,7 +95,7 @@ if (${_prj_lib_type} STREQUAL "STATIC")
 endif()
 target_compile_definitions(${_test_name}
                            PRIVATE
-                           ${_compile_def} TEST_1)
+                           ${_compile_def})
                            
 set_target_properties(${_test_name} PROPERTIES FOLDER
                       ${_lib_folder}/${_lib_name})
@@ -114,6 +114,8 @@ set_target_properties(${_test_name} PROPERTIES
 Add_Definitions(-D_UNICODE)
 
 # 项目依赖
-target_link_libraries(${_lib_name}_test ${_lib_name})
+target_link_libraries(${_test_name} ${_lib_name})
+target_link_libraries(${_lib_name} config)
+target_link_libraries(${_lib_name} log mqtt)
 
-cotire(${_lib_name} ${_lib_name}_test)
+cotire(${_lib_name} ${_test_name})

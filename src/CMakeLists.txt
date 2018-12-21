@@ -2,16 +2,16 @@
 cmake_minimum_required (VERSION 3.0)
 
 # 预编译头
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(cotire)
 
 find_package(Boost)
 
 # Win下设置静态执行库
 set(CMAKE_USER_MAKE_RULES_OVERRIDE
-  ${CMAKE_CURRENT_SOURCE_DIR}/CMake/c_flag_overrides.cmake)
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/c_flag_overrides.cmake)
 set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX
-  ${CMAKE_CURRENT_SOURCE_DIR}/CMake/cxx_flag_overrides.cmake)
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/cxx_flag_overrides.cmake)
   
 # 整体工程名
 set(_sln_name "pim")
@@ -42,7 +42,8 @@ set(CMAKE_BUILD_TYPE "Debug")
 # 一些全局的引用路径
 set(_prj_include_dir ${Boost_INCLUDE_DIRS}
                      ${PROJECT_SOURCE_DIR}
-                     ${PROJECT_SOURCE_DIR}/lib/include)
+                     ${PROJECT_SOURCE_DIR}/include/
+                     ${PROJECT_SOURCE_DIR}/include/lib)
 
 # Link时候的各种库
 set(_sys_lib )
@@ -57,26 +58,23 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # 各个项目
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/msg_proto/)
 
-# msg_mqtt_client
-add_subdirectory(${PROJECT_SOURCE_DIR}/lib/msg_mqtt_client/)
+# mqtt
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/mqtt/)
 
 # server_main
 add_subdirectory(${PROJECT_SOURCE_DIR}/server/server_main/)
 
-# net_communication
-add_subdirectory(${PROJECT_SOURCE_DIR}/lib/net_communication/)
-
 # plugin_mosquitto
 add_subdirectory(${PROJECT_SOURCE_DIR}/plugin/plugin_mosquitto/)
 
-# sql_base
-add_subdirectory(${PROJECT_SOURCE_DIR}/lib/sql_base/)
+# sql
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/sql/)
 
 # server_sql
 add_subdirectory(${PROJECT_SOURCE_DIR}/server/server_sql/)
 
-# login
-add_subdirectory(${PROJECT_SOURCE_DIR}/client/login/)
+# client_login
+add_subdirectory(${PROJECT_SOURCE_DIR}/client/client_login/)
 
 # config
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/config/)

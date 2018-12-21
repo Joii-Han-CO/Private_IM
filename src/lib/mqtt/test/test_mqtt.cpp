@@ -1,5 +1,5 @@
 ﻿#include "stdafx.h"
-#include "test_msg_mqtt_client.h"
+#include "test_mqtt.h"
 #include "base/character_conversion.hpp"
 #include "base/string_operation.hpp"
 #include "base/debug.hpp"

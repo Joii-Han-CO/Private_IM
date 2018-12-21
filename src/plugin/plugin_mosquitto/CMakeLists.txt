@@ -11,13 +11,13 @@ project(${_lib_name})
 set(_lib_folder "plugin")
 
 # C\C++ 包含源码路径
-set(_include_dirs ${PROJECT_SOURCE_DIR}/../../)
+set(_include_dirs ${PROJECT_SOURCE_DIR}/../../include/plugin/)
 
 # C\C++ 包含库路径
 set(_lib_dirs )
 
 # /src/include
-set(_incldue ${PROJECT_SOURCE_DIR}/../include/)
+set(_incldue ${PROJECT_SOURCE_DIR}/../../include/plugin/)
 
 set(_stdafx ${PROJECT_SOURCE_DIR}/stdafx)
 

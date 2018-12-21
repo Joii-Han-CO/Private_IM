@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "lib/include/base/type_def.h"
+#include "lib/base/type_def.h"
 
 
 #ifdef __cplusplus

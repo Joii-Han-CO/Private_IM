@@ -2,7 +2,7 @@
 #include <mosquitto_plugin.h>
 #include <memory>
 
-#include "server/include/im_server_sql.h"
+#include "include/server/im_server_sql.h"
 
 
 #pragma region

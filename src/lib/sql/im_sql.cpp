@@ -1,6 +1,5 @@
 ﻿#include "stdafx.h"
-#include "im_sql_base.h"
-#include "..\include\im_sql_base.h"
+#include "im_sql.h"
 
 #pragma region namespace
 namespace im {

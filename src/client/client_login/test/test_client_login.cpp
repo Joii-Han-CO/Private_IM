@@ -1,6 +1,6 @@
 ﻿#include "stdafx.h"
-#include "test_login.h"
-#include "im_login.h"
+#include "test_client_login.h"
+#include "im_client_login.h"
 #include "base/debug.hpp"
 #include "im_log.h"
 

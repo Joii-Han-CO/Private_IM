@@ -3,8 +3,9 @@ cmake_minimum_required (VERSION 3.0)
 
 ################################################################
 # Lib
+
 # 工程名
-set(_lib_name "msg_mqtt_client")
+set(_lib_name "sql")
 project(${_lib_name})
 
 set(_lib_folder "lib")
@@ -16,46 +17,45 @@ set(_include_dirs )
 set(_lib_dirs )
 
 # /src/include
-set(_incldue ${PROJECT_SOURCE_DIR}/../include/)
+set(_incldue ${PROJECT_SOURCE_DIR}/../../include/lib/)
 
 set(_stdafx ${PROJECT_SOURCE_DIR}/stdafx)
+
+set(_sqlite3_dir ${PROJECT_SOURCE_DIR}/../../include/lib/3rd_lib/sqlite3/)
 
 # 源码包含目录
 include_directories(${_lib_name}
                     ${_prj_include_dir}
                     ${PROJECT_SOURCE_DIR}
                     ${_include_dirs}
-                    ${THRD_LIB_PATH}/mosquitto/include)
+                    ${_sqlite3_dir})
 
 # 创建目录
 set(_inc_file
   ${_stdafx}.h
-  ${_incldue}/base/character_conversion.hpp
-  ${_incldue}/base/debug.hpp
-  ${_incldue}/base/error.hpp
-  ${_incldue}/base/log.hpp
-  ${_incldue}/base/task.hpp
-  ${_incldue}/base/type_def.h)
+  ${_incldue}/${_namepace}_${_lib_name}.h)
 source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
-  ${_stdafx}.cpp)
+  ${_stdafx}.cpp
+  ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp)
 source_group("source" FILES ${_cpp_file})
 
-set(_mqtt_client
-  ${_incldue}/mqtt_client_base.h
-  ${PROJECT_SOURCE_DIR}/mqtt_client_base.cpp)
-source_group("mqtt_client" FILES ${_mqtt_client})
+# Add sqlite3
+set(sqlite3_files
+  ${_sqlite3_dir}/sqlite3.h
+  ${_sqlite3_dir}/sqlite3ext.h
+  ${_sqlite3_dir}/sqlite3.c)
+source_group("sqlite3" FILES ${sqlite3_files})
 
 add_library(${_lib_name} ${_prj_lib_type}
-            ${_inc_file} ${_cpp_file} ${_mqtt_client})
+            ${_inc_file} ${_cpp_file} ${sqlite3_files})
 target_link_libraries(${_lib_name} LINK_PUBLIC ${_lib_dirs})
 
 # 设置环境变量
 set(_compile_def IM_LIB PRJ_NAME="${_lib_name}")
 if (${_prj_lib_type} STREQUAL "STATIC")
   set(_compile_def ${_compile_def} IM_STATIC)
-  add_definitions(-DLIBMOSQUITTO_STATIC)
 endif()
 target_compile_definitions(${_lib_name}
                            PRIVATE
@@ -100,7 +100,6 @@ add_executable(${_test_name}
 # 设置环境变量
 if (${_prj_lib_type} STREQUAL "STATIC")
   set(_compile_def ${_compile_def} IM_STATIC)
-  add_definitions(-DLIBMOSQUITTO_STATIC)
 endif()
 target_compile_definitions(${_test_name}
                            PRIVATE
@@ -124,24 +123,5 @@ Add_Definitions(-D_UNICODE)
 
 # 项目依赖
 target_link_libraries(${_test_name} ${_lib_name})
-if (WIN32)
-  target_link_libraries(${_lib_name} debug
-    "${THRD_LIB_PATH}/mosquitto/lib/debug_mt/mosquitto_static.lib")
-  target_link_libraries(${_lib_name} debug
-    "${THRD_LIB_PATH}/pthread-win32/lib/debug_mt/pthread_lib.lib")
-
-  target_link_libraries(${_lib_name} optimized
-    "${THRD_LIB_PATH}/mosquitto/lib/debug_mt/mosquitto_static.lib")
-  target_link_libraries(${_lib_name} optimized
-    "${THRD_LIB_PATH}/pthread-win32/lib/debug_mt/pthread_lib.lib")
-  
-  target_link_libraries(${_lib_name}
-    "${THRD_LIB_PATH}/openssl/v1_1_0j/libcrypto.lib"
-    "${THRD_LIB_PATH}/openssl/v1_1_0j/libssl.lib")
-  target_link_libraries(${_lib_name} Crypt32.lib ws2_32.lib)
-else()
-
-endif()
-target_link_libraries(${_test_name} log)
 
 cotire(${_lib_name} ${_test_name})
