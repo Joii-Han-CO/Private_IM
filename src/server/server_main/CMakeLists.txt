@@ -35,8 +35,17 @@ source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
   ${_stdafx}.cpp
-  ${PROJECT_SOURCE_DIR}/${_lib_name}.cpp)
+  ${PROJECT_SOURCE_DIR}/${_lib_name}.cpp
+  ${PROJECT_SOURCE_DIR}/management.h
+  ${PROJECT_SOURCE_DIR}/management.cpp)
 source_group("source" FILES ${_cpp_file})
+
+# 登陆模块
+set(_login_files
+  ${PROJECT_SOURCE_DIR}/login/server_login.h
+  ${PROJECT_SOURCE_DIR}/login/server_login.cpp)
+source_group("login" FILES ${_login_files})
+set(_cpp_file ${_cpp_file} ${_login_files})
 
 add_executable(${_lib_name}
                ${_inc_file} ${_cpp_file})
