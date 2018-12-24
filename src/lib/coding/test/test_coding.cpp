@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "test_coding.h"
 #include "im_coding.h"
 #include "base/debug.hpp"

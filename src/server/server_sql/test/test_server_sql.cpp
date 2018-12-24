@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "test_server_sql.h"
 #include "im_server_sql.h"
 

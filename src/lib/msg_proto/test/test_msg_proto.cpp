@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "test_msg_proto.h"
 #include "im_msg_proto.h"
 #include "base/time.hpp"

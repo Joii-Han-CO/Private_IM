@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "test_mqtt.h"
 #include "base/character_conversion.hpp"
 #include "base/string_operation.hpp"

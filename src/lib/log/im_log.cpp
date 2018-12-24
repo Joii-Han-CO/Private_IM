@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "im_log.h"
 #include "base/time.hpp"
 #include "base/character_conversion.hpp"

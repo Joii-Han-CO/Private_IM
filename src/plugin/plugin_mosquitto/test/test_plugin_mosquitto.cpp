@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "test_plugin_mosquitto.h"
 #include "im_plugin_mosquitto.h"
 #include "im_plugin_mosquitto.hpp"

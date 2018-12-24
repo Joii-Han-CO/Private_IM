@@ -19,7 +19,7 @@ set(_lib_dirs )
 # /src/include
 set(_incldue ${PROJECT_SOURCE_DIR}/../include/)
 
-set(_stdafx ${PROJECT_SOURCE_DIR}/stdafx)
+set(_pch ${PROJECT_SOURCE_DIR}/pch)
 
 # 源码包含目录
 include_directories(${_lib_name}
@@ -29,12 +29,12 @@ include_directories(${_lib_name}
 
 # 创建目录
 set(_inc_file
-  ${_stdafx}.h
+  ${_pch}.h
   ${_incldue}/${_namepace}_${_lib_name}.h)
 source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
-  ${_stdafx}.cpp
+  ${_pch}.cpp
   ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp)
 source_group("source" FILES ${_cpp_file})
 
@@ -57,7 +57,7 @@ set_target_properties(${_lib_name} PROPERTIES FOLDER
 
 # 预编译头
 set_target_properties(${_lib_name} PROPERTIES
-                      COTIRE_CXX_PREFIX_HEADER_INIT ${_stdafx}.h)
+                      COTIRE_CXX_PREFIX_HEADER_INIT ${_pch}.h)
 ################################################################
 
 
@@ -67,19 +67,19 @@ set_target_properties(${_lib_name} PROPERTIES
 set(_test_name ${_lib_name}_test)
 project(${_test_name})
 
-set(_stdafx ${PROJECT_SOURCE_DIR}/test/stdafx)
+set(_pch ${PROJECT_SOURCE_DIR}/test/pch)
 
 # 源码包含目录
 include_directories(${_test_name} ${_incldue})
 
 # 创建目录
 set(_inc_file
-  ${_stdafx}.h
+  ${_pch}.h
   ${PROJECT_SOURCE_DIR}/test/test_${_lib_name}.h)
 source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
-  ${_stdafx}.cpp
+  ${_pch}.cpp
   ${PROJECT_SOURCE_DIR}/test/test_${_lib_name}.cpp)
 source_group("source" FILES ${_cpp_file})
 
@@ -100,7 +100,7 @@ set_target_properties(${_test_name} PROPERTIES FOLDER
 
 # 预编译头
 set_target_properties(${_test_name} PROPERTIES
-                      COTIRE_CXX_PREFIX_HEADER_INIT ${_stdafx}.h)
+                      COTIRE_CXX_PREFIX_HEADER_INIT ${_pch}.h)
 #set_target_properties(${_test_name} PROPERTIES
 #                      COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
 ################################################################

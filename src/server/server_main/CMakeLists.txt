@@ -19,7 +19,7 @@ set(_lib_dirs )
 # /src/include
 set(_incldue ${PROJECT_SOURCE_DIR}/../../include/server/)
 
-set(_stdafx ${PROJECT_SOURCE_DIR}/stdafx)
+set(_pch ${PROJECT_SOURCE_DIR}/pch)
 
 # 源码包含目录
 include_directories(${_lib_name}
@@ -29,12 +29,12 @@ include_directories(${_lib_name}
 
 # 创建目录
 set(_inc_file
-  ${_stdafx}.h
+  ${_pch}.h
   ${PROJECT_SOURCE_DIR}/${_lib_name}.h)
 source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
-  ${_stdafx}.cpp
+  ${_pch}.cpp
   ${PROJECT_SOURCE_DIR}/${_lib_name}.cpp
   ${PROJECT_SOURCE_DIR}/management.h
   ${PROJECT_SOURCE_DIR}/management.cpp)
@@ -60,7 +60,7 @@ set_target_properties(${_lib_name} PROPERTIES FOLDER
 
 # 预编译头
 set_target_properties(${_lib_name} PROPERTIES
-                      COTIRE_CXX_PREFIX_HEADER_INIT ${_stdafx}.h)
+                      COTIRE_CXX_PREFIX_HEADER_INIT ${_pch}.h)
 ################################################################
 
 

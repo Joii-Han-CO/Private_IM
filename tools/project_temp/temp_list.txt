@@ -1,11 +1,11 @@
 lib.h-->src\$(--prj_folder--)\include\im_$(--prj_name--).h
 lib.cpp-->src\$(--prj_folder--)\$(--prj_name--)\im_$(--prj_name--).cpp
-stdafx.h-->src\$(--prj_folder--)\$(--prj_name--)\stdafx.h
-stdafx.cpp-->src\$(--prj_folder--)\$(--prj_name--)\stdafx.cpp
+pch.h-->src\$(--prj_folder--)\$(--prj_name--)\pch.h
+pch.cpp-->src\$(--prj_folder--)\$(--prj_name--)\pch.cpp
 
 test_lib.h-->src\$(--prj_folder--)\$(--prj_name--)\test\test_$(--prj_name--).h
 test_lib.cpp-->src\$(--prj_folder--)\$(--prj_name--)\test\test_$(--prj_name--).cpp
-stdafx.h-->src\$(--prj_folder--)\$(--prj_name--)\test\stdafx.h
-stdafx.cpp-->src\$(--prj_folder--)\$(--prj_name--)\test\stdafx.cpp
+pch.h-->src\$(--prj_folder--)\$(--prj_name--)\test\pch.h
+pch.cpp-->src\$(--prj_folder--)\$(--prj_name--)\test\pch.cpp
 
 CmakeLists.txt-->src\$(--prj_folder--)\$(--prj_name--)\CMakeLists.txt

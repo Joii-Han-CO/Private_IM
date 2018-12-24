@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "im_msg_proto.h"
 #include "proto_class/msg.pb.h"
 #include "base/character_conversion.hpp"

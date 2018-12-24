@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "test_client_login.h"
 #include "im_client_login.h"
 #include "base/debug.hpp"

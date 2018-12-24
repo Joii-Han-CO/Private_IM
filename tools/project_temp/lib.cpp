@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "im_$(--prj_name--).h"
 
 #pragma region namespace

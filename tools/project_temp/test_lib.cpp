@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "test_$(--prj_name--).h"
 #include "im_$(--prj_name--).h"
 

@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "im_client_login.h"
 #include "im_global_val.h"
 #include "im_log.h"

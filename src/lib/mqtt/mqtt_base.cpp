@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include <mosquitto.h>
 #include "im_mqtt.h"
 #include "im_log.h"

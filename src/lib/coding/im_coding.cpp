@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+﻿#include "pch.h"
 #include "im_coding.h"
 #include "base/character_conversion.hpp"
 #include "iconv.h"
