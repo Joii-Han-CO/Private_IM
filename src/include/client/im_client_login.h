@@ -23,14 +23,22 @@ typedef std::function<void(bool)> Func_LoginResult;
 
 class Login: public base::error::LastError {
 public:
-  Login(im::FUNC_StatusChange func_mqtt_status);
+  Login();
   ~Login();
 
 public:
-  // 全局初始化(部分异步处理)
-  //  密码部分使用sha256,因此传入string就可以了
-  bool Init(std::wstring user_name, std::string user_pwd,
-            Func_LoginResult func_done);
+  // 连接
+  bool Connect(std::wstring user_name, std::string user_pwd,
+               Func_LoginResult func_done);
+
+  // 断线重连
+  bool Reconnect(Func_LoginResult func_done);
+
+  // 断开连接
+  bool Disconnect(Func_LoginResult func_done);
+
+  // 注册状态变更的回调函数
+  uint32_t RegStatusCallback(im::FUNC_StatusChange func);
 
 private:
   bool InitMqtt(std::wstring user_name, std::string user_pwd);
@@ -49,7 +57,7 @@ private:
   im::config::pCConfig global_config_; // 全局配置
   im::pCMqttClientBase mqtt_client_;
 
-  im::FUNC_StatusChange func_mqtt_status_;  // mqtt 状态更新
+//  std::list<>
 };
 
 #pragma region

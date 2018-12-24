@@ -14,7 +14,7 @@ const std::wstring gc_user_pwd = L"123456";
 void Test_MqttCallback(im::EMqttOnlineStatus status) {}
 
 void TestLogin() {
-  im::login::Login lg(Test_MqttCallback);
+  im::login::Login lg;
 
   auto func_init_end = [](bool suc) {};
 

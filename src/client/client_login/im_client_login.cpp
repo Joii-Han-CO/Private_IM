@@ -10,13 +10,12 @@ namespace im {
 namespace login {
 #pragma endregion
 
-Login::Login(im::FUNC_StatusChange func_mqtt_status):
-  func_mqtt_status_(func_mqtt_status) {}
+Login::Login() {}
 
 Login::~Login() {}
 
-bool Login::Init(std::wstring user_name, std::string user_pwd,
-                 Func_LoginResult func_done) {
+bool Login::Connect(std::wstring user_name, std::string user_pwd,
+                    Func_LoginResult func_done) {
   PrintLogInfo("Begin Init");
   global_config_ = std::make_shared<im::config::CConfig>();
   if (global_config_->Init(im::gv::g_global_config_file_path) == false) {
@@ -30,6 +29,18 @@ bool Login::Init(std::wstring user_name, std::string user_pwd,
 
   PrintLogInfo("Init Success");
   return true;
+}
+
+bool Login::Reconnect(Func_LoginResult func_done) {
+  return false;
+}
+
+bool Login::Disconnect(Func_LoginResult func_done) {
+  return false;
+}
+
+uint32_t Login::RegStatusCallback(im::FUNC_StatusChange func) {
+  return uint32_t();
 }
 
 bool Login::InitMqtt(std::wstring user_name, std::string user_pwd) {
@@ -49,8 +60,6 @@ bool Login::InitMqtt(std::wstring user_name, std::string user_pwd) {
     [this]
   (im::EMqttOnlineStatus status) {
     MqttStatus(status);
-    if (func_mqtt_status_)
-      func_mqtt_status_(status);
   };
 
   if (mqtt_client_->Connect(connect_info) == false) {
@@ -68,6 +77,8 @@ void Login::MqttStatus(im::EMqttOnlineStatus status) {
     // 直接订阅登陆通道...
     SubLoginChannel();
   }
+
+  // 返回订阅队列
 }
 
 void Login::SubLoginChannel() {
