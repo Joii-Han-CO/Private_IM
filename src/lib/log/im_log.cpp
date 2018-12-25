@@ -94,6 +94,7 @@ void CLog::OutPutBase(const std::string &d) {
 #endif
   // 开始写入日志
   file_->write(d.c_str(), d.size());
+  file_->flush();
 }
 
 std::string CLog::MakeHeader(base::log::EBaseLogType t,
