@@ -3,6 +3,7 @@
 #include "im_global_val.h"
 #include "im_log.h"
 #include "base/uuid.hpp"
+#include "base/type_def.h"
 
 
 #pragma region namespace
@@ -15,10 +16,10 @@ Login::Login() {}
 Login::~Login() {}
 
 bool Login::Connect(std::wstring user_name, std::string user_pwd,
-                    Func_LoginResult func_done) {
+                    Func_AsyncResult func_done) {
   PrintLogInfo("Begin Init");
   global_config_ = std::make_shared<im::config::CConfig>();
-  if (global_config_->Init(im::gv::g_global_config_file_path) == false) {
+  if (global_config_->Init(im::gv::g_cli_cfg_path) == false) {
     SetLastErr(L"Init config file failed, des:%s",
                global_config_->GetLastErr_Wc());
     return false;
@@ -31,11 +32,11 @@ bool Login::Connect(std::wstring user_name, std::string user_pwd,
   return true;
 }
 
-bool Login::Reconnect(Func_LoginResult func_done) {
+bool Login::Reconnect(Func_AsyncResult func_done) {
   return false;
 }
 
-bool Login::Disconnect(Func_LoginResult func_done) {
+bool Login::Disconnect(Func_AsyncResult func_done) {
   return false;
 }
 

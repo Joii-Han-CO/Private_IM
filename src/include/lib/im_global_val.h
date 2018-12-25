@@ -7,7 +7,13 @@ namespace im {
 namespace gv {
 #pragma endregion
 
-const std::wstring g_global_config_file_path = L"global.config";
+// 客户端配置路径
+const std::wstring g_cli_cfg_path = L"global.config";
+
+// 服务端配置路径
+const std::wstring g_ser_cfg_path = L"global.config";
+
+const std::string g_mqtt_pub_sub_ = "global/login";
 
 #pragma region
 }

@@ -18,9 +18,6 @@ namespace login {
   //    该模块创建消息模块...
   //////////////////////////////////////////////////////////////////////////
 
-// 异步完成回调
-typedef std::function<void(bool)> Func_LoginResult;
-
 class Login: public base::error::LastError {
 public:
   Login();
@@ -29,13 +26,13 @@ public:
 public:
   // 连接
   bool Connect(std::wstring user_name, std::string user_pwd,
-               Func_LoginResult func_done);
+               Func_AsyncResult func_done);
 
   // 断线重连
-  bool Reconnect(Func_LoginResult func_done);
+  bool Reconnect(Func_AsyncResult func_done);
 
   // 断开连接
-  bool Disconnect(Func_LoginResult func_done);
+  bool Disconnect(Func_AsyncResult func_done);
 
   // 注册状态变更的回调函数
   uint32_t RegStatusCallback(im::FUNC_StatusChange func);

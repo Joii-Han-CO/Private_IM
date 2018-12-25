@@ -1,11 +1,37 @@
 ﻿#pragma once
+#include "lib/im_mqtt.h"
+#include "lib/base/type_def.h"
+
 
 #pragma region
 namespace server {
 #pragma endregion
 
 class ServerLogin {
+public:
+  ServerLogin();
+  ~ServerLogin();
 
+  bool Init(Func_AsyncResult func);
+
+  void RegMqttStatusChange(im::FUNC_StatusChange func);
+
+private:
+  void MqttStatusChange(im::EMqttOnlineStatus status);
+
+  // mqtt连接成功，准备订阅公共通道
+  void MqttConnected();
+
+  // mqtt消息， 登陆
+  void MqttMsg_Login(std::vector<char>);
+
+  // 返回并打印mqtt日志
+  void MqttLog(const base::log::SBaseLog &l);
+private:
+  im::pCMqttClientBase mqtt_;
+  std::vector<im::FUNC_StatusChange> mqtt_status_func_;
+
+  Func_AsyncResult init_async_res_ = nullptr;
 };
 
 #pragma region

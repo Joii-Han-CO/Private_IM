@@ -31,7 +31,8 @@ include_directories(${_lib_name}
 # 创建目录
 set(_inc_file
   ${_pch}.h
-  ${_incldue}/${_namepace}_${_lib_name}.h)
+  ${_incldue}/${_namepace}_${_lib_name}.h
+  ${_incldue}/im_global_val.h)
 source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
