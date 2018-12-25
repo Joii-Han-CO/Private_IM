@@ -1,5 +1,4 @@
 ﻿#include "pch.h"
-#include <mosquitto.h>
 #include "im_mqtt.h"
 #include "im_log.h"
 
@@ -175,7 +174,7 @@ void CMqttClientBase::Mqtt_Connect(const SMqttConnectInfo &info) {
                           info.host.c_str(), info.port,
                           info.keepalive);
   if (ref != MOSQ_ERR_SUCCESS) {
-    SetLastErrAndLog("[Mqtt] connect failed, code: %d", ref);
+    SetLastErrAndLog("[Mqtt] connect failed, code: %d", GetLastError());
     return;
   }
   is_connected = true;
