@@ -55,6 +55,10 @@ endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+# 调整输出目录
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/bin")
+set(LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/bin")
+
 # 各个项目
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/msg_proto/)
 
