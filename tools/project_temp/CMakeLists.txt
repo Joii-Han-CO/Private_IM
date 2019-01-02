@@ -10,14 +10,14 @@ project(${_lib_name})
 
 set(_lib_folder "$(--prj_folder--)")
 
+# /src/include
+set(_incldue ${PROJECT_SOURCE_DIR}/../../include/$(--prj_folder--))
+
 # C\C++ 包含源码路径
-set(_include_dirs )
+set(_include_dirs ${_incldue})
 
 # C\C++ 包含库路径
 set(_lib_dirs )
-
-# /src/include
-set(_incldue ${PROJECT_SOURCE_DIR}/../include/)
 
 set(_pch ${PROJECT_SOURCE_DIR}/pch)
 
