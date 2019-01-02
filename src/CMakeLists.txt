@@ -85,3 +85,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib/log/)
 
 # coding
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/coding/)
+
+# c_login
+add_subdirectory(${PROJECT_SOURCE_DIR}/client/c_login/)
