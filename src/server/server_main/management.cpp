@@ -26,10 +26,19 @@ bool CManagement::Init() {
   log_args.print_warn = true;
   log_args.print_erro = true;
   log_args.log_path = L"server_main.log";
-  im::log::CLog::Get()->Init();
+  if (im::log::CLog::Get()->Init() == false) {
+    std::cout << "init log module failed" << std::endl;
+    return false;
+  }
 
   pool_ = std::make_shared<base::CThreadPool>();
   global_config_ = std::make_shared<im::config::CConfig>();
+  auto cfg_path = base::_path::GetExeDir<wchar_t>() + L"\\" +
+    im::gv::g_ser_cfg_path;
+  if (global_config_->Init(cfg_path) == false) {
+    std::cout << "init config module failed" << std::endl;
+    return false;
+  }
 
   return true;
 }

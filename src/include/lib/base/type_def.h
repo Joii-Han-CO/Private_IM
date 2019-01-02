@@ -1,6 +1,8 @@
 ﻿// define some type
 #pragma once
 #include <functional>
+#include <vector>
+#include <memory>
 
 // interface args type
 #define IN
@@ -38,3 +40,8 @@ typedef unsigned char UCHAR;
 // 异步函数的完成回调
 typedef std::function<void(bool)> Func_AsyncResult;
 
+// 消息二进制buf
+typedef std::vector<unsigned char> MsgBuf;
+
+#define StdSharedPtr_Typedef(PtrName) \
+  typedef std::shared_ptr<PtrName> p##PtrName

@@ -46,7 +46,7 @@ private:
   void SubLoginChannel();
   void SubLoginChannelFinished();
 
-  void LoginMsg(std::vector<char> data);
+  void LoginMsg(MsgBuf data);
 
 public:
 

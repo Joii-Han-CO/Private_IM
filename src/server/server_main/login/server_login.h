@@ -23,10 +23,15 @@ private:
   void MqttConnected();
 
   // mqtt消息， 登陆
-  void MqttMsg_Login(std::vector<char>);
+  void MqttMsg_Login(const MsgBuf& buf);
 
   // 返回并打印mqtt日志
   void MqttLog(const base::log::SBaseLog &l);
+
+
+  // 登陆消息处理
+  void Msg_UserLogin(im::msg_proto::pMsg_UserLogin msg);
+
 private:
   im::pCMqttClientBase mqtt_;
   std::vector<im::FUNC_StatusChange> mqtt_status_func_;

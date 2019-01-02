@@ -77,9 +77,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib/sql/)
 # server_sql
 add_subdirectory(${PROJECT_SOURCE_DIR}/server/server_sql/)
 
-# client_login
-add_subdirectory(${PROJECT_SOURCE_DIR}/client/client_login/)
-
 # config
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/config/)
 

@@ -8,13 +8,17 @@ namespace im {
 namespace msg_proto {
 #pragma endregion
 
+#pragma region Msg
+
 pSIM_MsgText ParseText(void *data, size_t len) {
   return nullptr;
 }
 
-MsgBuffer SerializationTextMsg(pSIM_MsgText msg) {
-  return MsgBuffer();
+MsgBuf SerializationTextMsg(pSIM_MsgText msg) {
+  return MsgBuf();
 }
+
+#pragma endregion
 
 #pragma region namespace
 }

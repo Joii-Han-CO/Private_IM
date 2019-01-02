@@ -47,7 +47,8 @@ source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
   ${_pch}.cpp
-  ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp)
+  ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp
+  ${PROJECT_SOURCE_DIR}/login_channel.cpp)
 source_group("source" FILES ${_cpp_file})
 
 set(_proto_file
@@ -128,22 +129,22 @@ set_target_properties(${_test_name} PROPERTIES
 # 使用 unicode 编码
 Add_Definitions(-D_UNICODE)
 
-# 项目依赖
-target_link_libraries(${_lib_name}_test ${_lib_name})
-
 # D|R下不同的库
-target_link_libraries(${_lib_name}_test debug 
+target_link_libraries(${_lib_name} debug 
   "${THRD_LIB_PATH}/protobuf/lib/debug_mt/libprotobufd.lib")
-target_link_libraries(${_lib_name}_test debug 
+target_link_libraries(${_lib_name} debug 
   "${THRD_LIB_PATH}/protobuf/lib/debug_mt/libprotobuf-lited.lib")
-target_link_libraries(${_lib_name}_test debug 
+target_link_libraries(${_lib_name} debug 
   "${THRD_LIB_PATH}/protobuf/lib/debug_mt/libprotocd.lib")
 
-target_link_libraries(${_lib_name}_test optimized 
+target_link_libraries(${_lib_name} optimized 
   "${THRD_LIB_PATH}/protobuf/lib/release_mt/libprotobuf.lib")
-target_link_libraries(${_lib_name}_test optimized 
+target_link_libraries(${_lib_name} optimized 
   "${THRD_LIB_PATH}/protobuf/lib/release_mt/libprotobuf-lite.lib")
-target_link_libraries(${_lib_name}_test optimized 
+target_link_libraries(${_lib_name} optimized 
   "${THRD_LIB_PATH}/protobuf/lib/release_mt/libprotoc.lib")
+
+# 项目依赖
+target_link_libraries(${_lib_name}_test ${_lib_name})
 
 cotire(${_lib_name} ${_lib_name}_test)

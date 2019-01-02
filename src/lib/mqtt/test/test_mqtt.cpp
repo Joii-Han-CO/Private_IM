@@ -34,7 +34,7 @@ void MqttLog(const base::log::SBaseLog &l) {
   base::debug::OutputLogInfo(l);
 }
 
-void MqttMsg(const std::string &topic, const std::vector<char> &data) {
+void MqttMsg(const std::string &topic, const MsgBuf &data) {
   // 处理消息...
   base::debug::OutPut("[Msg]--%s--size:%d", topic.c_str(), data.size());
 }
@@ -108,7 +108,7 @@ bool Test_Sub() {
   auto func_finished = [&wait_sub] () {
     wait_sub.Notify();
   };
-  auto func_msg = [] (const std::vector<char> &data) {
+  auto func_msg = [] (const MsgBuf &data) {
     return MqttMsg(g_topic_, data);
   };
 
@@ -145,7 +145,7 @@ void Test_SendMsg() {
     std::cin >> cmd >> data;
     if (cmd == "q")
       break;
-    if (gmsg_->Publish(cmd, std::vector<char>(data.begin(), data.end()),
+    if (gmsg_->Publish(cmd, MsgBuf(data.begin(), data.end()),
                        [] () {
       base::debug::OutPut(L"Publish success");
     })

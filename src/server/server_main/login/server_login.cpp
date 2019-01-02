@@ -3,7 +3,7 @@
 #include "management.h"
 
 
-#pragma region
+#pragma region namespace
 namespace server {
 #pragma endregion
 
@@ -11,9 +11,14 @@ ServerLogin::ServerLogin() {}
 
 ServerLogin::~ServerLogin() {}
 
+#pragma region mqtt_management
+
 bool ServerLogin::Init(Func_AsyncResult func) {
   CManagement *m = CManagement::Get();
   auto cfg = m->GetGlobalConfig();
+
+  std::cout << "Begin connect mqtt server" << std::endl;
+  PrintLogInfo("begin connect mqtt server");
 
   im::SMqttConnectInfo mqtt_connect_info;
 
@@ -70,10 +75,16 @@ void ServerLogin::MqttStatusChange(im::EMqttOnlineStatus status) {
 
 void ServerLogin::MqttConnected() {
 
+  // 直接订阅消息
   auto sub_login_channel_res = [this]() {
     if (init_async_res_)
       init_async_res_(true);
+    std::cout << "Subscribe public channel success" << std::endl;
+    PrintLogInfo("Subscribe public channel success");
   };
+
+  std::cout << "Begin subscribe public channel" << std::endl;
+  PrintLogInfo("begin subscribe public channel");
 
   if (mqtt_->Subscribe(im::gv::g_mqtt_pub_sub_, sub_login_channel_res,
                        std::bind(&ServerLogin::MqttMsg_Login,
@@ -86,12 +97,36 @@ void ServerLogin::MqttConnected() {
   }
 }
 
-void ServerLogin::MqttMsg_Login(std::vector<char>) {}
+void ServerLogin::MqttMsg_Login(const MsgBuf& buf) {
+  auto msg = im::msg_proto::Parse_LoginChannel(buf);
+  if (msg == nullptr) {
+    return;
+  }
+
+  switch (msg->type) {
+  case im::msg_proto::ELoginMsgType::UserLogin:
+    return Msg_UserLogin(
+      std::static_pointer_cast<im::msg_proto::Msg_UserLogin>(msg));
+  default:
+    break;
+  }
+
+}
 
 void ServerLogin::MqttLog(const base::log::SBaseLog & l) {
   im::log::CLog::Get()->Print(l.type, "mqtt", l.file, l.func, l.line, l.log);
 }
 
+#pragma endregion
+
 #pragma region
+
+void ServerLogin::Msg_UserLogin(im::msg_proto::pMsg_UserLogin msg) {
+
+}
+
+#pragma endregion
+
+#pragma region namespace
 }
 #pragma endregion

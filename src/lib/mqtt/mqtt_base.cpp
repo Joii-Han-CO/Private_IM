@@ -68,7 +68,7 @@ void CMqttClientBase::Disconnect() {
 bool CMqttClientBase::Subscribe(
   const std::string &topic,
   const std::function<void()> &func_sub,
-  const std::function<void(std::vector<char>)> &func_msg) {
+  const std::function<void(const MsgBuf&)> &func_msg) {
 
   // 该函数挂上同步锁
   std::unique_lock<std::mutex> sub_lock(sync_subscribe_);
@@ -77,7 +77,7 @@ bool CMqttClientBase::Subscribe(
     return false;
   }
   map_msg_.insert(
-    std::pair<std::string, std::function<void(const std::vector<char>&)>>(
+    std::pair<std::string, std::function<void(const MsgBuf&)>>(
       topic, func_msg));
   int count_id = 0;
 
@@ -107,7 +107,7 @@ bool CMqttClientBase::Unsubscribe(const std::string & topic) {
 
 // 推送消息
 bool CMqttClientBase::Publish(const std::string &topic,
-                              const std::vector<char> &data,
+                              const MsgBuf &data,
                               const std::function<void()> &func) {
   int pub_id = publish_count_id_++;
   map_pub_.insert(std::pair<int, std::function<void()>>(pub_id, func));
@@ -300,7 +300,7 @@ void CMqttClientBase::Msg_Cb(const mosquitto_message *message) {
   }
 
   std::string topic = message->topic;
-  std::vector<char> data;
+  MsgBuf data;
   data.resize(message->payloadlen);
   memcpy(data.data(), message->payload, data.size());
 

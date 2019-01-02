@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "base/type_def.h"
+#include "im_type_def.h"
 #include "base/time.hpp"
 #include <list>
 #include <vector>
@@ -11,9 +12,60 @@ namespace im {
 namespace msg_proto {
 #pragma endregion
 
-#pragma region MsgStructs
+#pragma region Def
 
-typedef std::vector<char> MsgBuffer;
+#define ProroMsgBaseClassVirtual(ClassName) \
+public: \
+  virtual ~ClassName() {}; \
+  virtual bool Parse(const MsgBuf &buf) = 0; \
+  virtual MsgBuf Serializate() = 0;
+
+#define ProtoMsgChildClassVirtual(ClassName) \
+public: \
+  virtual bool Parse(const MsgBuf &buf) override; \
+  virtual MsgBuf Serializate() override;
+
+#pragma endregion
+
+#pragma region LoginChannel
+
+// 枚举   uint8_t
+// 登陆通道消息体类型
+enum class ELoginMsgType {
+  Error = 0,   // 报错...
+  UserLogin,    // 用户登陆
+};
+
+// 基类
+// 登陆通道基类
+struct Msg_LoginChannel {
+  ProroMsgBaseClassVirtual(Msg_LoginChannel);
+
+public:
+  ELoginMsgType type;
+};
+StdSharedPtr_Typedef(Msg_LoginChannel);
+
+// 用户登陆消息
+struct Msg_UserLogin: public Msg_LoginChannel {
+  ProtoMsgChildClassVirtual(Msg_UserLogin);
+
+public:
+  Msg_UserLogin();
+
+  std::string user_name;
+  std::string user_pwd;
+  im::EClientType client_type;
+  uint32_t client_id;
+};
+StdSharedPtr_Typedef(Msg_UserLogin);
+
+// 解析登陆相关消息
+pMsg_LoginChannel Parse_LoginChannel(const MsgBuf &buf);
+
+#pragma endregion
+
+#pragma region Msg
 
 enum class EIMMsg_Type {
   text,
@@ -52,11 +104,11 @@ struct IMMsg_Image: public SIMMsg_Base {
 };
 typedef std::shared_ptr<IMMsg_Image> pSIM_MsgImage;
 
-#pragma endregion
-
 pSIM_MsgText ParseText(void *data, size_t len);
 
-MsgBuffer SerializationTextMsg(pSIM_MsgText msg);
+MsgBuf SerializationTextMsg(pSIM_MsgText msg);
+
+#pragma endregion
 
 #pragma region
 }

@@ -4,7 +4,7 @@
 #include "login/server_login.h"
 
 // TODO 第一个版本全部的模块都在同一个进程中执行，以后考虑做成多进程的
- 
+
 int Init() {
   if (server::CManagement::Get()->Init() == false) {
     std::cout << "init failed" << std::endl;
@@ -25,7 +25,7 @@ int Init() {
     return -1;
   }
   std::unique_lock<std::mutex> lock(wait_init_finished_async);
-  wait_init_finished.wait(lock, [is_init]() {return is_init; });
+  wait_init_finished.wait(lock, [&is_init]() { return is_init; });
 
   return 0;
 }
@@ -36,9 +36,12 @@ int Run() {
     return exit_code;
   }
 
+
   return 0;
 }
 
 int main() {
-  return Run();
+  Run();
+  system("pause");
+  //return Run();
 }

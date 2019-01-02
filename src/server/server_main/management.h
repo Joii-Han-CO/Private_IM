@@ -24,7 +24,7 @@ private:
 
 
 /*
-global.config
+server_global.config
 
 [mqtt_server]
 host = 127.0.0.1

@@ -61,14 +61,14 @@ public:
   // 描述：添加一个订阅
   bool Subscribe(const std::string &topic,
                  const std::function<void()> &func_sub,
-                 const std::function<void(std::vector<char>)> &func_msg);
+                 const std::function<void(const MsgBuf&)> &func_msg);
 
   // 描述：取消一个订阅
   bool Unsubscribe(const std::string &topic);
 
   // 描述：推送消息
   bool Publish(const std::string &topic,
-               const std::vector<char> &data,
+               const MsgBuf &data,
                const std::function<void()> &func);
 
   static std::string FormatOnlineStatusA(EMqttOnlineStatus s);
@@ -116,7 +116,7 @@ private:
   base::async::Event sync_sub_callback_;
 
   // 订阅对应主题下发的消息
-  std::map<std::string, std::function<void(const std::vector<char>&)>> map_msg_;
+  std::map<std::string, std::function<void(const MsgBuf&)>> map_msg_;
 
   // 发送消息列表，用于回调
   int publish_count_id_ = 0;    // 发送消息ID计数，防止重复

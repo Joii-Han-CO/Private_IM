@@ -59,14 +59,15 @@ public:
 
     std::string header_str = MakeHeader(t, prj_name, source_file,
                                         func_name, line_num);
-#if LogASyncWrite
-    AddTask([this, header_str, sz, args...]() {
-#endif
-      // 格式化变量...
-      auto body_str = base::format::FormatStr(sz, args ...);
-      if (body_str.empty())
-        return;
 
+    // 格式化变量...
+    auto body_str = base::format::FormatStr(sz, args ...);
+    if (body_str.empty())
+      return;
+
+#if LogASyncWrite
+    AddTask([this, header_str, body_str]() {
+#endif
       std::string log_str =
         header_str + "]:" + base::format::GetStr_Utf8(body_str) + "\n";
 
