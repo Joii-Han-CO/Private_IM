@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 3.0)
 # Lib
 
 # 工程名
-set(_lib_name "c_login")
+set(_lib_name "c_framework")
 project(${_lib_name})
 
 set(_lib_folder "client")
@@ -53,7 +53,7 @@ target_compile_definitions(${_lib_name}
                            
 # 设置工程目录
 set_target_properties(${_lib_name} PROPERTIES FOLDER
-                      ${_lib_folder}/login)
+                      ${_lib_folder}/framework)
 
 # 预编译头
 set_target_properties(${_lib_name} PROPERTIES
@@ -96,7 +96,7 @@ target_compile_definitions(${_test_name}
                            ${_compile_def})
                            
 set_target_properties(${_test_name} PROPERTIES FOLDER
-                      ${_lib_folder}/login)
+                      ${_lib_folder}/framework)
 
 # 预编译头
 set_target_properties(${_test_name} PROPERTIES
@@ -112,8 +112,6 @@ set_target_properties(${_test_name} PROPERTIES
 Add_Definitions(-D_UNICODE)
 
 # 项目依赖
-target_link_libraries(${_lib_name} mqtt msg_proto)
 target_link_libraries(${_test_name} ${_lib_name})
-target_link_libraries(${_test_name} log)
 
 cotire(${_lib_name} ${_test_name})
