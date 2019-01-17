@@ -4,6 +4,7 @@
 #include <memory>
 #include <fstream>
 #include <mutex>
+#include <iostream>
 
 #include "base/task.hpp"
 #include "base/log.hpp"
@@ -69,10 +70,21 @@ public:
 #if LogASyncWrite
     AddTask([this, header_str, body_str]() {
 #endif
+
+      if (!output_ctrl_ || !save_file_)
+        return;
+
       std::string log_str =
         header_str + "]:" + base::format::GetStr_Utf8(body_str) + "\n";
 
-      OutPutBase(log_str);
+      if (save_file_)
+        OutPutBase(log_str);
+
+      if (output_ctrl_) {
+        auto log_wstr = base::Utf8ToUtf16(log_str);
+        std::wcout << log_wstr.c_str() << std::endl;
+      }
+
 #if LogASyncWrite
     });
 #endif
@@ -98,7 +110,8 @@ private:
   bool print_warn_ = true;
   bool print_erro_ = true;
 
-  bool print_ctrl_ = false;
+  bool output_ctrl_ = false;
+  bool save_file_ = true;
 
 #if !LogASyncWrite
   std::mutex write_log_sync_;

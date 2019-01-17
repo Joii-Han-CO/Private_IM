@@ -50,6 +50,13 @@ bool CLog::Init(SLog_InitArgs *args) {
   print_info_ = args->print_info;
   print_warn_ = args->print_warn;
   print_erro_ = args->print_erro;
+  output_ctrl_ = args->output_ctrl;
+  save_file_ = args->save_file;
+
+  if (output_ctrl_) {
+    std::locale::global(std::locale(""));
+    std::wcout.imbue(std::locale(""));
+  }
 
 #if LogASyncWrite
   StartTask();
@@ -80,7 +87,7 @@ bool CLog::FilterType(base::log::EBaseLogType t) {
 }
 
 void CLog::OutPutBase(const std::string &d) {
-  if (print_ctrl_)
+  if (output_ctrl_)
     base::debug::OutPut(d.c_str());
 
   // 写入日志...
