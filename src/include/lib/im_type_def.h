@@ -15,6 +15,12 @@ enum class EClientType {
   ios
 };
 
+// 定义client类型
+#ifdef _WIN32
+const EClientType g_client_type_ = EClientType::win;
+#else
+#endif
+
 #pragma region namespace
 }
 #pragma endregion

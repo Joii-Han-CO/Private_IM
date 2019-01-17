@@ -105,7 +105,7 @@ bool Test_Sub() {
   // sync subscribe
   base::async::Event wait_sub;
 
-  auto func_finished = [&wait_sub] () {
+  auto func_finished = [&wait_sub] (bool suc) {
     wait_sub.Notify();
   };
   auto func_msg = [] (const MsgBuf &data) {
@@ -146,7 +146,7 @@ void Test_SendMsg() {
     if (cmd == "q")
       break;
     if (gmsg_->Publish(cmd, MsgBuf(data.begin(), data.end()),
-                       [] () {
+                       [] (bool suc) {
       base::debug::OutPut(L"Publish success");
     })
         == false) {

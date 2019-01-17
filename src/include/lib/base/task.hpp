@@ -21,7 +21,10 @@ protected:
       thread_.reset(new std::thread(std::bind(&Task::TaskRun, this)));
   };
   void StopTask() {
+    lock_break_.lock();
     break_ = true;
+    lock_break_.unlock();
+
     con_v_.notify_all();
   };
   void WaitTask() {
@@ -30,6 +33,9 @@ protected:
   }
 
   void AddTask(std::function<void(void)>&& task) {
+    std::unique_lock<std::mutex> lock_break(lock_break_);
+    if (break_)
+      return;
     std::lock_guard<std::mutex> lock(lock_);
     task_list_.emplace_back(std::move(task));
     con_v_.notify_one();
@@ -61,6 +67,8 @@ private:
   std::list<std::function<void(void)>> task_list_;
   std::mutex lock_;
   std::condition_variable con_v_;
+
+  std::mutex lock_break_;
 };
 
 class Condition {
@@ -71,7 +79,7 @@ public:
   };
   void Wait() {
     std::unique_lock<std::mutex> lock(m_);
-    c_.wait(lock, [this] () {return f_; });
+    c_.wait(lock, [this]() {return f_; });
   };
 private:
   std::condition_variable c_;

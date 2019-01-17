@@ -76,7 +76,7 @@ void ServerLogin::MqttStatusChange(im::EMqttOnlineStatus status) {
 void ServerLogin::MqttConnected() {
 
   // 直接订阅消息
-  auto sub_login_channel_res = [this]() {
+  auto sub_login_channel_res = [this](bool suc) {
     if (init_async_res_)
       init_async_res_(true);
     std::cout << "Subscribe public channel success" << std::endl;
@@ -119,10 +119,17 @@ void ServerLogin::MqttLog(const base::log::SBaseLog & l) {
 
 #pragma endregion
 
-#pragma region
+#pragma region UserLogin
 
 void ServerLogin::Msg_UserLogin(im::msg_proto::pMsg_UserLogin msg) {
+  auto user_ptr = std::make_shared<ServerUserLogin>(
+    msg->user_name, msg->login_channel, mqtt_);
 
+  if (user_ptr->Init() == false) {
+    PrintLogWarn("receive user login notify, but can't init");
+    return;
+  }
+  users_list_.push_back(user_ptr);
 }
 
 #pragma endregion

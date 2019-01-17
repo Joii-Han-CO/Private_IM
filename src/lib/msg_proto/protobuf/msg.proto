@@ -7,6 +7,10 @@ message Proto_UserLogin {
   uint32 client_id = 4;
 }
 
+message Proto_UserLoginRes {
+  uint32 status = 1;
+}
+
 message Proto_Base {
   enum EProto_Type {
     None = 0;

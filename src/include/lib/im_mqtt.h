@@ -43,6 +43,12 @@ struct SMqttConnectInfo {
   FUNC_StatusChange cb_status_change;
 };
 
+enum class EMqttQos {
+  MostOne = 0,
+  LeastOne = 1,
+  OnlyOne = 2,
+};
+
 class CMqttClientBase:
   public base::error::LastError,
   public base::log::Log,
@@ -60,7 +66,7 @@ public:
 
   // 描述：添加一个订阅
   bool Subscribe(const std::string &topic,
-                 const std::function<void()> &func_sub,
+                 const Func_AsyncResult &func_sub,
                  const std::function<void(const MsgBuf&)> &func_msg);
 
   // 描述：取消一个订阅
@@ -69,7 +75,7 @@ public:
   // 描述：推送消息
   bool Publish(const std::string &topic,
                const MsgBuf &data,
-               const std::function<void()> &func);
+               const Func_AsyncResult &func);
 
   static std::string FormatOnlineStatusA(EMqttOnlineStatus s);
 
@@ -111,7 +117,7 @@ private:
   base::async::SyncVal<bool> sync_disconnect_flag_ = false;
 
   // 订阅成功的列表，用于回调
-  std::map<int, std::function<void()>> map_sub_;
+  std::map<int, Func_AsyncResult> map_sub_;
   std::mutex sync_subscribe_;
   base::async::Event sync_sub_callback_;
 
@@ -119,8 +125,7 @@ private:
   std::map<std::string, std::function<void(const MsgBuf&)>> map_msg_;
 
   // 发送消息列表，用于回调
-  int publish_count_id_ = 0;    // 发送消息ID计数，防止重复
-  std::map<int, std::function<void()>> map_pub_;
+  std::map<int, Func_AsyncResult> map_pub_;
 };
 typedef std::shared_ptr<CMqttClientBase> pCMqttClientBase;
 

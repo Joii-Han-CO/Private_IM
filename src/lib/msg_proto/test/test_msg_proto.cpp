@@ -24,8 +24,8 @@ void TestTime() {
 
 void Test_Login() {
   im::msg_proto::Msg_UserLogin msg;
-  msg.user_name = "sod8uf90w8s34f";
-  msg.user_pwd = "osjsidjflsjefl";
+  msg.user_name = L"sod8uf90w8s34f";
+  msg.login_channel = L"osjsidjflsjefl";
   msg.client_type = im::EClientType::android;
   msg.client_id = 89123;
 

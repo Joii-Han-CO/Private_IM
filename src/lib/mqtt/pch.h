@@ -10,3 +10,7 @@
 #include <mosquitto.h>
 
 #include <windows.h>
+
+
+#include "base/type_def.h"
+#include "im_type_def.h"

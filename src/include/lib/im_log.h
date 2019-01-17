@@ -28,7 +28,8 @@ struct SLog_InitArgs {
   bool print_info = false;
   bool print_warn = true;
   bool print_erro = true;
-  bool print_ctrl = false;
+  bool output_ctrl = false;   // 输出到控制台
+  bool save_file = true;    // 保存文件
 };
 typedef std::shared_ptr<SLog_InitArgs> pSLog_InitArgs;
 
@@ -126,7 +127,7 @@ inline void InitTestLog() {
   log_args.print_warn = true;
   log_args.print_erro = true;
 
-  log_args.print_ctrl = true;
+  log_args.output_ctrl = true;
 
   im::log::CLog::Get()->Init(&log_args);
 }

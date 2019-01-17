@@ -1,18 +1,40 @@
 ﻿#pragma once
 #include "base/type_def.h"
+#include "im_c_login.h"
+#include "im_config.h"
+
+#pragma region namespace
+namespace im {
+namespace c_framework {
+#pragma endregion
+
+class ClientFramework {
+private:
+  ClientFramework();
+public:
+  ~ClientFramework();
+  static ClientFramework *Get();
+
+  // 客户端全局的初始化
+  bool Init();
+
+  im::config::pCConfig GetGlobalConfigPtr();
+  im::c_login::pClientLogin GetLoginPtr();
+
+private:
+  im::config::pCConfig ptr_global_config_;
+  im::c_login::pClientLogin ptr_login_;
 
 
-#ifdef __cplusplus
-extern "C" {
-  namespace im {
-  namespace c_framework {
-#endif
+};
 
-  // 测试接口
-  IM_LIB_EXP bool Test_c_framework_C(IN int test_args);
+#define ClientInitGlobal \
+  im::c_framework::ClientFramework::Get()->Init()
 
-#ifdef __cplusplus
-  }
-  }
+#define ClientFW \
+  im::c_framework::ClientFramework::Get()
+
+#pragma region namespace
 }
-#endif
+}
+#pragma endregion

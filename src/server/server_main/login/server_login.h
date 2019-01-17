@@ -2,6 +2,8 @@
 #include "lib/im_mqtt.h"
 #include "lib/base/type_def.h"
 
+#include "user_login.h"
+
 
 #pragma region
 namespace server {
@@ -37,6 +39,8 @@ private:
   std::vector<im::FUNC_StatusChange> mqtt_status_func_;
 
   Func_AsyncResult init_async_res_ = nullptr;
+
+  std::list<pServerUserLogin> users_list_;
 };
 
 #pragma region

@@ -44,7 +44,6 @@ Msg_UserLogin::Msg_UserLogin() {
 }
 
 bool Msg_UserLogin::Parse(const MsgBuf &buf) {
-
   if (buf.size() - 1 == 0)
     return false;
 
@@ -52,8 +51,8 @@ bool Msg_UserLogin::Parse(const MsgBuf &buf) {
   if (proto.ParseFromArray(&buf[1], buf.size() - 1) == false)
     return false;
 
-  user_name = proto.user_name();
-  user_pwd = proto.user_pwd();
+  user_name = base::Utf8ToUtf16(proto.user_name());
+  login_channel = base::Utf8ToUtf16(proto.user_pwd());
   client_type = (EClientType)proto.client_type()[0];
   client_id = proto.client_id();
 
@@ -62,8 +61,8 @@ bool Msg_UserLogin::Parse(const MsgBuf &buf) {
 
 MsgBuf Msg_UserLogin::Serializate() {
   Proto_UserLogin proto;
-  proto.set_user_name(user_name);
-  proto.set_user_pwd(user_pwd);
+  proto.set_user_name(base::Utf16ToUtf8(user_name));
+  proto.set_user_pwd(base::Utf16ToUtf8(login_channel));
   proto.set_client_type((char*)&client_type);
   proto.set_client_id(client_id);
 
@@ -74,7 +73,46 @@ MsgBuf Msg_UserLogin::Serializate() {
   buf.resize(size + 1);
   proto.SerializeToArray((void*)&buf[1], size);
 
-  buf[0] = (uint8_t)(ELoginMsgType::UserLogin);
+  buf[0] = (uint8_t)(type);
+  return buf;
+}
+
+#pragma endregion
+
+#pragma region UserLoginRes
+
+Msg_UserLoginRes::Msg_UserLoginRes() {
+  type = im::msg_proto::ELoginMsgType::UserLoginRes;
+}
+
+bool Msg_UserLoginRes::Parse(const MsgBuf &buf) {
+  if (buf.size() - 1 == 0) {
+    return false;
+  }
+  Proto_UserLoginRes proto;
+  if (proto.ParseFromArray(&buf[1], buf.size() - 1) == false) {
+    return false;
+  }
+
+  status = proto.status();
+
+  return true;
+}
+
+MsgBuf Msg_UserLoginRes::Serializate() {
+  Proto_UserLoginRes proto;
+  proto.set_status(status);
+  MsgBuf buf;
+
+  auto size = proto.ByteSizeLong();
+  if (size <= 0) {
+    return buf;
+  }
+
+  buf.resize(size + 1);
+  proto.SerializePartialToArray((void*)&buf[1], size);
+
+  buf[0] = (uint8_t)(type);
   return buf;
 }
 

@@ -43,7 +43,9 @@ source_group("source" FILES ${_cpp_file})
 # 登陆模块
 set(_login_files
   ${PROJECT_SOURCE_DIR}/login/server_login.h
-  ${PROJECT_SOURCE_DIR}/login/server_login.cpp)
+  ${PROJECT_SOURCE_DIR}/login/server_login.cpp
+  ${PROJECT_SOURCE_DIR}/login/user_login.h
+  ${PROJECT_SOURCE_DIR}/login/user_login.cpp)
 source_group("login" FILES ${_login_files})
 set(_cpp_file ${_cpp_file} ${_login_files})
 

@@ -34,6 +34,7 @@ public: \
 enum class ELoginMsgType {
   Error = 0,   // 报错...
   UserLogin,    // 用户登陆
+  UserLoginRes, // server登陆成功后平台返回标志
 };
 
 // 基类
@@ -49,16 +50,24 @@ StdSharedPtr_Typedef(Msg_LoginChannel);
 // 用户登陆消息
 struct Msg_UserLogin: public Msg_LoginChannel {
   ProtoMsgChildClassVirtual(Msg_UserLogin);
-
-public:
   Msg_UserLogin();
 
-  std::string user_name;
-  std::string user_pwd;
+public:
+  std::wstring user_name;
+  std::wstring login_channel;
   im::EClientType client_type;
   uint32_t client_id;
 };
 StdSharedPtr_Typedef(Msg_UserLogin);
+
+struct Msg_UserLoginRes: public Msg_LoginChannel {
+  ProtoMsgChildClassVirtual(Msg_UserLogin);
+  Msg_UserLoginRes();
+
+public:
+  uint32_t status;
+
+};
 
 // 解析登陆相关消息
 pMsg_LoginChannel Parse_LoginChannel(const MsgBuf &buf);
