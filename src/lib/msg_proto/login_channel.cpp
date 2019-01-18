@@ -118,6 +118,46 @@ MsgBuf Msg_UserLoginRes::Serializate() {
 
 #pragma endregion
 
+#pragma region UserLogout
+
+Msg_UserLogout::Msg_UserLogout() {
+  type = im::msg_proto::ELoginMsgType::UserLogout;
+}
+
+bool Msg_UserLogout::Parse(const MsgBuf &buf) {
+  if (buf.size() - 1 == 0) {
+    return false;
+  }
+  Proto_UserLoginRes proto;
+  if (proto.ParseFromArray(&buf[1], buf.size() - 1) == false) {
+    return false;
+  }
+
+  status = proto.status();
+
+  return true;
+}
+
+MsgBuf Msg_UserLogout::Serializate() {
+  Proto_UserLoginRes proto;
+  proto.set_status(status);
+  MsgBuf buf;
+
+  auto size = proto.ByteSizeLong();
+  if (size <= 0) {
+    return buf;
+  }
+
+  buf.resize(size + 1);
+  proto.SerializePartialToArray((void*)&buf[1], size);
+
+  buf[0] = (uint8_t)(type);
+  return buf;
+}
+
+#pragma endregion
+
+
 #pragma region namespace
 }
 }

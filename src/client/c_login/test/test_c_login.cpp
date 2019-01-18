@@ -25,7 +25,7 @@ void TestLogin() {
 
   auto cl = ClientFW->GetLoginPtr();
 
-  // 初始化...
+  // 初始化登陆
   {
     std::condition_variable wait_init;
     std::mutex wait_init_lock;
@@ -37,13 +37,24 @@ void TestLogin() {
 
     if (cl->Init(g_users[0].first, g_users[0].second, func_init) == false) {
       std::cout << "Init failed" << std::endl;
-      return; 
+      return;
     }
     std::unique_lock<std::mutex> lock(wait_init_lock);
     wait_init.wait(lock, [&wait_init_flag]() {return wait_init_flag; });
   }
 
   system("pause");
+
+  // 登出
+  {
+    auto func_uninit = [](bool suc) {
+
+    };
+    if (cl->Uninit(func_uninit) == false) {
+      std::cout << "Uninit failed" << std::endl;
+      return;
+    }
+  }
 }
 
 #pragma region namespace

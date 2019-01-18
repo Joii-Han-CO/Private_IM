@@ -12,6 +12,7 @@ ClientLogin::ClientLogin() {}
 
 ClientLogin::~ClientLogin() {}
 
+// 初始化
 bool ClientLogin::Init(std::wstring user_name, std::wstring user_pwd,
                        Func_AsyncResult finished) {
   if (is_init_ == true) {
@@ -31,6 +32,15 @@ bool ClientLogin::Init(std::wstring user_name, std::wstring user_pwd,
   return true;
 }
 
+// 释放
+bool ClientLogin::Uninit(Func_AsyncResult finished) {
+  uninit_finished_callback_ = finished;
+
+  MqttSendLogoutInfo();
+  return true;
+}
+
+// 初始化mqtt和登陆连接
 bool ClientLogin::InitMqtt(std::wstring user_name,
                            std::wstring user_pwd) {
   if (mqtt_ != nullptr) {
@@ -52,6 +62,7 @@ bool ClientLogin::InitMqtt(std::wstring user_name,
   return true;
 }
 
+// 初始化结束封装
 void ClientLogin::InitFinished(bool suc) {
   if (init_finished_callback_) {
     init_finished_callback_(suc);
@@ -59,15 +70,23 @@ void ClientLogin::InitFinished(bool suc) {
   }
 }
 
+void ClientLogin::UninitFinished(bool suc) {
+  if (uninit_finished_callback_) {
+    uninit_finished_callback_(suc);
+    uninit_finished_callback_ = nullptr;
+  }
+}
+
 #pragma endregion
 
 #pragma region mqtt
 
+// 获取mqtt句柄
 im::pCMqttClientBase ClientLogin::GetMqtt() {
   return mqtt_;
 }
 
-// 注册回调函数
+// mqtt--注册回调函数
 uint32_t ClientLogin::RegMqttConnectedStatusChanged(
   FUNC_StatusChange func) {
   auto count = mqtt_status_changed_func_count_++;
@@ -76,19 +95,19 @@ uint32_t ClientLogin::RegMqttConnectedStatusChanged(
   return count;
 }
 
-// 卸载
+// mqtt--卸载回调函数
 void ClientLogin::UnregMqttConnectedStatusChanged(uint32_t count) {
   auto it = mqtt_status_changed_func_.find(count);
   if (it != mqtt_status_changed_func_.end())
     mqtt_status_changed_func_.erase(it);
 }
 
-// mqtt 日志返回
+// mqtt--日志返回
 void ClientLogin::MqttLog(const base::log::SBaseLog &l) {
   im::log::CLog::Get()->Print(l.type, "mqtt", l.file, l.func, l.line, l.log);
 }
 
-// 接到消息后处理...
+// mqtt--接到消息后处理
 void ClientLogin::MqttConnectedStatusChanged(
   im::EMqttOnlineStatus status) {
   // 处理...
@@ -117,7 +136,7 @@ void ClientLogin::MqttConnectedStatusChanged(
       it.second(status);
 }
 
-// 订阅公共通道消息
+// 登陆--订阅公共通道消息
 void ClientLogin::MqttSubPublicChannel() {
   // 订阅公共通道
 
@@ -139,12 +158,12 @@ void ClientLogin::MqttSubPublicChannel() {
   }
 }
 
-// mqtt登陆消息通道
+// 登陆--登陆消息通道
 void ClientLogin::MqttLoginChannel(const MsgBuf &buf) {
 
 }
 
-// mqtt 发送登陆信息
+// 登陆--发送登陆信息
 void ClientLogin::MqttSendLoginInfo() {
   // 拼接消息
   im::msg_proto::Msg_UserLogin proto;
@@ -164,6 +183,26 @@ void ClientLogin::MqttSendLoginInfo() {
                  im::gv::g_mqtt_pub_sub_.c_str(),
                  mqtt_->GetLastErr_Astd().c_str());
     InitFinished(false);
+    return;
+  }
+}
+
+// 登出--发送消息
+void ClientLogin::MqttSendLogoutInfo() {
+  im::msg_proto::Msg_UserLogout proto;
+  proto.status = 0;
+  auto buf = proto.Serializate();
+  auto func = [this](bool suc) {
+    if (suc == false)
+      UninitFinished(false);
+
+    // 貌似不能在这里调用断开连接...
+    mqtt_->Disconnect();
+  };
+  if (mqtt_->Publish(im::gv::g_mqtt_pub_sub_, buf, func) == false) {
+    PrintLogErro("send user logout info failed, topic:%s, des:%s",
+                 im::gv::g_mqtt_pub_sub_.c_str(),
+                 mqtt_->GetLastErr_Astd().c_str());
     return;
   }
 }

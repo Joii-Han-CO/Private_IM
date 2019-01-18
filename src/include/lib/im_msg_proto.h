@@ -32,9 +32,10 @@ public: \
 // 枚举   uint8_t
 // 登陆通道消息体类型
 enum class ELoginMsgType {
-  Error = 0,   // 报错...
-  UserLogin,    // 用户登陆
-  UserLoginRes, // server登陆成功后平台返回标志
+  Error = 0,    // 报错...
+  UserLogin,    // C-->S 用户登陆
+  UserLoginRes, // S-->C server登陆成功后平台返回标志
+  UserLogout,   // C-->S 用户登出
 };
 
 // 基类
@@ -68,6 +69,16 @@ public:
   uint32_t status;
 
 };
+StdSharedPtr_Typedef(Msg_UserLoginRes);
+
+struct Msg_UserLogout: public Msg_LoginChannel {
+  ProtoMsgChildClassVirtual(Msg_UserLogin);
+  Msg_UserLogout();
+
+public:
+  uint32_t status;
+};
+StdSharedPtr_Typedef(Msg_UserLogout);
 
 // 解析登陆相关消息
 pMsg_LoginChannel Parse_LoginChannel(const MsgBuf &buf);

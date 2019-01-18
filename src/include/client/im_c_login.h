@@ -17,6 +17,8 @@ public:
   bool Init(std::wstring user_name, std::wstring user_pwd,
             Func_AsyncResult finished);
 
+  bool Uninit(Func_AsyncResult finished);
+
   // 获取mqtt句柄
   im::pCMqttClientBase GetMqtt();
 
@@ -29,21 +31,27 @@ private:
                 std::wstring user_pwd);
 
   void InitFinished(bool suc);
+  void UninitFinished(bool suc);
 
   // Mqtt 相关
 private:
+  // mqtt--日志返回
   void MqttLog(const base::log::SBaseLog &l);
 
+  // mqtt--接到消息后处理
   void MqttConnectedStatusChanged(im::EMqttOnlineStatus status);
 
-  // mqtt 订阅公共通道
+  // 登陆--订阅公共通道消息
   void MqttSubPublicChannel();
 
-  // mqtt登陆消息通道
+  // 登陆--登陆消息通道
   void MqttLoginChannel(const MsgBuf &buf);
 
-  // mqtt 发送登陆信息
+  // 登陆--发送登陆信息
   void MqttSendLoginInfo();
+
+  // 登出--发送消息
+  void MqttSendLogoutInfo();
 
   im::pCMqttClientBase mqtt_;
   std::map<uint32_t, im::FUNC_StatusChange> mqtt_status_changed_func_;
@@ -52,6 +60,7 @@ private:
 
   bool is_init_ = false;
   Func_AsyncResult init_finished_callback_;
+  Func_AsyncResult uninit_finished_callback_;
 
   std::wstring user_name_;
 

@@ -19,7 +19,7 @@ CLog::~CLog() {
   StopTask();
   WaitTask();
 #endif
-  if (file_ && *file_)
+  if (save_file_ && file_ && *file_)
     file_->flush();
 }
 
@@ -62,11 +62,13 @@ bool CLog::Init(SLog_InitArgs *args) {
   StartTask();
 #endif
 
+  if (save_file_) {
   // 打开文件
-  file_ = std::make_shared<std::ofstream>(args->log_path);
+    file_ = std::make_shared<std::ofstream>(args->log_path);
 
-  // 写入第一条日志
-  PrintHeader();
+    // 写入第一条日志
+    PrintHeader();
+  }
 
   return true;
 }

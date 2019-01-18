@@ -23,6 +23,7 @@ bool ClientFramework::Init() {
 
   im::log::SLog_InitArgs log_args;
   log_args.output_ctrl = true;
+  log_args.save_file = false;
   log_args.print_dbg = true;
   log_args.print_info = true;
   log_args.print_warn = true;

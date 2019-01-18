@@ -54,6 +54,8 @@ public:
   void Print(base::log::EBaseLogType t, const char *prj_name,
              const char *source_file, const char *func_name, int line_num,
              const cus_char *sz, T1 ... args) {
+    if (!output_ctrl_ && !save_file_)
+      return;
     if (sz == nullptr || sz[0] == '\0')
       return;
     if (!FilterType(t))
@@ -70,9 +72,6 @@ public:
 #if LogASyncWrite
     AddTask([this, header_str, body_str]() {
 #endif
-
-      if (!output_ctrl_ || !save_file_)
-        return;
 
       std::string log_str =
         header_str + "]:" + base::format::GetStr_Utf8(body_str) + "\n";
