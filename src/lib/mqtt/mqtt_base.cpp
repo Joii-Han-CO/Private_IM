@@ -37,38 +37,39 @@ private:
 };
 }
 
-CMqttClientBase::CMqttClientBase():
-  base::log::Log(std::bind(&CMqttClientBase::OutputLog,
+CMqttClient::CMqttClient():
+  base::log::Log(std::bind(&CMqttClient::OutputLog,
                            this, std::placeholders::_1)) {}
 
-CMqttClientBase::CMqttClientBase(base::log::LogCallback func) :
+CMqttClient::CMqttClient(base::log::LogCallback func) :
   base::log::Log(func) {}
 
-CMqttClientBase::~CMqttClientBase() {
+CMqttClient::~CMqttClient() {
   WaitTask();
 }
 
 // 连接
-bool CMqttClientBase::Connect(const SMqttConnectInfo &info) {
+bool CMqttClient::Connect(const SMqttConnectInfo &info) {
   cb_status_change_ = info.cb_status_change;
 
   StartTask();
   AddTask(
-    std::bind(&CMqttClientBase::Mqtt_Connect, this, info));
+    std::bind(&CMqttClient::Mqtt_Connect, this, info));
   return true;
 }
 
 // 断开
-void CMqttClientBase::Disconnect() {
+void CMqttClient::Disconnect() {
   Mqtt_StatusChange(EMqttOnlineStatus::disconnecting);
   sync_disconnect_flag_.Set(true);
 }
 
 // 添加一个订阅
-bool CMqttClientBase::Subscribe(
+bool CMqttClient::Subscribe(
   const std::string &topic,
   const Func_AsyncResult &func_sub,
-  const std::function<void(const MsgBuf&)> &func_msg) {
+  const std::function<void(const MsgBuf&)> &func_msg,
+  EMqttQos qos) {
 
   // 该函数挂上同步锁
   std::unique_lock<std::mutex> sub_lock(sync_subscribe_);
@@ -81,7 +82,8 @@ bool CMqttClientBase::Subscribe(
       topic, func_msg));
   int count_id = 0;
 
-  auto ref = mosquitto_subscribe(mqtt_, &count_id, topic.c_str(), 1);
+  auto ref = mosquitto_subscribe(mqtt_, &count_id, topic.c_str(),
+                                 GetQosVal(qos));
   map_sub_.insert(
     std::pair<int, Func_AsyncResult>(
       count_id, func_sub));
@@ -95,7 +97,7 @@ bool CMqttClientBase::Subscribe(
   return true;
 }
 
-bool CMqttClientBase::Unsubscribe(const std::string & topic) {
+bool CMqttClient::Unsubscribe(const std::string & topic) {
   auto ref = mosquitto_unsubscribe(mqtt_, nullptr, topic.c_str());
   if (ref != MOSQ_ERR_SUCCESS) {
     SetLastErrAndLog("unsubscribe %s failed, code: %d",
@@ -106,13 +108,14 @@ bool CMqttClientBase::Unsubscribe(const std::string & topic) {
 }
 
 // 推送消息
-bool CMqttClientBase::Publish(const std::string &topic,
+bool CMqttClient::Publish(const std::string &topic,
                               const MsgBuf &data,
-                              const Func_AsyncResult &func) {
+                              const Func_AsyncResult &func,
+                              EMqttQos qos) {
   int pub_id = -1;
   int ref = mosquitto_publish(mqtt_, &pub_id, topic.c_str(),
                               data.size(), data.data(),
-                              (int)EMqttQos::OnlyOne, true);
+                              (int)qos, false);
   // 需要同步锁处理异步问题
   if (ref != MOSQ_ERR_SUCCESS) {
     SetLastErrAndLog("publish %s failed, data_size:%d, code: %d",
@@ -133,7 +136,7 @@ bool CMqttClientBase::Publish(const std::string &topic,
 }
 
 // 格式化在线状态
-std::string CMqttClientBase::FormatOnlineStatusA(EMqttOnlineStatus s) {
+std::string CMqttClient::FormatOnlineStatusA(EMqttOnlineStatus s) {
   switch (s) {
   case im::EMqttOnlineStatus::none:
     return "none";
@@ -151,8 +154,22 @@ std::string CMqttClientBase::FormatOnlineStatusA(EMqttOnlineStatus s) {
   return "unknow";
 }
 
+int CMqttClient::GetQosVal(EMqttQos q) {
+  switch (q) {
+  case im::EMqttQos::MostOne:
+    return 0;
+  case im::EMqttQos::LeastOne:
+    return 1;
+  case im::EMqttQos::OnlyOne:
+    return 2;
+  default:
+    break;
+  }
+  return 0;
+}
+
 // mqtt同步连接
-void CMqttClientBase::Mqtt_Connect(const SMqttConnectInfo &info) {
+void CMqttClient::Mqtt_Connect(const SMqttConnectInfo &info) {
   if (is_connected == true) {
     SetLastErrAndLog("is connected");
     return;
@@ -166,8 +183,15 @@ void CMqttClientBase::Mqtt_Connect(const SMqttConnectInfo &info) {
     return;
   }
 
+  const char *id = nullptr;
+  bool client_session = true;
+  if (!info.client_id.empty()) {
+    id = info.client_id.c_str();
+    //client_session = false;
+  }
+
   // 创建mosquitto实例
-  mqtt_ = mosquitto_new(nullptr, true, this);
+  mqtt_ = mosquitto_new(id, client_session, this);
   if (mqtt_ == nullptr || mqtt_ == (void*)EINVAL) {
     SetLastErrAndLog("new mosquitto failed");
     return;
@@ -199,7 +223,7 @@ void CMqttClientBase::Mqtt_Connect(const SMqttConnectInfo &info) {
 }
 
 // mqtt断开连接
-void CMqttClientBase::Mqtt_Disconnect() {
+void CMqttClient::Mqtt_Disconnect() {
   if (mqtt_ == nullptr) {
     MPrintWarn("not connected, mqtt_ == nullptr");
     return;
@@ -214,12 +238,14 @@ void CMqttClientBase::Mqtt_Disconnect() {
 }
 
 // mqtt连接前，设置一些相关参数
-bool CMqttClientBase::Mqtt_InitOpts(const SMqttConnectInfo &info) {
-  if (info.max_inflight_msg != -1 &&
+bool CMqttClient::Mqtt_InitOpts(const SMqttConnectInfo &info) {
+  if (info.max_inflight_msg != -1) {
+    if (
       mosquitto_max_inflight_messages_set(mqtt_, info.max_inflight_msg) !=
       MOSQ_ERR_SUCCESS) {
-    SetLastErrAndLog("set max in flight message failed");
-    return false;
+      SetLastErrAndLog("set max in flight message failed");
+      return false;
+    }
   }
   if (info.user_name.empty() == false && info.user_pwd.empty() == false) {
     if (mosquitto_username_pw_set(mqtt_,
@@ -238,7 +264,7 @@ bool CMqttClientBase::Mqtt_InitOpts(const SMqttConnectInfo &info) {
 }
 
 // 消息循环
-void CMqttClientBase::Mqtt_MsgLoop() {
+void CMqttClient::Mqtt_MsgLoop() {
   int i_ref = 0;
   while (true) {
     if (sync_disconnect_flag_.Get()) {
@@ -254,7 +280,7 @@ void CMqttClientBase::Mqtt_MsgLoop() {
   }
 }
 
-void CMqttClientBase::Mqtt_StatusChange(EMqttOnlineStatus status) {
+void CMqttClient::Mqtt_StatusChange(EMqttOnlineStatus status) {
   if (cb_status_change_)
     cb_status_change_(status);
 }
@@ -262,16 +288,16 @@ void CMqttClientBase::Mqtt_StatusChange(EMqttOnlineStatus status) {
 #pragma region Callback
 
 // 订阅成功的回调
-void CMqttClientBase::SSub_Cb(mosquitto *mosq, void * obj, int mid,
+void CMqttClient::SSub_Cb(mosquitto *mosq, void * obj, int mid,
                               int qos_count, const int * granted_qos) {
   if (obj == nullptr)
     return;
-  CMqttClientBase *this_ = (CMqttClientBase*)obj;
+  CMqttClient *this_ = (CMqttClient*)obj;
   if (mosq == nullptr || mosq != this_->mqtt_)
     return;
   this_->Sub_Cb(mid, qos_count, granted_qos);
 }
-void CMqttClientBase::Sub_Cb(int mid,
+void CMqttClient::Sub_Cb(int mid,
                              int qos_count, const int * granted_qos) {
   sync_sub_callback_.Wait();
   auto it = map_sub_.find(mid);
@@ -283,16 +309,16 @@ void CMqttClientBase::Sub_Cb(int mid,
 }
 
 // 消息循环的静态回调
-void CMqttClientBase::SMsg_Cb(mosquitto *mosq, void *obj,
+void CMqttClient::SMsg_Cb(mosquitto *mosq, void *obj,
                               const mosquitto_message *message) {
   if (obj == nullptr)
     return;
-  CMqttClientBase *this_ = (CMqttClientBase*)obj;
+  CMqttClient *this_ = (CMqttClient*)obj;
   if (mosq == nullptr || mosq != this_->mqtt_)
     return;
   this_->Msg_Cb(message);
 }
-void CMqttClientBase::Msg_Cb(const mosquitto_message *message) {
+void CMqttClient::Msg_Cb(const mosquitto_message *message) {
   if (message == nullptr) {
     MPrintWarn("message failed, message is null");
     return;
@@ -326,15 +352,15 @@ void CMqttClientBase::Msg_Cb(const mosquitto_message *message) {
 }
 
 // 消息发送的回调
-void CMqttClientBase::SPub_Cb(mosquitto *mosq, void *obj, int mid) {
+void CMqttClient::SPub_Cb(mosquitto *mosq, void *obj, int mid) {
   if (obj == nullptr)
     return;
-  CMqttClientBase *this_ = (CMqttClientBase*)obj;
+  CMqttClient *this_ = (CMqttClient*)obj;
   if (mosq == nullptr || mosq != this_->mqtt_)
     return;
   this_->Pub_Cb(mid);
 }
-void CMqttClientBase::Pub_Cb(int mid) {
+void CMqttClient::Pub_Cb(int mid) {
   auto it = map_pub_.find(mid);
   if (it == map_pub_.end()) {
     MPrintWarn("publish failed, No corresponding callback found");
@@ -345,7 +371,7 @@ void CMqttClientBase::Pub_Cb(int mid) {
   map_pub_.erase(mid);
 }
 
-void CMqttClientBase::OutputLog(const base::log::SBaseLog & l) {
+void CMqttClient::OutputLog(const base::log::SBaseLog & l) {
   im::log::CLog::Get()->Print(l.type, PRJ_NAME, l.file, l.func, l.line, l.log);
 }
 

@@ -17,7 +17,6 @@ bool ServerLogin::Init(Func_AsyncResult func) {
   CManagement *m = CManagement::Get();
   auto cfg = m->GetGlobalConfig();
 
-  std::cout << "Begin connect mqtt server" << std::endl;
   PrintLogInfo("begin connect mqtt server");
 
   im::SMqttConnectInfo mqtt_connect_info;
@@ -31,11 +30,12 @@ bool ServerLogin::Init(Func_AsyncResult func) {
   mqtt_connect_info.cb_status_change = std::bind(
     &ServerLogin::MqttStatusChange, this, std::placeholders::_1);
 
+  mqtt_connect_info.client_id = im::gv::g_ser_mqtt_id;
+
   init_async_res_ = func;
-  mqtt_ = std::make_shared<im::CMqttClientBase>(
+  mqtt_ = std::make_shared<im::CMqttClient>(
     std::bind(&ServerLogin::MqttLog, this, std::placeholders::_1));
   if (mqtt_->Connect(mqtt_connect_info) == false) {
-    std::cout << "connetc mqtt failed" << std::endl;
     PrintLogErro("connect mqtt failed, des:%s",
                  mqtt_->GetLastErr_Astd().c_str());
     return false;
@@ -79,18 +79,15 @@ void ServerLogin::MqttConnected() {
   auto sub_login_channel_res = [this](bool suc) {
     if (init_async_res_)
       init_async_res_(true);
-    std::cout << "Subscribe public channel success" << std::endl;
     PrintLogInfo("Subscribe public channel success");
   };
 
-  std::cout << "Begin subscribe public channel" << std::endl;
   PrintLogInfo("begin subscribe public channel");
 
   if (mqtt_->Subscribe(im::gv::g_mqtt_pub_sub_, sub_login_channel_res,
                        std::bind(&ServerLogin::MqttMsg_Login,
                                  this, std::placeholders::_1)) == false) {
-    std::cout << "mqtt subscribe " <<
-      im::gv::g_mqtt_pub_sub_.c_str() << " failed" << std::endl;
+    PrintLogErro("mqtt subscribe %s fialed", im::gv::g_mqtt_pub_sub_.c_str());
     if (init_async_res_)
       init_async_res_(false);
     return;
@@ -105,8 +102,8 @@ void ServerLogin::MqttMsg_Login(const MsgBuf& buf) {
 
   switch (msg->type) {
   case im::msg_proto::ELoginMsgType::UserLogin:
-    return Msg_UserLogin(
-      std::static_pointer_cast<im::msg_proto::Msg_UserLogin>(msg));
+    return M_UserLogin(
+      std::dynamic_pointer_cast<im::msg_proto::Msg_UserLogin>(msg));
   default:
     break;
   }
@@ -121,7 +118,7 @@ void ServerLogin::MqttLog(const base::log::SBaseLog & l) {
 
 #pragma region UserLogin
 
-void ServerLogin::Msg_UserLogin(im::msg_proto::pMsg_UserLogin msg) {
+void ServerLogin::M_UserLogin(im::msg_proto::pMsg_UserLogin msg) {
   auto user_ptr = std::make_shared<ServerUserLogin>(
     msg->user_name, msg->login_channel, mqtt_);
 

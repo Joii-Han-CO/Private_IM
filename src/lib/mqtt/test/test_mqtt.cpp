@@ -21,7 +21,7 @@ namespace test {
 
 #pragma region global val
 
-im::pCMqttClientBase gmsg_;
+im::pCMqttClient gmsg_;
 std::map<std::string, std::string> g_args_;
 std::string g_topic_ = "t1";
 bool g_is_init_ = false, g_is_sub_ = false;
@@ -46,7 +46,7 @@ void MqttMsg(const std::string &topic, const MsgBuf &data) {
 // sync connect
 bool Test_Init() {
   base::debug::OutPut("Begin...");
-  gmsg_ = std::make_shared<im::CMqttClientBase>(MqttLog);
+  gmsg_ = std::make_shared<im::CMqttClient>(MqttLog);
 
   // sync connect
   std::condition_variable wait_conncet;
@@ -66,7 +66,7 @@ bool Test_Init() {
     [&wait_conncet, &wait_conncet_flag] (im::EMqttOnlineStatus status) {
     base::debug::OutPut(
       "[StatusChange]--%s",
-      im::CMqttClientBase::FormatOnlineStatusA(status).c_str());
+      im::CMqttClient::FormatOnlineStatusA(status).c_str());
     if (status == im::EMqttOnlineStatus::connected) {
       wait_conncet_flag = true;
       wait_conncet.notify_all();

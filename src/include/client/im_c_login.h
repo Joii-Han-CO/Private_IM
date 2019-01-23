@@ -20,7 +20,7 @@ public:
   bool Uninit(Func_AsyncResult finished);
 
   // 获取mqtt句柄
-  im::pCMqttClientBase GetMqtt();
+  im::pCMqttClient GetMqtt();
 
   // 注册一个mqtt状态变更的回调
   uint32_t RegMqttConnectedStatusChanged(FUNC_StatusChange func);
@@ -53,7 +53,7 @@ private:
   // 登出--发送消息
   void MqttSendLogoutInfo();
 
-  im::pCMqttClientBase mqtt_;
+  im::pCMqttClient mqtt_;
   std::map<uint32_t, im::FUNC_StatusChange> mqtt_status_changed_func_;
   uint32_t mqtt_status_changed_func_count_ = 0;
   std::string channel_name_login_;

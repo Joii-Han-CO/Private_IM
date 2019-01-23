@@ -25,13 +25,20 @@ bool CManagement::Init() {
   log_args.print_info = true;
   log_args.print_warn = true;
   log_args.print_erro = true;
+
+  log_args.output_ctrl = true;
+  log_args.save_file = false;
+
   log_args.log_path = L"server_main.log";
-  if (im::log::CLog::Get()->Init() == false) {
+  if (im::log::CLog::Get()->Init(&log_args) == false) {
     std::cout << "init log module failed" << std::endl;
     return false;
   }
 
+  // 初始化线程池
   pool_ = std::make_shared<base::CThreadPool>();
+
+  // 初始化全局配置文件
   global_config_ = std::make_shared<im::config::CConfig>();
   auto cfg_path = base::_path::GetExeDir<wchar_t>() + L"\\" +
     im::gv::g_ser_cfg_path;

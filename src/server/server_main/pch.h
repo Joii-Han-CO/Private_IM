@@ -5,6 +5,7 @@
 #include <condition_variable>
 #include <list>
 #include <memory>
+#include <conio.h>
 
 #include "im_global_val.h"
 #include "lib/base/log.hpp"

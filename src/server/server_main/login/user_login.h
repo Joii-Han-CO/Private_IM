@@ -8,7 +8,7 @@ namespace server {
 class ServerUserLogin {
 public:
   ServerUserLogin(std::wstring user_name, std::wstring channel_name,
-                  im::pCMqttClientBase mqtt);
+                  im::pCMqttClient mqtt);
   ~ServerUserLogin();
 
   bool Init();
@@ -19,7 +19,7 @@ private:
 private:
   std::wstring user_name_;
   std::wstring channel_name_;
-  im::pCMqttClientBase mqtt_;
+  im::pCMqttClient mqtt_;
 };
 StdSharedPtr_Typedef(ServerUserLogin);
 

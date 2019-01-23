@@ -42,6 +42,14 @@ inline std::string GetStr_Utf8(const std::wstring &s) {
   return base::Utf16ToUtf8(s);
 }
 
+inline std::wstring GetStr_Utf16(const std::string &s) {
+  return base::Utf8ToUtf16(s);
+}
+
+inline std::wstring GetStr_Utf16(const std::wstring &s) {
+  return s;
+}
+
 inline std::string GetStr_Gbk(const std::string &s) {
   return s;
 }

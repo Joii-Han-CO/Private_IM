@@ -22,18 +22,6 @@ private:
   im::config::pCConfig global_config_;
 };
 
-
-/*
-server_global.config
-
-[mqtt_server]
-host = 127.0.0.1
-port = 1234
-admin_name = admin
-admin_pwd = 123456
-
-*/
-
 #pragma region
 }
 #pragma endregion

@@ -47,7 +47,7 @@ bool ClientLogin::InitMqtt(std::wstring user_name,
     PrintLogErro("mqtt not empty");
     return false;
   }
-  mqtt_ = std::make_shared<im::CMqttClientBase>(
+  mqtt_ = std::make_shared<im::CMqttClient>(
     std::bind(&ClientLogin::MqttLog, this, std::placeholders::_1));
 
   im::SMqttConnectInfo mqtt_info;
@@ -82,7 +82,7 @@ void ClientLogin::UninitFinished(bool suc) {
 #pragma region mqtt
 
 // 获取mqtt句柄
-im::pCMqttClientBase ClientLogin::GetMqtt() {
+im::pCMqttClient ClientLogin::GetMqtt() {
   return mqtt_;
 }
 
@@ -145,6 +145,7 @@ void ClientLogin::MqttSubPublicChannel() {
     im::gv::g_mqtt_login_sub_ + base::_uuid::GenerateUUID<char>();
   auto func = [this](bool suc) {
     // 订阅成功后 ,发送该通道及用户名
+    PrintLogInfo("subscribe login channel success");
     MqttSendLoginInfo();
   };
 
@@ -175,6 +176,7 @@ void ClientLogin::MqttSendLoginInfo() {
   auto buf = proto.Serializate();
 
   auto func = [this](bool suc) {
+    PrintLogInfo("send user login info success");
     InitFinished(true);
   };
 

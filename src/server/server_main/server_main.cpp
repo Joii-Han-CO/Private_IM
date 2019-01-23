@@ -5,6 +5,8 @@
 
 // TODO 第一个版本全部的模块都在同一个进程中执行，以后考虑做成多进程的
 
+server::pServerLogin g_li;
+
 int Init() {
   if (server::CManagement::Get()->Init() == false) {
     std::cout << "init failed" << std::endl;
@@ -19,8 +21,8 @@ int Init() {
     wait_init_finished.notify_all();
   };
 
-  server::ServerLogin li;
-  if (li.Init(func_init_res) == false) {
+  g_li = std::make_shared<server::ServerLogin>();
+  if (g_li->Init(func_init_res) == false) {
     std::cout << "init login module failed, will exit" << std::endl;
     return -1;
   }
@@ -42,6 +44,6 @@ int Run() {
 
 int main() {
   Run();
-  system("pause");
+  _getch();
   //return Run();
 }

@@ -106,13 +106,22 @@ void CLog::OutPutBase(const std::string &d) {
   file_->flush();
 }
 
-std::string CLog::MakeHeader(base::log::EBaseLogType t,
+std::string CLog::MakeHeader_LogFile(base::log::EBaseLogType t,
                              const char *prj_name, const char * source_file,
                              const char * func_name, int line_num) {
   // 虽然不优雅，但是性能提升还是很明显的...
   return "[" + std::string(base::log::GetBaseLogTypeStr(t)) + "],[" +
     std::string(prj_name) + "],[" +
     std::string(func_name) + ":" + std::to_string(line_num);
+}
+
+std::string CLog::MakeHeader_Ctrl(base::log::EBaseLogType t,
+                                const char * prj_name,
+                                const char * source_file,
+                                const char * func_name,
+                                int line_num) {
+  return "[" + std::string(base::log::GetBaseLogTypeStr(t)) + "],[" +
+    std::string(prj_name) + ":" + std::to_string(line_num);
 }
 
 bool CLog::WriteLog(base::log::EBaseLogType t) {

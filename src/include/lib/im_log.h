@@ -61,8 +61,17 @@ public:
     if (!FilterType(t))
       return;
 
-    std::string header_str = MakeHeader(t, prj_name, source_file,
-                                        func_name, line_num);
+    std::string header_str;
+    std::string header_str_low;
+    header_str = MakeHeader_LogFile(t, prj_name, source_file,
+                                    func_name, line_num);
+    if (t == base::log::EBaseLogType::info && output_ctrl_) {
+      header_str_low = MakeHeader_Ctrl(t, prj_name, source_file,
+                                       func_name, line_num);
+    }
+    else {
+      header_str_low = header_str;
+    }
 
     // 格式化变量...
     auto body_str = base::format::FormatStr(sz, args ...);
@@ -70,7 +79,7 @@ public:
       return;
 
 #if LogASyncWrite
-    AddTask([this, header_str, body_str]() {
+    AddTask([this, header_str, header_str_low, body_str]() {
 #endif
 
       std::string log_str =
@@ -80,7 +89,9 @@ public:
         OutPutBase(log_str);
 
       if (output_ctrl_) {
-        auto log_wstr = base::Utf8ToUtf16(log_str);
+        std::wstring log_wstr =
+          base::Utf8ToUtf16(header_str_low) + L"]:" +
+          base::format::GetStr_Utf16(body_str) + L"\n";
         std::wcout << log_wstr.c_str() << std::endl;
       }
 
@@ -93,9 +104,12 @@ private:
   bool FilterType(base::log::EBaseLogType t);
   void OutPutBase(const std::string &d);
 
-  std::string MakeHeader(base::log::EBaseLogType t,
-                         const char *prj_name, const char *source_file,
-                         const char *func_name, int line_num);
+  std::string MakeHeader_LogFile(base::log::EBaseLogType t,
+                                 const char *prj_name, const char *source_file,
+                                 const char *func_name, int line_num);
+  std::string MakeHeader_Ctrl(base::log::EBaseLogType t,
+                              const char *prj_name, const char *source_file,
+                              const char *func_name, int line_num);
 
   bool WriteLog(base::log::EBaseLogType t);
 

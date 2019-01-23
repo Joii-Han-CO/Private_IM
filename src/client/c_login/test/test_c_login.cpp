@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <condition_variable>
+#include <conio.h>
 
 #pragma region namespace
 namespace test {
@@ -43,7 +44,7 @@ void TestLogin() {
     wait_init.wait(lock, [&wait_init_flag]() {return wait_init_flag; });
   }
 
-  system("pause");
+  _getch();
 
   // 登出
   {

@@ -7,7 +7,7 @@ namespace server {
 
 ServerUserLogin::ServerUserLogin(std::wstring user_name,
                                  std::wstring channel_name,
-                                 im::pCMqttClientBase mqtt):
+                                 im::pCMqttClient mqtt):
   user_name_(user_name),
   channel_name_(channel_name),
   mqtt_(mqtt) {}
@@ -55,6 +55,7 @@ bool ServerUserLogin::Init() {
     return false;
   }
 
+  PrintLogInfo(L"a new user login: %s", user_name_.c_str());
   return true;
 }
 

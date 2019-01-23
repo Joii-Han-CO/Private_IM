@@ -32,16 +32,17 @@ private:
 
 
   // 登陆消息处理
-  void Msg_UserLogin(im::msg_proto::pMsg_UserLogin msg);
+  void M_UserLogin(im::msg_proto::pMsg_UserLogin msg);
 
 private:
-  im::pCMqttClientBase mqtt_;
+  im::pCMqttClient mqtt_;
   std::vector<im::FUNC_StatusChange> mqtt_status_func_;
 
   Func_AsyncResult init_async_res_ = nullptr;
 
   std::list<pServerUserLogin> users_list_;
 };
+StdSharedPtr_Typedef(ServerLogin);
 
 #pragma region
 }

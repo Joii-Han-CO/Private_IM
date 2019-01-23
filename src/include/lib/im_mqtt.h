@@ -36,6 +36,8 @@ struct SMqttConnectInfo {
   std::string user_name;
   std::string user_pwd;
 
+  std::string client_id;
+
   int keepalive = 30;
   int max_inflight_msg = -1;  // 如果离线，最大消息数。默认-1（mosquitto 默认为20）
   int loop_timeout = 0;   // 每次消息循环的超时时间
@@ -49,15 +51,15 @@ enum class EMqttQos {
   OnlyOne = 2,
 };
 
-class CMqttClientBase:
+class CMqttClient:
   public base::error::LastError,
   public base::log::Log,
   public virtual base::b_async::Task {
 
 public:
-  CMqttClientBase();
-  CMqttClientBase(base::log::LogCallback func);
-  virtual ~CMqttClientBase();
+  CMqttClient();
+  CMqttClient(base::log::LogCallback func);
+  virtual ~CMqttClient();
 
   // 描述：连接\断开
   //  对外接口，异步执行
@@ -67,7 +69,8 @@ public:
   // 描述：添加一个订阅
   bool Subscribe(const std::string &topic,
                  const Func_AsyncResult &func_sub,
-                 const std::function<void(const MsgBuf&)> &func_msg);
+                 const std::function<void(const MsgBuf&)> &func_msg,
+                 EMqttQos qos = EMqttQos::LeastOne);
 
   // 描述：取消一个订阅
   bool Unsubscribe(const std::string &topic);
@@ -75,9 +78,12 @@ public:
   // 描述：推送消息
   bool Publish(const std::string &topic,
                const MsgBuf &data,
-               const Func_AsyncResult &func);
+               const Func_AsyncResult &func,
+               EMqttQos qos = EMqttQos::LeastOne);
 
   static std::string FormatOnlineStatusA(EMqttOnlineStatus s);
+
+  static int GetQosVal(EMqttQos q);
 
 private:
   // mqtt同步连接
@@ -127,7 +133,7 @@ private:
   // 发送消息列表，用于回调
   std::map<int, Func_AsyncResult> map_pub_;
 };
-typedef std::shared_ptr<CMqttClientBase> pCMqttClientBase;
+typedef std::shared_ptr<CMqttClient> pCMqttClient;
 
 #pragma region
 }
