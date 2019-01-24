@@ -2,7 +2,7 @@
 #include <mosquitto_plugin.h>
 #include <memory>
 
-#include "include/server/im_server_sql.h"
+#include "base/log.hpp"
 
 
 #pragma region
@@ -36,7 +36,6 @@ private:
   void OnLog(const base::log::SBaseLog &func);
 
 private:
-  im::server_sql::CServerSql_User sql_user_;
 
 };
 typedef CPluginMosq* pCPluginMosq;

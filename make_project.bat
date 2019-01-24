@@ -10,7 +10,7 @@ cd o_win
 
 ::BOOST_ROOT
 mkdir ..\src\lib\msg_proto\proto_class\
-cmake -G "Visual Studio 15 2017" ./../src/ -DTHRD_LIB_PATH=%im_3rd_lib% -DBoost_LIBRARY_DIRS=%im_boost_lib_dir%
+cmake -G "Visual Studio 15 2017" ./../src/ -DTHRD_LIB_PATH=%im_3rd_lib% -DBoost_LIBRARY_DIRS=%im_boost_lib_dir% -Dmysql_dir="%mysql_dir%"
 
 set cmake_ref_val=%errorlevel%
 cd ..

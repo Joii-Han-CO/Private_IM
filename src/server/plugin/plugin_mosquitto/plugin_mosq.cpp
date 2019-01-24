@@ -18,8 +18,7 @@ int CPluginMosq::GetVersion() {
 
 #pragma region I/R
 
-CPluginMosq::CPluginMosq():
-  sql_user_(std::bind(&CPluginMosq::OnLog, this, std::placeholders::_1)) {}
+CPluginMosq::CPluginMosq() {}
 
 bool CPluginMosq::Init() {
   return false;

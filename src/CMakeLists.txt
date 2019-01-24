@@ -69,13 +69,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib/mqtt/)
 add_subdirectory(${PROJECT_SOURCE_DIR}/server/server_main/)
 
 # plugin_mosquitto
-add_subdirectory(${PROJECT_SOURCE_DIR}/plugin/plugin_mosquitto/)
-
-# sql
-add_subdirectory(${PROJECT_SOURCE_DIR}/lib/sql/)
-
-# server_sql
-add_subdirectory(${PROJECT_SOURCE_DIR}/server/server_sql/)
+add_subdirectory(${PROJECT_SOURCE_DIR}/server/plugin/plugin_mosquitto/)
 
 # config
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/config/)
@@ -91,3 +85,9 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/client/c_login/)
 
 # c_framework
 add_subdirectory(${PROJECT_SOURCE_DIR}/client/c_framework/)
+
+# s_user_manager
+add_subdirectory(${PROJECT_SOURCE_DIR}/server/s_user_manager/)
+
+# s_sql
+add_subdirectory(${PROJECT_SOURCE_DIR}/server/s_sql/)

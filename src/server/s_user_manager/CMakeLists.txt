@@ -5,28 +5,25 @@ cmake_minimum_required (VERSION 3.0)
 # Lib
 
 # 工程名
-set(_lib_name "server_sql")
+set(_lib_name "s_user_manager")
 project(${_lib_name})
 
 set(_lib_folder "server")
 
+# /src/include
+set(_incldue ${PROJECT_SOURCE_DIR}/../../include/server)
+
 # C\C++ 包含源码路径
-set(_include_dirs )
+set(_include_dirs ${_incldue})
 
 # C\C++ 包含库路径
 set(_lib_dirs )
-
-# /src/include
-set(_incldue ${PROJECT_SOURCE_DIR}/../../include/server/)
-set(_incldue_src ${PROJECT_SOURCE_DIR}/../../include/lib/)
 
 set(_pch ${PROJECT_SOURCE_DIR}/pch)
 
 # 源码包含目录
 include_directories(${_lib_name}
                     ${_prj_include_dir}
-                    ${_incldue}
-                    ${_incldue_src}
                     ${PROJECT_SOURCE_DIR}
                     ${_include_dirs})
 
@@ -38,7 +35,9 @@ source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
   ${_pch}.cpp
-  ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp)
+  ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp
+  ${PROJECT_SOURCE_DIR}/s_user_manager.h
+  ${PROJECT_SOURCE_DIR}/s_user_manager.cpp)
 source_group("source" FILES ${_cpp_file})
 
 add_library(${_lib_name} ${_prj_lib_type}
@@ -73,8 +72,7 @@ project(${_test_name})
 set(_pch ${PROJECT_SOURCE_DIR}/test/pch)
 
 # 源码包含目录
-include_directories(${_test_name} ${_prj_include_dir}
-                                  ${_incldue})
+include_directories(${_test_name} ${_incldue})
 
 # 创建目录
 set(_inc_file
@@ -116,7 +114,6 @@ set_target_properties(${_test_name} PROPERTIES
 Add_Definitions(-D_UNICODE)
 
 # 项目依赖
-target_link_libraries(${_lib_name} sql)
 target_link_libraries(${_test_name} ${_lib_name})
 
 cotire(${_lib_name} ${_test_name})

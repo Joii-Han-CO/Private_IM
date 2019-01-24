@@ -21,7 +21,7 @@ const std::wstring g_ser_cfg_path = L"server_global.config";
 [mqtt_server]
 host=127.0.0.1
 port=1883
-admin_name=admin
+user_name=server1
 admin_pwd=123456
 */
 

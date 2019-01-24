@@ -5,4 +5,6 @@
 
 3rd lib 
 https://pan.baidu.com/s/1_EnMxKqta_ExmdSmhSImag
-jmgw
+
+need mysql connector
+https://dev.mysql.com/downloads/connector/cpp/

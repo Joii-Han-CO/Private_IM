@@ -8,16 +8,16 @@ cmake_minimum_required (VERSION 3.0)
 set(_lib_name "plugin_mosquitto")
 project(${_lib_name})
 
-set(_lib_folder "plugin")
+set(_lib_folder "server")
 
 # C\C++ 包含源码路径
-set(_include_dirs ${PROJECT_SOURCE_DIR}/../../include/plugin/)
+set(_include_dirs ${PROJECT_SOURCE_DIR}/../../../include/)
 
 # C\C++ 包含库路径
 set(_lib_dirs )
 
 # /src/include
-set(_incldue ${PROJECT_SOURCE_DIR}/../../include/plugin/)
+set(_incldue ${PROJECT_SOURCE_DIR}/../../../include/server/plugin/)
 
 set(_pch ${PROJECT_SOURCE_DIR}/pch)
 
@@ -32,7 +32,7 @@ include_directories(${_lib_name}
 # 创建目录
 set(_inc_file
   ${_pch}.h
-  ${_incldue}/${_namepace}_${_lib_name}.h
+  ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.h
   ${PROJECT_SOURCE_DIR}/plugin_mosq.h)
 source_group("include" FILES ${_inc_file})
 
@@ -45,8 +45,6 @@ source_group("source" FILES ${_cpp_file})
 add_library(${_lib_name} SHARED
             ${_inc_file} ${_cpp_file})
 target_link_libraries(${_lib_name} LINK_PUBLIC ${_lib_dirs})
-
-target_link_libraries(${_lib_name} server_sql)
   
 # 设置环境变量
 set(_compile_def IM_LIB PRJ_NAME="${_lib_name}")
