@@ -64,6 +64,16 @@ void TestLogin() {
 
 
 int main() {
+  // 初始化日志
+  im::log::SLog_InitArgs log_init;
+  log_init.print_dbg = true;
+  log_init.print_info = true;
+  log_init.print_warn = true;
+  log_init.print_erro = true;
+  log_init.save_file = false;
+  log_init.output_ctrl = true;
+  im::log::CLog::Get()->Init(&log_init);
+
   test::TestLogin();
 
   system("pause");

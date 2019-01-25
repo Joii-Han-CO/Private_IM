@@ -55,6 +55,17 @@ target_compile_definitions(${_lib_name}
 set_target_properties(${_lib_name} PROPERTIES FOLDER
                       ${_lib_folder}/${_lib_name})
 
+# 生成后命令
+add_custom_command(TARGET ${_lib_name} POST_BUILD
+  COMMAND xcopy /r /y "${mysql_dir}\\lib\\mysqlcppconn-7-vs14.dll" 
+    \"${EXECUTABLE_OUTPUT_PATH}/$(Configuration)\\\"
+  COMMAND xcopy /r /y "${mysql_dir}\\lib\\mysqlcppconn8-1-vs14.dll" 
+    \"${EXECUTABLE_OUTPUT_PATH}/$(Configuration)\\\"
+  COMMAND xcopy /r /y "${mysql_dir}\\lib\\libeay32.dll" 
+    \"${EXECUTABLE_OUTPUT_PATH}/$(Configuration)\\\"
+  COMMAND xcopy /r /y "${mysql_dir}\\lib\\ssleay32.dll" 
+    \"${EXECUTABLE_OUTPUT_PATH}/$(Configuration)\\\")
+
 # 预编译头
 set_target_properties(${_lib_name} PROPERTIES
                       COTIRE_CXX_PREFIX_HEADER_INIT ${_pch}.h)
@@ -112,6 +123,7 @@ set_target_properties(${_test_name} PROPERTIES
 Add_Definitions(-D_UNICODE)
 
 # 项目依赖
+target_link_libraries(${_lib_name} log)
 target_link_libraries(${_lib_name}
 	"${mysql_dir}/lib/vs14/mysqlcppconn.lib"
 	"${mysql_dir}/lib/vs14/mysqlcppconn8.lib")

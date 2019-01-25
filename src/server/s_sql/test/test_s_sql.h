@@ -5,7 +5,7 @@
 namespace test {
 #pragma endregion
 
-  void test_C();
+  void Test();
 
 #pragma region namespace
 }
