@@ -18,6 +18,9 @@ public:
   im::config::pCConfig GetGlobalConfig();
 
 private:
+
+  bool InitSql();
+
   base::pCThreadPool pool_;
   im::config::pCConfig global_config_;
 };

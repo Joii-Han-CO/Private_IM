@@ -44,7 +44,7 @@ bool ClientLogin::Uninit(Func_AsyncResult finished) {
 bool ClientLogin::InitMqtt(std::wstring user_name,
                            std::wstring user_pwd) {
   if (mqtt_ != nullptr) {
-    PrintLogErro("mqtt not empty");
+    PrintLogErro("Mqtt not empty");
     return false;
   }
   mqtt_ = std::make_shared<im::CMqttClient>(
@@ -127,6 +127,9 @@ void ClientLogin::MqttConnectedStatusChanged(
   case im::EMqttOnlineStatus::disconnected:
     PrintLogInfo("Mqtt disconnected");
     break;
+  case im::EMqttOnlineStatus::error:
+    MqttConnectError();
+    break;
   default:
     break;
   }
@@ -134,6 +137,10 @@ void ClientLogin::MqttConnectedStatusChanged(
   for (auto it : mqtt_status_changed_func_)
     if (it.second != nullptr)
       it.second(status);
+}
+
+void ClientLogin::MqttConnectError() {
+  InitFinished(false);
 }
 
 // 登陆--订阅公共通道消息
@@ -145,7 +152,7 @@ void ClientLogin::MqttSubPublicChannel() {
     im::gv::g_mqtt_login_sub_ + base::_uuid::GenerateUUID<char>();
   auto func = [this](bool suc) {
     // 订阅成功后 ,发送该通道及用户名
-    PrintLogInfo("subscribe login channel success");
+    PrintLogInfo("Subscribe login channel success");
     MqttSendLoginInfo();
   };
 
@@ -153,7 +160,7 @@ void ClientLogin::MqttSubPublicChannel() {
                        std::bind(&ClientLogin::MqttLoginChannel,
                                  this, std::placeholders::_1)) == false) {
     PrintLogErro(
-      "subscribe login channel faile, sub_name:%s, des:%s",
+      "Subscribe login channel faile, sub_name:%s, des:%s",
       channel_name_login_.c_str(), mqtt_->GetLastErr_Astd().c_str());
     InitFinished(false);
   }
@@ -176,12 +183,12 @@ void ClientLogin::MqttSendLoginInfo() {
   auto buf = proto.Serializate();
 
   auto func = [this](bool suc) {
-    PrintLogInfo("send user login info success");
+    PrintLogInfo("Send user login info success");
     InitFinished(true);
   };
 
   if (mqtt_->Publish(im::gv::g_mqtt_pub_sub_, buf, func) == false) {
-    PrintLogErro("send user login info failed, topic:%s, des:%s",
+    PrintLogErro("Send user login info failed, topic:%s, des:%s",
                  im::gv::g_mqtt_pub_sub_.c_str(),
                  mqtt_->GetLastErr_Astd().c_str());
     InitFinished(false);
@@ -202,7 +209,7 @@ void ClientLogin::MqttSendLogoutInfo() {
     mqtt_->Disconnect();
   };
   if (mqtt_->Publish(im::gv::g_mqtt_pub_sub_, buf, func) == false) {
-    PrintLogErro("send user logout info failed, topic:%s, des:%s",
+    PrintLogErro("Send user logout info failed, topic:%s, des:%s",
                  im::gv::g_mqtt_pub_sub_.c_str(),
                  mqtt_->GetLastErr_Astd().c_str());
     return;

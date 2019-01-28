@@ -57,6 +57,22 @@ inline std::string GetStr_Gbk(const std::wstring &s) {
   return base::Utf16ToGB2312(s);
 }
 
+template <typename cus_char>
+inline void DelWrap(cus_string &str) {
+  auto fun_wrap = [&str](cus_char c) {
+    int f1;
+    while (true) {
+      f1 = str.find(c);
+      if (f1 == str.npos)
+        return;
+      str = str.substr(0, f1) + str.substr(f1 + 1, str.size() - f1 - 1);
+    }
+  };
+
+  fun_wrap('\r');
+  fun_wrap('\n');
+}
+
 #pragma region namespace
 }
 }

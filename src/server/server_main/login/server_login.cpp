@@ -17,7 +17,7 @@ bool ServerLogin::Init(Func_AsyncResult func) {
   CManagement *m = CManagement::Get();
   auto cfg = m->GetGlobalConfig();
 
-  PrintLogInfo("begin connect mqtt server");
+  PrintLogInfo("Begin connect mqtt server");
 
   im::SMqttConnectInfo mqtt_connect_info;
 
@@ -36,7 +36,7 @@ bool ServerLogin::Init(Func_AsyncResult func) {
   mqtt_ = std::make_shared<im::CMqttClient>(
     std::bind(&ServerLogin::MqttLog, this, std::placeholders::_1));
   if (mqtt_->Connect(mqtt_connect_info) == false) {
-    PrintLogErro("connect mqtt failed, des:%s",
+    PrintLogErro("Connect mqtt failed, des:%s",
                  mqtt_->GetLastErr_Astd().c_str());
     return false;
   }
@@ -44,9 +44,25 @@ bool ServerLogin::Init(Func_AsyncResult func) {
   return true;
 }
 
+void ServerLogin::Uninit() {
+  if (mqtt_) {
+    mqtt_->Disconnect();
+  }
+}
+
 void ServerLogin::RegMqttStatusChange(im::FUNC_StatusChange func) {
   if (func)
     mqtt_status_func_.push_back(func);
+}
+
+void ServerLogin::Run() {
+  std::condition_variable c;
+  std::mutex c_sync;
+  bool c_flag = false;
+
+
+  std::unique_lock<std::mutex> lock(c_sync);
+  c.wait(lock, [&c_flag]() {return c_flag; });
 }
 
 void ServerLogin::MqttStatusChange(im::EMqttOnlineStatus status) {
@@ -61,7 +77,8 @@ void ServerLogin::MqttStatusChange(im::EMqttOnlineStatus status) {
     break;
   case im::EMqttOnlineStatus::disconnecting:
     break;
-  case im::EMqttOnlineStatus::disconnected:
+  case im::EMqttOnlineStatus::error:
+    MqttConnectError();
     break;
   default:
     break;
@@ -73,23 +90,22 @@ void ServerLogin::MqttStatusChange(im::EMqttOnlineStatus status) {
   }
 }
 
+// Mqtt连接成功之后
 void ServerLogin::MqttConnected() {
 
   // 直接订阅消息
   auto sub_login_channel_res = [this](bool suc) {
-    if (init_async_res_)
-      init_async_res_(true);
+    InitFinished(true);
     PrintLogInfo("Subscribe public channel success");
   };
 
-  PrintLogInfo("begin subscribe public channel");
+  PrintLogInfo("Begin subscribe public channel");
 
   if (mqtt_->Subscribe(im::gv::g_mqtt_pub_sub_, sub_login_channel_res,
                        std::bind(&ServerLogin::MqttMsg_Login,
                                  this, std::placeholders::_1)) == false) {
-    PrintLogErro("mqtt subscribe %s fialed", im::gv::g_mqtt_pub_sub_.c_str());
-    if (init_async_res_)
-      init_async_res_(false);
+    PrintLogErro("Mqtt subscribe %s fialed", im::gv::g_mqtt_pub_sub_.c_str());
+    InitFinished(false);
     return;
   }
 }
@@ -114,6 +130,17 @@ void ServerLogin::MqttLog(const base::log::SBaseLog & l) {
   im::log::CLog::Get()->Print(l.type, "mqtt", l.file, l.func, l.line, l.log);
 }
 
+void ServerLogin::MqttConnectError() {
+  InitFinished(false);
+}
+
+void ServerLogin::InitFinished(bool suc) {
+  if (init_async_res_) {
+    init_async_res_(suc);
+    init_async_res_ = nullptr;
+  }
+}
+
 #pragma endregion
 
 #pragma region UserLogin
@@ -123,7 +150,7 @@ void ServerLogin::M_UserLogin(im::msg_proto::pMsg_UserLogin msg) {
     msg->user_name, msg->login_channel, mqtt_);
 
   if (user_ptr->Init() == false) {
-    PrintLogWarn("receive user login notify, but can't init");
+    PrintLogWarn("Receive user login notify, but can't init");
     return;
   }
   users_list_.push_back(user_ptr);

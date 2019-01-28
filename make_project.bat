@@ -5,8 +5,8 @@ call tools\build\win\set_env.bat
 
 :: 构建Win下工程
 
-mkdir o_win
-cd o_win
+mkdir %im_output_name%
+cd %im_output_name%
 
 ::BOOST_ROOT
 mkdir ..\src\lib\msg_proto\proto_class\

@@ -47,11 +47,29 @@ bool CManagement::Init() {
     return false;
   }
 
+  if (InitSql() == false) {
+    return false;
+  }
+
+  PrintLogInfo("Server management init success!");
   return true;
 }
 
 im::config::pCConfig CManagement::GetGlobalConfig() {
   return global_config_;
+}
+
+bool CManagement::InitSql() {
+  auto sql_host = global_config_->GetVal(L"mqtt_server", L"sql_host");
+  auto sql_name = global_config_->GetVal(L"mqtt_server", L"sql_name");
+  auto sql_pwd = global_config_->GetVal(L"mqtt_server", L"sql_pwd");
+  auto sql_db = global_config_->GetVal(L"mqtt_server", L"sql_db");
+
+  if (im::s_sql::CSqlManager::Get()->Init(
+    sql_host, sql_name, sql_pwd, sql_db) == false) {
+    return false;
+  }
+  return true;
 }
 
 #pragma region

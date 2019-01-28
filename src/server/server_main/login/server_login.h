@@ -16,7 +16,11 @@ public:
 
   bool Init(Func_AsyncResult func);
 
+  void Uninit();
+
   void RegMqttStatusChange(im::FUNC_StatusChange func);
+
+  void Run();
 
 private:
   void MqttStatusChange(im::EMqttOnlineStatus status);
@@ -30,6 +34,10 @@ private:
   // 返回并打印mqtt日志
   void MqttLog(const base::log::SBaseLog &l);
 
+  // 各种连接过程中的错误
+  void MqttConnectError();
+
+  void InitFinished(bool suc);
 
   // 登陆消息处理
   void M_UserLogin(im::msg_proto::pMsg_UserLogin msg);

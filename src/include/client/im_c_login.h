@@ -41,6 +41,8 @@ private:
   // mqtt--接到消息后处理
   void MqttConnectedStatusChanged(im::EMqttOnlineStatus status);
 
+  void MqttConnectError();
+
   // 登陆--订阅公共通道消息
   void MqttSubPublicChannel();
 

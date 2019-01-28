@@ -74,4 +74,4 @@ Add_Definitions(-D_UNICODE)
 cotire(${_lib_name})
 
 # 相关依赖
-target_link_libraries(${_lib_name} mqtt config msg_proto)
+target_link_libraries(${_lib_name} mqtt config msg_proto s_sql)

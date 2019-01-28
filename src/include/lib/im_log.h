@@ -92,7 +92,7 @@ public:
         std::wstring log_wstr =
           base::Utf8ToUtf16(header_str_low) + L"]:" +
           base::format::GetStr_Utf16(body_str) + L"\n";
-        std::wcout << log_wstr.c_str() << std::endl;
+        wprintf_s(log_wstr.c_str());
       }
 
 #if LogASyncWrite

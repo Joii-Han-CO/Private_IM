@@ -4,6 +4,11 @@
 #include "character_conversion.hpp"
 #include "format_str.hpp"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif // _WIN32
+
+
 #pragma region namespace
 namespace base {
 namespace log {
@@ -131,6 +136,17 @@ protected:
 protected:
   LogCallback func_;
 };
+
+inline std::wstring GetMqttErrorDesW() {
+  const int err_max_size = 1024;
+  std::wstring err;
+  err.resize(err_max_size);
+  FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, errno,
+                0, (LPTSTR)err.c_str(), err_max_size, NULL);
+  base::format::DelWrap(err);
+
+  return err.c_str();
+}
 
 #pragma region namespace
 }

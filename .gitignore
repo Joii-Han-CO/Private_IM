@@ -7,6 +7,7 @@
 
 # CMake输出目录
 /o_**/
+/out_put/
 
 # 3rd
 /3rd_lib/

@@ -24,6 +24,7 @@ enum class EMqttOnlineStatus {
   connected,  // 连接成功
   disconnecting, // 正在断开
   disconnected,   // 已断开
+  error,
 };
 
 typedef std::function<void(EMqttOnlineStatus status)> FUNC_StatusChange;
@@ -121,6 +122,7 @@ private:
   bool is_connected = false;
   int loop_timeout_ = 0;
   base::async::SyncVal<bool> sync_disconnect_flag_ = false;
+  EMqttOnlineStatus cur_status_ = EMqttOnlineStatus::none;
 
   // 订阅成功的列表，用于回调
   std::map<int, Func_AsyncResult> map_sub_;

@@ -60,6 +60,11 @@ bool CMqttClient::Connect(const SMqttConnectInfo &info) {
 
 // 断开
 void CMqttClient::Disconnect() {
+  if (cur_status_ == EMqttOnlineStatus::error ||
+      cur_status_ == EMqttOnlineStatus::connecting ||
+      cur_status_ == EMqttOnlineStatus::none) {
+    StopTask();
+  }
   Mqtt_StatusChange(EMqttOnlineStatus::disconnecting);
   sync_disconnect_flag_.Set(true);
 }
@@ -109,9 +114,9 @@ bool CMqttClient::Unsubscribe(const std::string & topic) {
 
 // 推送消息
 bool CMqttClient::Publish(const std::string &topic,
-                              const MsgBuf &data,
-                              const Func_AsyncResult &func,
-                              EMqttQos qos) {
+                          const MsgBuf &data,
+                          const Func_AsyncResult &func,
+                          EMqttQos qos) {
   int pub_id = -1;
   int ref = mosquitto_publish(mqtt_, &pub_id, topic.c_str(),
                               data.size(), data.data(),
@@ -171,7 +176,8 @@ int CMqttClient::GetQosVal(EMqttQos q) {
 // mqtt同步连接
 void CMqttClient::Mqtt_Connect(const SMqttConnectInfo &info) {
   if (is_connected == true) {
-    SetLastErrAndLog("is connected");
+    SetLastErrAndLog("Is connected");
+    Mqtt_StatusChange(EMqttOnlineStatus::error);
     return;
   }
 
@@ -179,7 +185,8 @@ void CMqttClient::Mqtt_Connect(const SMqttConnectInfo &info) {
 
   auto ref = GlobalInitMqtt::Get()->Init();
   if (ref != MOSQ_ERR_SUCCESS) {
-    SetLastErrAndLog("global init failed, code: %d", ref);
+    SetLastErrAndLog("Global init failed, code: %d", ref);
+    Mqtt_StatusChange(EMqttOnlineStatus::error);
     return;
   }
 
@@ -193,7 +200,8 @@ void CMqttClient::Mqtt_Connect(const SMqttConnectInfo &info) {
   // 创建mosquitto实例
   mqtt_ = mosquitto_new(id, client_session, this);
   if (mqtt_ == nullptr || mqtt_ == (void*)EINVAL) {
-    SetLastErrAndLog("new mosquitto failed");
+    SetLastErrAndLog("New mosquitto failed");
+    Mqtt_StatusChange(EMqttOnlineStatus::error);
     return;
   }
 
@@ -207,7 +215,9 @@ void CMqttClient::Mqtt_Connect(const SMqttConnectInfo &info) {
                           info.host.c_str(), info.port,
                           info.keepalive);
   if (ref != MOSQ_ERR_SUCCESS) {
-    SetLastErrAndLog("connect failed, code: %d", GetLastError());
+    SetLastErrAndLog(L"Connect failed, code: %d",
+                     base::log::GetMqttErrorDesW().c_str());
+    Mqtt_StatusChange(EMqttOnlineStatus::error);
     return;
   }
   is_connected = true;
@@ -225,7 +235,8 @@ void CMqttClient::Mqtt_Connect(const SMqttConnectInfo &info) {
 // mqtt断开连接
 void CMqttClient::Mqtt_Disconnect() {
   if (mqtt_ == nullptr) {
-    MPrintWarn("not connected, mqtt_ == nullptr");
+    MPrintWarn("Not connected, mqtt_ == nullptr");
+    Mqtt_StatusChange(EMqttOnlineStatus::error);
     return;
   }
 
@@ -243,7 +254,7 @@ bool CMqttClient::Mqtt_InitOpts(const SMqttConnectInfo &info) {
     if (
       mosquitto_max_inflight_messages_set(mqtt_, info.max_inflight_msg) !=
       MOSQ_ERR_SUCCESS) {
-      SetLastErrAndLog("set max in flight message failed");
+      SetLastErrAndLog("Set max in flight message failed");
       return false;
     }
   }
@@ -251,7 +262,7 @@ bool CMqttClient::Mqtt_InitOpts(const SMqttConnectInfo &info) {
     if (mosquitto_username_pw_set(mqtt_,
                                   info.user_name.c_str(),
                                   info.user_pwd.c_str()) != MOSQ_ERR_SUCCESS) {
-      SetLastErrAndLog("set user and possword failed");
+      SetLastErrAndLog("Set user and possword failed");
       return false;
     }
   }
@@ -269,18 +280,19 @@ void CMqttClient::Mqtt_MsgLoop() {
   while (true) {
     if (sync_disconnect_flag_.Get()) {
       Mqtt_Disconnect();
-      MPrintInfo("[mqtt]--exit loop");
+      MPrintInfo("Exit loop");
       break;
     }
     i_ref = mosquitto_loop(mqtt_, loop_timeout_, 1);
     if (i_ref != MOSQ_ERR_SUCCESS) {
-      MPrintErro("mosquitto_loop is failed");
+      MPrintErro("Mosquitto_loop is failed");
       break;
     }
   }
 }
 
 void CMqttClient::Mqtt_StatusChange(EMqttOnlineStatus status) {
+  cur_status_ = status;
   if (cb_status_change_)
     cb_status_change_(status);
 }
@@ -289,7 +301,7 @@ void CMqttClient::Mqtt_StatusChange(EMqttOnlineStatus status) {
 
 // 订阅成功的回调
 void CMqttClient::SSub_Cb(mosquitto *mosq, void * obj, int mid,
-                              int qos_count, const int * granted_qos) {
+                          int qos_count, const int * granted_qos) {
   if (obj == nullptr)
     return;
   CMqttClient *this_ = (CMqttClient*)obj;
@@ -298,7 +310,7 @@ void CMqttClient::SSub_Cb(mosquitto *mosq, void * obj, int mid,
   this_->Sub_Cb(mid, qos_count, granted_qos);
 }
 void CMqttClient::Sub_Cb(int mid,
-                             int qos_count, const int * granted_qos) {
+                         int qos_count, const int * granted_qos) {
   sync_sub_callback_.Wait();
   auto it = map_sub_.find(mid);
   if (it == map_sub_.end())
@@ -310,7 +322,7 @@ void CMqttClient::Sub_Cb(int mid,
 
 // 消息循环的静态回调
 void CMqttClient::SMsg_Cb(mosquitto *mosq, void *obj,
-                              const mosquitto_message *message) {
+                          const mosquitto_message *message) {
   if (obj == nullptr)
     return;
   CMqttClient *this_ = (CMqttClient*)obj;
@@ -320,19 +332,19 @@ void CMqttClient::SMsg_Cb(mosquitto *mosq, void *obj,
 }
 void CMqttClient::Msg_Cb(const mosquitto_message *message) {
   if (message == nullptr) {
-    MPrintWarn("message failed, message is null");
+    MPrintWarn("Message failed, message is null");
     return;
   }
   if (message->topic == nullptr || message->topic[0] == '\0') {
-    MPrintWarn("message failed, topic is null");
+    MPrintWarn("Message failed, topic is null");
     return;
   }
   if (message->payloadlen <= 0) {
-    MPrintWarn("message failed, data size is 0");
+    MPrintWarn("Message failed, data size is 0");
     return;
   }
   if (message->payload == nullptr) {
-    MPrintWarn("message failed, payload is null");
+    MPrintWarn("Message failed, payload is null");
     return;
   }
 
@@ -344,7 +356,7 @@ void CMqttClient::Msg_Cb(const mosquitto_message *message) {
   auto it = map_msg_.find(topic);
   if (it == map_msg_.end()) {
     MPrintWarn(
-      "message failed, No corresponding callback found");
+      "Message failed, No corresponding callback found");
     return;
   }
   if (it->second)
@@ -363,7 +375,7 @@ void CMqttClient::SPub_Cb(mosquitto *mosq, void *obj, int mid) {
 void CMqttClient::Pub_Cb(int mid) {
   auto it = map_pub_.find(mid);
   if (it == map_pub_.end()) {
-    MPrintWarn("publish failed, No corresponding callback found");
+    MPrintWarn("Publish failed, No corresponding callback found");
     return;
   }
   if (it->second)

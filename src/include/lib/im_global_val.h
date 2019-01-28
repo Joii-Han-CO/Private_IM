@@ -25,6 +25,7 @@ host=127.0.0.1
 port=1883
 user_name=server1
 admin_pwd=123456
+
 sql_host=tcp://127.0.0.1:3306
 sql_name=root
 sql_pwd=x
