@@ -16,17 +16,21 @@ ELoginMsgType GetLoginMsgType(const MsgBuf &buf) {
 pMsg_LoginChannel Factory_Login(ELoginMsgType type) {
   pMsg_LoginChannel msg;
   switch (type) {
-  case im::msg_proto::ELoginMsgType::Error:
+  case ELoginMsgType::Error:
     return nullptr;
-  case im::msg_proto::ELoginMsgType::UserLogin:
+  case ELoginMsgType::UserLogin:
     return std::make_shared<Msg_UserLogin>();
+  case ELoginMsgType::UserLoginSRes:
+    return std::make_shared<Msg_UserLoginSRes>();
+  case ELoginMsgType::UserLoginCRes:
+    return std::make_shared<Msg_UserLoginClientRes>();
+  case ELoginMsgType::UserLogout:
+    return std::make_shared<Msg_UserLogout>();
   default:
     break;
   }
   return nullptr;
 }
-
-#pragma endregion
 
 pMsg_LoginChannel Parse_LoginChannel(const MsgBuf &buf) {
   auto type = GetLoginMsgType(buf);
@@ -37,11 +41,9 @@ pMsg_LoginChannel Parse_LoginChannel(const MsgBuf &buf) {
     return nullptr;
 }
 
-#pragma region UserLogin
+#pragma endregion
 
-Msg_UserLogin::Msg_UserLogin() {
-  type = im::msg_proto::ELoginMsgType::UserLogin;
-}
+#pragma region UserLogin
 
 bool Msg_UserLogin::Parse(const MsgBuf &buf) {
   if (buf.size() - 1 == 0)
@@ -79,13 +81,9 @@ MsgBuf Msg_UserLogin::Serializate() {
 
 #pragma endregion
 
-#pragma region UserLoginRes
+#pragma region UserLoginSRes
 
-Msg_UserLoginRes::Msg_UserLoginRes() {
-  type = im::msg_proto::ELoginMsgType::UserLoginRes;
-}
-
-bool Msg_UserLoginRes::Parse(const MsgBuf &buf) {
+bool Msg_UserLoginSRes::Parse(const MsgBuf &buf) {
   if (buf.size() - 1 == 0) {
     return false;
   }
@@ -99,7 +97,42 @@ bool Msg_UserLoginRes::Parse(const MsgBuf &buf) {
   return true;
 }
 
-MsgBuf Msg_UserLoginRes::Serializate() {
+MsgBuf Msg_UserLoginSRes::Serializate() {
+  Proto_UserLoginRes proto;
+  proto.set_status(status);
+  MsgBuf buf;
+
+  auto size = proto.ByteSizeLong();
+  if (size <= 0) {
+    return buf;
+  }
+
+  buf.resize(size + 1);
+  proto.SerializePartialToArray((void*)&buf[1], size);
+
+  buf[0] = (uint8_t)(type);
+  return buf;
+}
+
+#pragma endregion
+
+#pragma region UserLoginCRes
+
+bool Msg_UserLoginClientRes::Parse(const MsgBuf &buf) {
+  if (buf.size() - 1 == 0) {
+    return false;
+  }
+  Proto_UserLoginRes proto;
+  if (proto.ParseFromArray(&buf[1], buf.size() - 1) == false) {
+    return false;
+  }
+
+  status = proto.status();
+
+  return true;
+}
+
+MsgBuf Msg_UserLoginClientRes::Serializate() {
   Proto_UserLoginRes proto;
   proto.set_status(status);
   MsgBuf buf;
@@ -119,10 +152,6 @@ MsgBuf Msg_UserLoginRes::Serializate() {
 #pragma endregion
 
 #pragma region UserLogout
-
-Msg_UserLogout::Msg_UserLogout() {
-  type = im::msg_proto::ELoginMsgType::UserLogout;
-}
 
 bool Msg_UserLogout::Parse(const MsgBuf &buf) {
   if (buf.size() - 1 == 0) {
@@ -156,7 +185,6 @@ MsgBuf Msg_UserLogout::Serializate() {
 }
 
 #pragma endregion
-
 
 #pragma region namespace
 }

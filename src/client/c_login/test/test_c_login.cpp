@@ -62,8 +62,9 @@ void TestLogin() {
 }
 #pragma endregion
 
-
 int main() {
+  base::log::PrintModleHeader();
+
   // 初始化日志
   im::log::SLog_InitArgs log_init;
   log_init.print_dbg = true;

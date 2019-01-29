@@ -36,7 +36,7 @@ bool ClientLogin::Init(std::wstring user_name, std::wstring user_pwd,
 bool ClientLogin::Uninit(Func_AsyncResult finished) {
   uninit_finished_callback_ = finished;
 
-  MqttSendLogoutInfo();
+  SendLogoutInfo();
   return true;
 }
 
@@ -53,6 +53,12 @@ bool ClientLogin::InitMqtt(std::wstring user_name,
   im::SMqttConnectInfo mqtt_info;
   mqtt_info.user_name = base::Utf16ToUtf8(user_name);
   mqtt_info.user_pwd = base::Utf16ToUtf8(user_pwd);
+
+  auto gc = im::c_framework::ClientFramework::Get()->GetGlobalConfigPtr();
+
+  mqtt_info.host = gc->GetValA(L"mqtt", L"host");
+  mqtt_info.port = gc->GetVal_Int(L"mqtt", L"port");
+  mqtt_info.client_id = "2D8596A6-F267-4521-BF6D-880E3E2C4D30";
 
   mqtt_info.cb_status_change =
     std::bind(&ClientLogin::MqttConnectedStatusChanged,
@@ -118,7 +124,7 @@ void ClientLogin::MqttConnectedStatusChanged(
     PrintLogInfo("Mqtt connecting");
     break;
   case im::EMqttOnlineStatus::connected:
-    MqttSubPublicChannel();
+    SubChannel();
     PrintLogInfo("Mqtt connected success");
     break;
   case im::EMqttOnlineStatus::disconnecting:
@@ -139,12 +145,24 @@ void ClientLogin::MqttConnectedStatusChanged(
       it.second(status);
 }
 
+// mqtt--连接错误
 void ClientLogin::MqttConnectError() {
   InitFinished(false);
 }
 
+bool ClientLogin::SendMsg(const MsgBuf &buf, Func_AsyncResult func) {
+  if (mqtt_) {
+    return mqtt_->Publish(channel_name_login_, buf, func);
+  }
+  return false;
+}
+
+#pragma endregion
+
+#pragma region Business related
+
 // 登陆--订阅公共通道消息
-void ClientLogin::MqttSubPublicChannel() {
+void ClientLogin::SubChannel() {
   // 订阅公共通道
 
   // 生成Mqtt通道
@@ -153,11 +171,11 @@ void ClientLogin::MqttSubPublicChannel() {
   auto func = [this](bool suc) {
     // 订阅成功后 ,发送该通道及用户名
     PrintLogInfo("Subscribe login channel success");
-    MqttSendLoginInfo();
+    SendLoginInfo();
   };
 
   if (mqtt_->Subscribe(channel_name_login_, func,
-                       std::bind(&ClientLogin::MqttLoginChannel,
+                       std::bind(&ClientLogin::MsgChannel,
                                  this, std::placeholders::_1)) == false) {
     PrintLogErro(
       "Subscribe login channel faile, sub_name:%s, des:%s",
@@ -167,12 +185,55 @@ void ClientLogin::MqttSubPublicChannel() {
 }
 
 // 登陆--登陆消息通道
-void ClientLogin::MqttLoginChannel(const MsgBuf &buf) {
+void ClientLogin::MsgChannel(const MsgBuf &buf) {
+  auto msg = im::msg_proto::Parse_LoginChannel(buf);
+  if (msg == nullptr) {
+    PrintLogWarn("Receive a unknow msg, msg size:%d", buf.size());
+    return;
+  }
+  if (msg->type == im::msg_proto::ELoginMsgType::Error) {
+    PrintLogWarn("Receive a msg, but can't parse, msg size:%d", buf.size());
+    return;
+  }
 
+  switch (msg->type) {
+  case im::msg_proto::ELoginMsgType::UserLoginSRes:
+    Msg_LoginRes(
+      std::dynamic_pointer_cast<im::msg_proto::Msg_UserLoginSRes>(msg));
+    break;
+  default:
+    break;
+  }
+}
+
+// 登陆--收到登陆成功状态
+void ClientLogin::Msg_LoginRes(
+  const im::msg_proto::pMsg_UserLoginSRes msg
+) {
+  PrintLogDbg("Get LoginSRes msg, status :%d", msg->status);
+  if (msg->status != 1) {
+    // 登陆失败，需要触发错误回调
+    PrintLogWarn("LoginRes retuan not 1");
+    return;
+  }
+
+  im::msg_proto::Msg_UserLoginClientRes proto;
+  proto.status = 1;
+  auto buf = proto.Serializate();
+
+  auto func = [this](bool suc) {
+    InitFinished(suc);
+  };
+
+  if (SendMsg(buf, func) == false) {
+    PrintLogErro("Send client login res msg faield");
+    InitFinished(false);
+    return;
+  }
 }
 
 // 登陆--发送登陆信息
-void ClientLogin::MqttSendLoginInfo() {
+void ClientLogin::SendLoginInfo() {
   // 拼接消息
   im::msg_proto::Msg_UserLogin proto;
   proto.user_name = user_name_;
@@ -184,7 +245,9 @@ void ClientLogin::MqttSendLoginInfo() {
 
   auto func = [this](bool suc) {
     PrintLogInfo("Send user login info success");
-    InitFinished(true);
+
+    // 需要等待平台返回...
+    //InitFinished(true);
   };
 
   if (mqtt_->Publish(im::gv::g_mqtt_pub_sub_, buf, func) == false) {
@@ -197,7 +260,7 @@ void ClientLogin::MqttSendLoginInfo() {
 }
 
 // 登出--发送消息
-void ClientLogin::MqttSendLogoutInfo() {
+void ClientLogin::SendLogoutInfo() {
   im::msg_proto::Msg_UserLogout proto;
   proto.status = 0;
   auto buf = proto.Serializate();

@@ -5,12 +5,16 @@
 namespace server {
 #pragma endregion
 
-ServerUserLogin::ServerUserLogin(std::wstring user_name,
+ServerUserLogin::ServerUserLogin(uint32_t id,
+                                 std::wstring user_name,
                                  std::wstring channel_name,
-                                 im::pCMqttClient mqtt):
+                                 im::pCMqttClient mqtt,
+                                 std::function<void(uint32_t)> exit_func):
+  id_(id),
   user_name_(user_name),
   channel_name_(channel_name),
-  mqtt_(mqtt) {}
+  mqtt_(mqtt),
+  exit_func_(exit_func) {}
 
 ServerUserLogin::~ServerUserLogin() {
   // 需要断开连接
@@ -18,21 +22,21 @@ ServerUserLogin::~ServerUserLogin() {
 
 bool ServerUserLogin::Init() {
   if (user_name_.empty()) {
-    PrintLogWarn("user login user_name_ is empty");
+    PrintLogWarn("User login user_name_ is empty");
     return false;
   }
   if (channel_name_.empty()) {
-    PrintLogWarn("user login channel_name_ is empty");
+    PrintLogWarn("User login channel_name_ is empty");
     return false;
   }
   if (mqtt_ == nullptr) {
-    PrintLogErro("user login mqtt is nullptr");
+    PrintLogErro("User login mqtt is nullptr");
     return false;
   }
 
   auto func = [this](bool suc) {
     // 订阅成功后，通知客户端
-    im::msg_proto::Msg_UserLoginRes msg;
+    im::msg_proto::Msg_UserLoginSRes msg;
     msg.status = 1;
     auto buf = msg.Serializate();
     auto func = [this](bool suc) {};
@@ -50,16 +54,94 @@ bool ServerUserLogin::Init() {
                        std::bind(&ServerUserLogin::RecvMsg,
                                  this, std::placeholders::_1)) == false) {
     PrintLogWarn(
-      L"user login subscribe user channel failed, channel name:%s, des:%s",
+      L"User login subscribe user channel failed, channel name:%s, des:%s",
       channel_name_.c_str(), mqtt_->GetLastErr_Wc());
     return false;
   }
+  PrintLogInfo(L"A new user login: %s", user_name_.c_str());
 
-  PrintLogInfo(L"a new user login: %s", user_name_.c_str());
   return true;
 }
 
-void ServerUserLogin::RecvMsg(const MsgBuf &buf) {}
+bool ServerUserLogin::Uninit() {
+  return false;
+}
+
+// 发送消息
+bool ServerUserLogin::SendMsg(const MsgBuf &buf,
+                              const Func_AsyncResult func) {
+  return mqtt_->Publish(base::Utf16ToUtf8(channel_name_), buf, func);
+}
+
+// 当前用户发送的消息
+void ServerUserLogin::RecvMsg(const MsgBuf &buf) {
+  auto msg = im::msg_proto::Parse_LoginChannel(buf);
+  if (msg == nullptr) {
+    PrintLogWarn("Receive a unknow msg, msg size:%d", buf.size());
+    return;
+  }
+  if (msg->type == im::msg_proto::ELoginMsgType::Error) {
+    PrintLogWarn("Receive a msg, but can't parse, msg size:%d", buf.size());
+    return;
+  }
+
+  switch (msg->type) {
+  case (im::msg_proto::ELoginMsgType::UserLoginCRes):
+    ClientLoginRes(
+      std::dynamic_pointer_cast<im::msg_proto::Msg_UserLoginClientRes>(msg));
+    break;
+  default:
+    break;
+  }
+}
+
+#pragma region Business related
+
+bool ServerUserLogin::SendLoginStatus() {
+  im::msg_proto::Msg_UserLoginSRes proto;
+  proto.status = 1;
+  auto buf = proto.Serializate();
+  auto func_ref = [this](bool suc) {
+    if (suc == false) {
+      PrintLogErro("Send login res msg failed in callback");
+      LogoutExit();
+      return;
+    }
+  };
+
+  if (SendMsg(buf, func_ref) == false) {
+    PrintLogErro("Send login res msg failed, des: %s",
+                 mqtt_->GetLastErr_Astd().c_str());
+    LogoutExit();
+    return false;
+  }
+  return true;
+}
+
+// 收到客户端登陆消息返回
+void ServerUserLogin::ClientLoginRes(
+  const im::msg_proto::pMsg_UserLoginClientRes msg
+) {
+  PrintLogDbg("Get LoginCRes msg, status :%d", msg->status);
+  if (msg->status == 1) {
+    PrintLogInfo(L"User %s login success!", user_name_.c_str());
+  }
+  else {
+    PrintLogErro("User login failed, will logout and exit");
+    LogoutExit();
+  }
+}
+
+// 用户登陆成功之后触发
+void ServerUserLogin::LoginSuccess() {}
+
+// 触发登出操作
+void ServerUserLogin::LogoutExit() {
+  if (exit_func_)
+    exit_func_(id_);
+}
+
+#pragma endregion
 
 #pragma region namespace
 }

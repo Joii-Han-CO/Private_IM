@@ -71,7 +71,7 @@ public:
   bool Subscribe(const std::string &topic,
                  const Func_AsyncResult &func_sub,
                  const std::function<void(const MsgBuf&)> &func_msg,
-                 EMqttQos qos = EMqttQos::LeastOne);
+                 EMqttQos qos = EMqttQos::OnlyOne);
 
   // 描述：取消一个订阅
   bool Unsubscribe(const std::string &topic);
@@ -80,7 +80,7 @@ public:
   bool Publish(const std::string &topic,
                const MsgBuf &data,
                const Func_AsyncResult &func,
-               EMqttQos qos = EMqttQos::LeastOne);
+               EMqttQos qos = EMqttQos::OnlyOne);
 
   static std::string FormatOnlineStatusA(EMqttOnlineStatus s);
 

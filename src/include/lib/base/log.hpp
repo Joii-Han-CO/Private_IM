@@ -137,6 +137,10 @@ protected:
   LogCallback func_;
 };
 
+inline void PrintModleHeader() {
+  printf("--------%s--------\n", PRJ_NAME);
+}
+
 inline std::wstring GetMqttErrorDesW() {
   const int err_max_size = 1024;
   std::wstring err;

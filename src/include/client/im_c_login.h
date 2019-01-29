@@ -2,6 +2,7 @@
 #include "base/type_def.h"
 #include "lib/im_mqtt.h"
 #include "lib/im_log.h"
+#include "lib/im_msg_proto.h"
 
 
 #pragma region namespace
@@ -43,17 +44,24 @@ private:
 
   void MqttConnectError();
 
+  // 发送登陆通道的消息
+  bool SendMsg(const MsgBuf &buf, Func_AsyncResult func);
+
+  // 登陆业务
+private:
   // 登陆--订阅公共通道消息
-  void MqttSubPublicChannel();
+  void SubChannel();
 
   // 登陆--登陆消息通道
-  void MqttLoginChannel(const MsgBuf &buf);
+  void MsgChannel(const MsgBuf &buf);
+
+  void Msg_LoginRes(const im::msg_proto::pMsg_UserLoginSRes msg);
 
   // 登陆--发送登陆信息
-  void MqttSendLoginInfo();
+  void SendLoginInfo();
 
   // 登出--发送消息
-  void MqttSendLogoutInfo();
+  void SendLogoutInfo();
 
   im::pCMqttClient mqtt_;
   std::map<uint32_t, im::FUNC_StatusChange> mqtt_status_changed_func_;

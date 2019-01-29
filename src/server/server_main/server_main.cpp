@@ -52,6 +52,8 @@ int Run() {
 }
 
 int main() {
+  base::log::PrintModleHeader();
+
   auto exit_code = Run();
   if (g_li)
     g_li->Uninit();

@@ -56,13 +56,21 @@ void ServerLogin::RegMqttStatusChange(im::FUNC_StatusChange func) {
 }
 
 void ServerLogin::Run() {
-  std::condition_variable c;
-  std::mutex c_sync;
-  bool c_flag = false;
-
-
-  std::unique_lock<std::mutex> lock(c_sync);
-  c.wait(lock, [&c_flag]() {return c_flag; });
+  // 此处制作一个循环，全部的消息都在此处处理...
+  while (!run_break_) {
+    std::function<void(void)> func;
+    {
+      std::unique_lock<std::mutex> lock(run_task_sync_);
+      while (run_task_list_.empty()) {
+        if (run_break_)
+          return;
+        run_task_con_.wait(lock);
+      }
+      func = run_task_list_.front();
+      run_task_list_.pop_front();
+    }
+    func();
+  }
 }
 
 void ServerLogin::MqttStatusChange(im::EMqttOnlineStatus status) {
@@ -141,19 +149,42 @@ void ServerLogin::InitFinished(bool suc) {
   }
 }
 
+void ServerLogin::AddRunTask(std::function<void()> func) {
+  std::unique_lock<std::mutex> lock_break(run_task_lock_break_);
+  if (run_break_)
+    return;
+  std::lock_guard<std::mutex> lock(run_task_sync_);
+  run_task_list_.emplace_back(std::move(func));
+  run_task_con_.notify_one();
+}
+
 #pragma endregion
 
 #pragma region UserLogin
 
 void ServerLogin::M_UserLogin(im::msg_proto::pMsg_UserLogin msg) {
-  auto user_ptr = std::make_shared<ServerUserLogin>(
-    msg->user_name, msg->login_channel, mqtt_);
+  // 线程池中操作
+  CManagement::Get()->GetPool()->Commit([msg, this]() {
 
-  if (user_ptr->Init() == false) {
-    PrintLogWarn("Receive user login notify, but can't init");
-    return;
-  }
-  users_list_.push_back(user_ptr);
+    auto user_id = user_id_count_++;
+
+    auto user_ptr = std::make_shared<ServerUserLogin>(
+      user_id, msg->user_name, msg->login_channel, mqtt_,
+      std::bind(&ServerLogin::M_UserLogout, this, std::placeholders::_1));
+
+    if (user_ptr->Init() == false) {
+      PrintLogWarn("Receive user login notify, but can't init");
+      return;
+    }
+    users_.insert(std::pair<uint32_t, pServerUserLogin>(user_id, user_ptr));
+  });
+}
+
+void ServerLogin::M_UserLogout(uint32_t user_id) {
+  AddRunTask([this]() {
+    // 移除该用户
+
+  });
 }
 
 #pragma endregion

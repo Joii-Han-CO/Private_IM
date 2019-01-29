@@ -285,7 +285,8 @@ void CMqttClient::Mqtt_MsgLoop() {
     }
     i_ref = mosquitto_loop(mqtt_, loop_timeout_, 1);
     if (i_ref != MOSQ_ERR_SUCCESS) {
-      MPrintErro("Mosquitto_loop is failed");
+      MPrintErro(L"Mosquitto_loop is failed, des: %s",
+                 base::log::GetMqttErrorDesW().c_str());
       break;
     }
   }

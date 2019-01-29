@@ -39,16 +39,28 @@ private:
 
   void InitFinished(bool suc);
 
+  void AddRunTask(std::function<void()> func);
+
   // 登陆消息处理
   void M_UserLogin(im::msg_proto::pMsg_UserLogin msg);
 
+  // 用户消息登出处理...
+  void M_UserLogout(uint32_t user_id);
+
 private:
+  Func_AsyncResult init_async_res_ = nullptr;
+
+  bool run_break_ = false;
+  std::condition_variable run_task_con_;
+  std::mutex run_task_sync_;
+  std::list<std::function<void(void)>> run_task_list_;
+  std::mutex run_task_lock_break_;
+
   im::pCMqttClient mqtt_;
   std::vector<im::FUNC_StatusChange> mqtt_status_func_;
 
-  Func_AsyncResult init_async_res_ = nullptr;
-
-  std::list<pServerUserLogin> users_list_;
+  std::map<uint32_t, pServerUserLogin> users_;
+  uint32_t user_id_count_ = 0;
 };
 StdSharedPtr_Typedef(ServerLogin);
 

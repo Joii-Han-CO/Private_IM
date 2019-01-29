@@ -59,6 +59,10 @@ im::config::pCConfig CManagement::GetGlobalConfig() {
   return global_config_;
 }
 
+base::pCThreadPool CManagement::GetPool() {
+  return pool_;
+}
+
 bool CManagement::InitSql() {
   auto sql_host = global_config_->GetVal(L"mqtt_server", L"sql_host");
   auto sql_name = global_config_->GetVal(L"mqtt_server", L"sql_name");
