@@ -41,6 +41,10 @@ public:
     val_ = t;
   }
 
+  void Now() {
+    val_ = local_time::now();
+  }
+
   int64_t GetVal() {
     auto d =
       std::chrono::duration_cast<std::chrono::microseconds>(

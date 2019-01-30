@@ -8,6 +8,21 @@
 namespace test {
 #pragma endregion
 
+void Test_Header() {
+  im::msg_proto::MsgBase_Header h;
+  h.type = 123;
+
+  MsgBuf buf;
+  buf.resize(23);
+
+  h.Serialization(buf);
+
+  im::msg_proto::MsgBase_Header h2;
+  h2.Parse(buf);
+
+  return;
+}
+
 void Test_Login() {
   im::msg_proto::Msg_UserLogin msg;
   msg.user_name = L"sod8uf90w8s34f";
@@ -34,7 +49,7 @@ void Test_Login() {
 #pragma endregion
 
 int main() {
-
+  //test::Test_Header();
   test::Test_Login();
 
   return 0;

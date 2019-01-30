@@ -8,14 +8,36 @@ namespace im {
 namespace msg_proto {
 #pragma endregion
 
-#pragma region Msg
+#pragma region Header
 
-pSIM_MsgText ParseText(void *data, size_t len) {
-  return nullptr;
+int MsgBase_Header::GetSize() {
+  return sizeof(type) + sizeof(int64_t);
 }
 
-MsgBuf SerializationTextMsg(pSIM_MsgText msg) {
-  return MsgBuf();
+bool MsgBase_Header::Parse(const MsgBuf &buf) {
+  if (buf.size() < (size_t)GetSize())
+    return false;
+
+  type = (uint8_t)buf[0];
+
+  int64_t time_val = 0;
+  memcpy_s(&time_val, sizeof(time_val), &buf[1], sizeof(time_val));
+  time = base::time::BaseTime(time_val);
+
+  return true;
+}
+
+bool MsgBase_Header::Serialization(MsgBuf &buf) {
+  if (buf.size() < (size_t)GetSize()) {
+    return false;
+  }
+
+  buf[0] = (char)type;
+
+  auto time_val = time.GetVal();
+  memcpy_s(&buf[1], sizeof(time_val), &time_val, sizeof(time_val));
+
+  return true;
 }
 
 #pragma endregion
