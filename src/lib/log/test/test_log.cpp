@@ -10,7 +10,7 @@ namespace test {
 #pragma endregion
 
 void TestPerformance() {
-  base::time::Timer_ms ms;
+  base::time::BaseTime ms;
 
   const int count = 10000;
 
@@ -33,12 +33,19 @@ void TestPerformance() {
   base::debug::OutPut(L"Time spent per log :%d microsecond", x / count / 8);
 }
 
+void TestTime() {
+  return;
+}
+
 #pragma region namespace
 }
 #pragma endregion
 
 
 int main() {
+  test::TestTime();
+  return 0;
+
   im::log::SLog_InitArgs log_args;
   log_args.print_dbg = true;
   log_args.print_info = true;

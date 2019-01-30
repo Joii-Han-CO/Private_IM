@@ -5,6 +5,12 @@
 #include <string>
 #include <iomanip>
 #include <sstream>
+#include <iomanip>
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#endif
 
 
 #pragma region
@@ -22,65 +28,70 @@ public:
     val_ = local_time::now();
   };
 
-  // 输出时间
-  BaseTime(time_t t, long ms) {
-    val_ = local_time::from_time_t(t);
+  BaseTime(int64_t v) {
+    TIME_ZONE_INFORMATION tmp;
+    GetTimeZoneInformation(&tmp);
+    auto mTime = std::chrono::microseconds(v +
+      (int64_t)(tmp.Bias * tmp.DaylightBias * 1000));
+    val_ = std::chrono::time_point<std::chrono::system_clock,
+      std::chrono::microseconds>(mTime);
   }
 
-  time_t GetTimeT(long *ms = nullptr) {
-    auto ref_t = local_time::to_time_t(val_);
-    if (ms) {
-      auto l = local_time::from_time_t(ref_t);
-      auto de = val_ - l;
-      *ms = (long)de.count();
-    }
-    return local_time::to_time_t(val_);
+  BaseTime(local_time::time_point t) {
+    val_ = t;
+  }
+
+  int64_t GetVal() {
+    auto d =
+      std::chrono::duration_cast<std::chrono::microseconds>(
+        val_ - local_time::time_point());
+    return d.count();
+  }
+
+  // 计时，返回ms
+  int64_t End() {
+    auto end = local_time::now();
+    auto duration =
+      std::chrono::duration_cast<std::chrono::microseconds>(end - val_);
+    return duration.count();
+  }
+
+  // 格式化时间 "%Y_%m_%d-%H_%M_%S"
+  template <typename cus_char>
+  cus_string PrintTime(const cus_char *fmt) {
+    auto n = local_time::now();
+    std::time_t t = local_time::to_time_t(n);
+    cus_stringstream ss;
+
+#ifdef WIN32
+    tm tm_l = {0};
+    auto err_n = localtime_s(&tm_l, &t);
+    if (err_n != 0)
+      return cus_string();
+    ss << std::put_time(&tm_l, fmt);
+#else
+    ss << std::put_time(localtime(&t), fmt);
+#endif // WIN32
+    std::chrono::milliseconds ms =
+      std::chrono::duration_cast<std::chrono::milliseconds>(
+        n.time_since_epoch());
+
+    ss << std::setw(3) << std::setfill<cus_char>('0') << (ms.count() % 1000);
+    return ss.str();
+  };
+
+  static std::string PrintTimeA() {
+    BaseTime b;
+    return b.PrintTime("%Y_%m_%d-%H_%M_%S");
+  }
+
+  static std::wstring PrintTimeW() {
+    BaseTime b;
+    return b.PrintTime(L"%Y_%m_%d-%H_%M_%S");
   }
 
 private:
   local_time::time_point val_;
-};
-
-inline std::string PrintTime() {
-  auto n = local_time::now();
-  std::time_t t = local_time::to_time_t(n);
-  std::stringstream ss;
-
-#ifdef WIN32
-  tm tm_l = {0};
-  auto err_n = localtime_s(&tm_l, &t);
-  if (err_n != 0)
-    return "";
-  ss << std::put_time(&tm_l, "%Y_%m_%d-%H_%M_%S");
-#else
-  ss << std::put_time(localtime(&t), out_buf.c_str());
-#endif // WIN32
-
-  std::chrono::milliseconds ms =
-    std::chrono::duration_cast<std::chrono::milliseconds>(
-      n.time_since_epoch());
-
-  ss << "_" << std::setw(3) << std::setfill('0') << (ms.count() % 1000);
-  return ss.str();
-}
-
-// 微秒 计时...
-class Timer_ms {
-public:
-  Timer_ms() {
-    start_ = local_time::now();
-  }
-
-  long long End() {
-    auto end = local_time::now();
-    auto duration =
-      std::chrono::duration_cast<std::chrono::microseconds>(end - start_);
-
-    return duration.count();
-  }
-
-private:
-  std::chrono::time_point<local_time> start_;
 };
 
 #pragma region

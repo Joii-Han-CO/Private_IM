@@ -8,20 +8,6 @@
 namespace test {
 #pragma endregion
 
-void TestTime() {
-  base::time::BaseTime t;
-
-  // 获取当前时间
-  long tt_ms = 0;
-  auto tt = t.GetTimeT(&tt_ms);
-
-  base::time::BaseTime t2(tt, 0);
-
-
-
-  //
-}
-
 void Test_Login() {
   im::msg_proto::Msg_UserLogin msg;
   msg.user_name = L"sod8uf90w8s34f";
@@ -49,7 +35,6 @@ void Test_Login() {
 
 int main() {
 
-  //test::TestTime();
   test::Test_Login();
 
   return 0;

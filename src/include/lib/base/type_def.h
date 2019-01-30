@@ -36,6 +36,9 @@ typedef unsigned char UCHAR;
 #define cus_string std::basic_string<cus_char, \
                                      std::char_traits<cus_char>, \
                                      std::allocator<cus_char>>
+#define cus_stringstream std::basic_stringstream<cus_char, \
+                            std::char_traits<cus_char>, \
+                            std::allocator<cus_char>>
 
 // 异步函数的完成回调
 typedef std::function<void(bool)> Func_AsyncResult;

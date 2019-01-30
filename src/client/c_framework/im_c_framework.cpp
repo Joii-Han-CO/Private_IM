@@ -30,7 +30,7 @@ bool ClientFramework::Init() {
   log_args.print_erro = true;
 #ifdef _WIN32  
   auto log_file_name =
-    base::GB2312ToUtf16(base::time::PrintTime()) + L"_" +
+    base::GB2312ToUtf16(base::time::BaseTime::PrintTimeA()) + L"_" +
     std::to_wstring(GetCurrentProcessId()) + L".log";
 #else
   auto log_file_name =

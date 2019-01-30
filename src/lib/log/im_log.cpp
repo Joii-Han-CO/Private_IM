@@ -37,7 +37,7 @@ bool CLog::Init(SLog_InitArgs *args) {
   if (args->log_path.empty()) {
     // 获取当前时间
     std::wstring t = base::Utf8ToUtf16(
-      base::time::PrintTime());
+      base::time::BaseTime::PrintTimeA());
 
     // 获取PID
     args->log_path = base::format::FormatStr(
@@ -146,7 +146,7 @@ void CLog::PrintHeader() {
     "--BeginTime:%s\n"
     "--------------------------------\n\n";
   std::string path = base::_path::GetExePath<char>();
-  std::string tim = base::time::PrintTime();
+  std::string tim = base::time::BaseTime::PrintTimeA();
   p = base::format::FormatStr(p.c_str(), path.c_str(), tim.c_str());
 
   OutPutBase(p);
