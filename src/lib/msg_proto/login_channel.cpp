@@ -7,50 +7,52 @@ namespace im {
 namespace msg_proto {
 #pragma endregion
 
-#pragma region Ulity
+#pragma region Base
 
-ELoginMsgType GetLoginMsgType(const MsgBuf &buf) {
-  return (ELoginMsgType)buf[0];
+MsgBase_Login::MsgBase_Login() {
+
 }
 
-pMsg_LoginChannel Factory_Login(ELoginMsgType type) {
-  pMsg_LoginChannel msg;
-  switch (type) {
-  case ELoginMsgType::Error:
+pMsgBase_Login MsgBase_Login::Parse(const MsgBuf &buf) {
+  auto msg = MsgBase::Parse(buf, EChannelType::login);
+  return std::dynamic_pointer_cast<MsgBase_Login>(msg);
+}
+
+pMsgBase MsgBase_Login::Factory(uint8_t type) {
+  auto t = (ELoginMsgType)type;
+  switch (t) {
+  case im::msg_proto::ELoginMsgType::Error:
     return nullptr;
-  case ELoginMsgType::UserLogin:
+  case im::msg_proto::ELoginMsgType::UserLogin:
     return std::make_shared<Msg_UserLogin>();
-  case ELoginMsgType::UserLoginSRes:
+  case im::msg_proto::ELoginMsgType::UserLoginSRes:
     return std::make_shared<Msg_UserLoginSRes>();
-  case ELoginMsgType::UserLoginCRes:
+  case im::msg_proto::ELoginMsgType::UserLoginCRes:
     return std::make_shared<Msg_UserLoginClientRes>();
-  case ELoginMsgType::UserLogout:
+  case im::msg_proto::ELoginMsgType::UserLogout:
     return std::make_shared<Msg_UserLogout>();
   default:
-    break;
+    return nullptr;
   }
-  return nullptr;
 }
 
-pMsg_LoginChannel Parse_LoginChannel(const MsgBuf &buf) {
-  auto type = GetLoginMsgType(buf);
-  auto msg = Factory_Login(type);
-  if (msg != nullptr && msg->Parse(buf) == true)
-    return msg;
-  else
-    return nullptr;
+bool MsgBase_Login::_ParseEnd() {
+  type_ = (ELoginMsgType)header.type;
+
+  return true;
 }
 
 #pragma endregion
 
-#pragma region UserLogin
+#pragma region Msg_UserLogin
 
-bool Msg_UserLogin::Parse(const MsgBuf &buf) {
-  if (buf.size() - 1 == 0)
+bool Msg_UserLogin::_Parse(const MsgBuf &buf) {
+  if (buf.size() - MsgBase_Header::GetSize() == 0)
     return false;
 
   Proto_UserLogin proto;
-  if (proto.ParseFromArray(&buf[1], buf.size() - 1) == false)
+  if (proto.ParseFromArray(&buf[MsgBase_Header::GetSize()],
+                           buf.size() - MsgBase_Header::GetSize()) == false)
     return false;
 
   user_name = base::Utf8ToUtf16(proto.user_name());
@@ -61,7 +63,7 @@ bool Msg_UserLogin::Parse(const MsgBuf &buf) {
   return true;
 }
 
-MsgBuf Msg_UserLogin::Serializate() {
+MsgBuf Msg_UserLogin::_Serializate() {
   Proto_UserLogin proto;
   proto.set_user_name(base::Utf16ToUtf8(user_name));
   proto.set_user_pwd(base::Utf16ToUtf8(login_channel));
@@ -72,32 +74,31 @@ MsgBuf Msg_UserLogin::Serializate() {
   if (size <= 0)
     return MsgBuf();
   MsgBuf buf;
-  buf.resize(size + 1);
-  proto.SerializeToArray((void*)&buf[1], size);
-
-  buf[0] = (uint8_t)(type);
+  buf.resize(size + MsgBase_Header::GetSize());
+  proto.SerializeToArray((void*)&buf[MsgBase_Header::GetSize()], size);
   return buf;
 }
 
 #pragma endregion
 
+
 #pragma region UserLoginSRes
 
-bool Msg_UserLoginSRes::Parse(const MsgBuf &buf) {
-  if (buf.size() - 1 == 0) {
+bool Msg_UserLoginSRes::_Parse(const MsgBuf &buf) {
+  if (buf.size() - MsgBase_Header::GetSize() == 0) {
     return false;
   }
   Proto_UserLoginRes proto;
-  if (proto.ParseFromArray(&buf[1], buf.size() - 1) == false) {
+  if (proto.ParseFromArray(&buf[MsgBase_Header::GetSize()],
+                           buf.size() - MsgBase_Header::GetSize()) == false) {
     return false;
   }
 
   status = proto.status();
-
   return true;
 }
 
-MsgBuf Msg_UserLoginSRes::Serializate() {
+MsgBuf Msg_UserLoginSRes::_Serializate() {
   Proto_UserLoginRes proto;
   proto.set_status(status);
   MsgBuf buf;
@@ -107,10 +108,9 @@ MsgBuf Msg_UserLoginSRes::Serializate() {
     return buf;
   }
 
-  buf.resize(size + 1);
-  proto.SerializePartialToArray((void*)&buf[1], size);
+  buf.resize(size + MsgBase_Header::GetSize());
+  proto.SerializePartialToArray((void*)&buf[MsgBase_Header::GetSize()], size);
 
-  buf[0] = (uint8_t)(type);
   return buf;
 }
 
@@ -118,21 +118,21 @@ MsgBuf Msg_UserLoginSRes::Serializate() {
 
 #pragma region UserLoginCRes
 
-bool Msg_UserLoginClientRes::Parse(const MsgBuf &buf) {
-  if (buf.size() - 1 == 0) {
+bool Msg_UserLoginClientRes::_Parse(const MsgBuf &buf) {
+  if (buf.size() - MsgBase_Header::GetSize() == 0) {
     return false;
   }
   Proto_UserLoginRes proto;
-  if (proto.ParseFromArray(&buf[1], buf.size() - 1) == false) {
+  if (proto.ParseFromArray(&buf[MsgBase_Header::GetSize()],
+                           buf.size() - MsgBase_Header::GetSize()) == false) {
     return false;
   }
 
   status = proto.status();
-
   return true;
 }
 
-MsgBuf Msg_UserLoginClientRes::Serializate() {
+MsgBuf Msg_UserLoginClientRes::_Serializate() {
   Proto_UserLoginRes proto;
   proto.set_status(status);
   MsgBuf buf;
@@ -142,10 +142,9 @@ MsgBuf Msg_UserLoginClientRes::Serializate() {
     return buf;
   }
 
-  buf.resize(size + 1);
-  proto.SerializePartialToArray((void*)&buf[1], size);
+  buf.resize(size + MsgBase_Header::GetSize());
+  proto.SerializePartialToArray((void*)&buf[MsgBase_Header::GetSize()], size);
 
-  buf[0] = (uint8_t)(type);
   return buf;
 }
 
@@ -153,12 +152,13 @@ MsgBuf Msg_UserLoginClientRes::Serializate() {
 
 #pragma region UserLogout
 
-bool Msg_UserLogout::Parse(const MsgBuf &buf) {
-  if (buf.size() - 1 == 0) {
+bool Msg_UserLogout::_Parse(const MsgBuf &buf) {
+  if (buf.size() - MsgBase_Header::GetSize() == 0) {
     return false;
   }
   Proto_UserLoginRes proto;
-  if (proto.ParseFromArray(&buf[1], buf.size() - 1) == false) {
+  if (proto.ParseFromArray(&buf[MsgBase_Header::GetSize()],
+                           buf.size() - MsgBase_Header::GetSize()) == false) {
     return false;
   }
 
@@ -167,7 +167,7 @@ bool Msg_UserLogout::Parse(const MsgBuf &buf) {
   return true;
 }
 
-MsgBuf Msg_UserLogout::Serializate() {
+MsgBuf Msg_UserLogout::_Serializate() {
   Proto_UserLoginRes proto;
   proto.set_status(status);
   MsgBuf buf;
@@ -177,10 +177,9 @@ MsgBuf Msg_UserLogout::Serializate() {
     return buf;
   }
 
-  buf.resize(size + 1);
-  proto.SerializePartialToArray((void*)&buf[1], size);
+  buf.resize(size + MsgBase_Header::GetSize());
+  proto.SerializePartialToArray((void*)&buf[MsgBase_Header::GetSize()], size);
 
-  buf[0] = (uint8_t)(type);
   return buf;
 }
 

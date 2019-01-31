@@ -3,6 +3,7 @@
 #include "im_type_def.h"
 #include "base/time.hpp"
 #include <list>
+#include <map>
 #include <vector>
 #include <memory>
 
@@ -12,32 +13,17 @@ namespace im {
 namespace msg_proto {
 #pragma endregion
 
-#pragma region Def
-
-#define ProroMsgBaseClassVirtual(ClassName) \
-public: \
-  virtual ~ClassName() {}; \
-  virtual bool Parse(const MsgBuf &buf) = 0; \
-  virtual MsgBuf Serializate() = 0;
-
-#define ProtoMsgChildClassVirtual(ClassName) \
-public: \
-  virtual bool Parse(const MsgBuf &buf) override; \
-  virtual MsgBuf Serializate() override;
-
-#pragma endregion
-
 #pragma region Header
 
 class MsgBase_Header {
 public:
   static int GetSize();
   bool Parse(const MsgBuf &buf);
-  bool Serialization(MsgBuf &buf);
+  bool Serializate(MsgBuf &buf);
 
 public:
   uint8_t type = 0;
-  base::time::BaseTime time;
+  base::time::pBaseTime time;
 };
 StdSharedPtr_Typedef(MsgBase_Header);
 
@@ -45,19 +31,38 @@ StdSharedPtr_Typedef(MsgBase_Header);
 
 #pragma region Base
 
+enum class EChannelType {
+  none = 0,
+  login,    // 登陆通道
+};
+
+class MsgBase;
+StdSharedPtr_Typedef(MsgBase);
+
 class MsgBase {
+public:
   MsgBase();
+  virtual ~MsgBase();
+
+  static pMsgBase Parse(const MsgBuf &buf, EChannelType t);
+  MsgBuf Serializate();
+
+protected:
+  virtual bool _Parse(const MsgBuf &buf) = 0;
+  virtual bool _ParseEnd() = 0;
+  virtual MsgBuf _Serializate() = 0;
 
 public:
-  pMsgBase_Header header;
+  MsgBase_Header header;
+
 };
 
 #pragma endregion
 
+// 登陆通道
 #pragma region LoginChannel
 
-// 枚举   uint8_t
-// 登陆通道消息体类型
+// 登陆通道消息体类型 uint8_t
 enum class ELoginMsgType {
   Error = 0,      // 报错...
   UserLogin,      // C-->S 用户登陆
@@ -66,21 +71,34 @@ enum class ELoginMsgType {
   UserLogout,     // C-->S 用户登出
 };
 
-// 基类, 登陆通道基类
-struct Msg_LoginChannel {
-  ProroMsgBaseClassVirtual(Msg_LoginChannel);
+class MsgBase_Login;
+StdSharedPtr_Typedef(MsgBase_Login);
 
+class MsgBase_Login: public MsgBase {
 public:
-  ELoginMsgType type;
+  MsgBase_Login();
+
+  static pMsgBase_Login Parse(const MsgBuf &buf);
+
+  static pMsgBase Factory(uint8_t type);
+
+  ELoginMsgType type_;
+
+protected:
+  bool _ParseEnd() override;
+
 };
-StdSharedPtr_Typedef(Msg_LoginChannel);
 
 // 用户登陆消息
-struct Msg_UserLogin: public Msg_LoginChannel {
-  ProtoMsgChildClassVirtual(Msg_UserLogin);
+struct Msg_UserLogin: public MsgBase_Login {
+public:
   Msg_UserLogin() {
-    type = im::msg_proto::ELoginMsgType::UserLogin;
+    header.type = (uint8_t)im::msg_proto::ELoginMsgType::UserLogin;
   }
+
+protected:
+  virtual bool _Parse(const MsgBuf &buf) override;
+  virtual MsgBuf _Serializate() override;
 
 public:
   std::wstring user_name;
@@ -91,11 +109,15 @@ public:
 StdSharedPtr_Typedef(Msg_UserLogin);
 
 // 服务端返回登陆成功
-struct Msg_UserLoginSRes: public Msg_LoginChannel {
-  ProtoMsgChildClassVirtual(Msg_UserLogin);
+struct Msg_UserLoginSRes: public MsgBase_Login {
+public:
   Msg_UserLoginSRes() {
-    type = im::msg_proto::ELoginMsgType::UserLoginSRes;
+    header.type = (uint8_t)im::msg_proto::ELoginMsgType::UserLoginSRes;
   }
+
+protected:
+  virtual bool _Parse(const MsgBuf &buf) override;
+  virtual MsgBuf _Serializate() override;
 
 public:
   uint32_t status;
@@ -103,11 +125,16 @@ public:
 };
 StdSharedPtr_Typedef(Msg_UserLoginSRes);
 
-struct Msg_UserLoginClientRes: public Msg_LoginChannel {
-  ProtoMsgChildClassVirtual(Msg_UserLoginClientRes);
+// 客户端确认登陆成功
+struct Msg_UserLoginClientRes: public MsgBase_Login {
+public:
   Msg_UserLoginClientRes() {
-    type = ELoginMsgType::UserLoginCRes;
-  };
+    header.type = (uint8_t)im::msg_proto::ELoginMsgType::UserLoginCRes;
+  }
+
+protected:
+  virtual bool _Parse(const MsgBuf &buf) override;
+  virtual MsgBuf _Serializate() override;
 
 public:
   uint32_t status;
@@ -115,19 +142,20 @@ public:
 StdSharedPtr_Typedef(Msg_UserLoginClientRes);
 
 // 登出
-struct Msg_UserLogout: public Msg_LoginChannel {
-  ProtoMsgChildClassVirtual(Msg_UserLogin);
+struct Msg_UserLogout: public MsgBase_Login {
+public:
   Msg_UserLogout() {
-    type = im::msg_proto::ELoginMsgType::UserLogout;
+    header.type = (uint8_t)im::msg_proto::ELoginMsgType::UserLogout;
   }
+
+protected:
+  virtual bool _Parse(const MsgBuf &buf) override;
+  virtual MsgBuf _Serializate() override;
 
 public:
   uint32_t status;
 };
 StdSharedPtr_Typedef(Msg_UserLogout);
-
-// 解析登陆相关消息
-pMsg_LoginChannel Parse_LoginChannel(const MsgBuf &buf);
 
 #pragma endregion
 
@@ -135,4 +163,3 @@ pMsg_LoginChannel Parse_LoginChannel(const MsgBuf &buf);
 }
 }
 #pragma endregion
-

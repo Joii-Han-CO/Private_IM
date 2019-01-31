@@ -119,12 +119,12 @@ void ServerLogin::MqttConnected() {
 }
 
 void ServerLogin::MqttMsg_Login(const MsgBuf& buf) {
-  auto msg = im::msg_proto::Parse_LoginChannel(buf);
+  auto msg = im::msg_proto::MsgBase_Login::Parse(buf);
   if (msg == nullptr) {
     return;
   }
 
-  switch (msg->type) {
+  switch (msg->type_) {
   case im::msg_proto::ELoginMsgType::UserLogin:
     return M_UserLogin(
       std::dynamic_pointer_cast<im::msg_proto::Msg_UserLogin>(msg));

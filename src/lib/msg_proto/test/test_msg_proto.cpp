@@ -15,7 +15,7 @@ void Test_Header() {
   MsgBuf buf;
   buf.resize(23);
 
-  h.Serialization(buf);
+  h.Serializate(buf);
 
   im::msg_proto::MsgBase_Header h2;
   h2.Parse(buf);
@@ -32,16 +32,17 @@ void Test_Login() {
 
   auto buf = msg.Serializate();
 
-  auto base_msg = (im::msg_proto::Parse_LoginChannel(buf));
+  auto base_msg = (im::msg_proto::Msg_UserLogin::Parse(buf));
   if (base_msg == nullptr) {
     return;
   }
 
-  if (base_msg->type != im::msg_proto::ELoginMsgType::UserLogin) {
+  if (base_msg->type_ != im::msg_proto::ELoginMsgType::UserLogin) {
     return;
   }
 
-  auto msg2 = std::dynamic_pointer_cast<im::msg_proto::Msg_UserLogin>(base_msg);
+  auto msg2 =
+    std::dynamic_pointer_cast<im::msg_proto::Msg_UserLogin>(base_msg);
 }
 
 #pragma region namespace

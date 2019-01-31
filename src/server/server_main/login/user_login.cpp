@@ -35,18 +35,15 @@ bool ServerUserLogin::Init() {
   }
 
   auto func = [this](bool suc) {
-    // 订阅成功后，通知客户端
-    im::msg_proto::Msg_UserLoginSRes msg;
-    msg.status = 1;
-    auto buf = msg.Serializate();
-    auto func = [this](bool suc) {};
     if (suc == false) {
-      PrintLogWarn("subscribe mqtt first msg failed");
+      PrintLogErro("User login subscribe user channel failed");
+      LogoutExit();
       return;
     }
-    if (mqtt_->Publish(base::Utf16ToUtf8(channel_name_), buf, func) == false) {
-      PrintLogWarn("");
-      return;
+    else {
+      if (SendLoginStatus() == false) {
+        return;
+      }
     }
   };
 
@@ -75,17 +72,18 @@ bool ServerUserLogin::SendMsg(const MsgBuf &buf,
 
 // 当前用户发送的消息
 void ServerUserLogin::RecvMsg(const MsgBuf &buf) {
-  auto msg = im::msg_proto::Parse_LoginChannel(buf);
+  auto msg = im::msg_proto::MsgBase_Login::Parse(buf);
   if (msg == nullptr) {
     PrintLogWarn("Receive a unknow msg, msg size:%d", buf.size());
     return;
   }
-  if (msg->type == im::msg_proto::ELoginMsgType::Error) {
+
+  if (msg->type_ == im::msg_proto::ELoginMsgType::Error) {
     PrintLogWarn("Receive a msg, but can't parse, msg size:%d", buf.size());
     return;
   }
 
-  switch (msg->type) {
+  switch (msg->type_) {
   case (im::msg_proto::ELoginMsgType::UserLoginCRes):
     ClientLoginRes(
       std::dynamic_pointer_cast<im::msg_proto::Msg_UserLoginClientRes>(msg));
@@ -137,8 +135,10 @@ void ServerUserLogin::LoginSuccess() {}
 
 // 触发登出操作
 void ServerUserLogin::LogoutExit() {
-  if (exit_func_)
+  if (exit_func_) {
+    mqtt_->Unsubscribe(base::Utf16ToUtf8(channel_name_));
     exit_func_(id_);
+  }
 }
 
 #pragma endregion

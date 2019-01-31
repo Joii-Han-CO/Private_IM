@@ -186,17 +186,18 @@ void ClientLogin::SubChannel() {
 
 // 登陆--登陆消息通道
 void ClientLogin::MsgChannel(const MsgBuf &buf) {
-  auto msg = im::msg_proto::Parse_LoginChannel(buf);
+  auto msg = im::msg_proto::MsgBase_Login::Parse(buf);
+
   if (msg == nullptr) {
     PrintLogWarn("Receive a unknow msg, msg size:%d", buf.size());
     return;
   }
-  if (msg->type == im::msg_proto::ELoginMsgType::Error) {
+  if (msg->type_ == im::msg_proto::ELoginMsgType::Error) {
     PrintLogWarn("Receive a msg, but can't parse, msg size:%d", buf.size());
     return;
   }
 
-  switch (msg->type) {
+  switch (msg->type_) {
   case im::msg_proto::ELoginMsgType::UserLoginSRes:
     Msg_LoginRes(
       std::dynamic_pointer_cast<im::msg_proto::Msg_UserLoginSRes>(msg));

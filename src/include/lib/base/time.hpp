@@ -45,6 +45,7 @@ public:
     val_ = local_time::now();
   }
 
+  // 获取时间的值，精度 微秒
   int64_t GetVal() {
     auto d =
       std::chrono::duration_cast<std::chrono::microseconds>(
@@ -97,6 +98,7 @@ public:
 private:
   local_time::time_point val_;
 };
+StdSharedPtr_Typedef(BaseTime);
 
 #pragma region
 }
