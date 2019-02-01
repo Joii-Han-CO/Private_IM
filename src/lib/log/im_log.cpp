@@ -89,9 +89,6 @@ bool CLog::FilterType(base::log::EBaseLogType t) {
 }
 
 void CLog::OutPutBase(const std::string &d) {
-  if (output_ctrl_)
-    base::debug::OutPut(d.c_str());
-
   // 写入日志...
   if (!file_)
     return;

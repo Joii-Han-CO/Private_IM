@@ -91,3 +91,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/server/s_user_manager/)
 
 # s_sql
 add_subdirectory(${PROJECT_SOURCE_DIR}/server/s_sql/)
+
+# msg
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/msg/)

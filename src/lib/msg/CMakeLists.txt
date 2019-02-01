@@ -2,32 +2,22 @@
 cmake_minimum_required (VERSION 3.0)
 
 ################################################################
-#编译Proto
-if (CMAKE_SYSTEM_NAME MATCHES "Windows")
-  execute_process(COMMAND
-    "${THRD_LIB_PATH}/protobuf/lib/release_mt/protoc"
-    "-I=${PROJECT_SOURCE_DIR}/lib/msg_proto/protobuf"
-    "--cpp_out=${PROJECT_SOURCE_DIR}/lib/msg_proto/proto_class"
-    "${PROJECT_SOURCE_DIR}/lib/msg_proto/protobuf/msg.proto")
-endif()
-
-################################################################
 # Lib
 
 # 工程名
-set(_lib_name "msg_proto")
+set(_lib_name "msg")
 project(${_lib_name})
 
 set(_lib_folder "lib")
 
+# /src/include
+set(_incldue ${PROJECT_SOURCE_DIR}/../../include/lib)
+
 # C\C++ 包含源码路径
-set(_include_dirs )
+set(_include_dirs ${_incldue})
 
 # C\C++ 包含库路径
 set(_lib_dirs )
-
-# /src/include
-set(_incldue ${PROJECT_SOURCE_DIR}/../../include/lib/)
 
 set(_pch ${PROJECT_SOURCE_DIR}/pch)
 
@@ -35,29 +25,21 @@ set(_pch ${PROJECT_SOURCE_DIR}/pch)
 include_directories(${_lib_name}
                     ${_prj_include_dir}
                     ${PROJECT_SOURCE_DIR}
-                    ${_include_dirs}
-                    ${THRD_LIB_PATH}/protobuf/include)
+                    ${_include_dirs})
 
 # 创建目录
 set(_inc_file
   ${_pch}.h
-  ${_incldue}/${_namepace}_${_lib_name}.h
-  ${_incldue}/base/time.hpp)
+  ${_incldue}/${_namepace}_${_lib_name}.h)
 source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
   ${_pch}.cpp
-  ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp
-  ${PROJECT_SOURCE_DIR}/login_channel.cpp)
+  ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp)
 source_group("source" FILES ${_cpp_file})
 
-set(_proto_file
-  ${PROJECT_SOURCE_DIR}/proto_class/msg.pb.h
-  ${PROJECT_SOURCE_DIR}/proto_class/msg.pb.cc)
-source_group("proto" FILES ${_proto_file})
-
 add_library(${_lib_name} ${_prj_lib_type}
-            ${_inc_file} ${_cpp_file} ${_proto_file})
+            ${_inc_file} ${_cpp_file})
 target_link_libraries(${_lib_name} LINK_PUBLIC ${_lib_dirs})
 
 # 设置环境变量
@@ -88,7 +70,7 @@ project(${_test_name})
 set(_pch ${PROJECT_SOURCE_DIR}/test/pch)
 
 # 源码包含目录
-include_directories(${_test_name} ${_prj_include_dir})
+include_directories(${_test_name} ${_incldue})
 
 # 创建目录
 set(_inc_file
@@ -119,8 +101,8 @@ set_target_properties(${_test_name} PROPERTIES FOLDER
 # 预编译头
 set_target_properties(${_test_name} PROPERTIES
                       COTIRE_CXX_PREFIX_HEADER_INIT ${_pch}.h)
-set_target_properties(${_test_name} PROPERTIES
-                      COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
+#set_target_properties(${_test_name} PROPERTIES
+#                      COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
 ################################################################
 
 
@@ -129,23 +111,8 @@ set_target_properties(${_test_name} PROPERTIES
 # 使用 unicode 编码
 Add_Definitions(-D_UNICODE)
 
-# D|R下不同的库
-target_link_libraries(${_lib_name} debug 
-  "${THRD_LIB_PATH}/protobuf/lib/debug_mt/libprotobufd.lib")
-target_link_libraries(${_lib_name} debug 
-  "${THRD_LIB_PATH}/protobuf/lib/debug_mt/libprotobuf-lited.lib")
-target_link_libraries(${_lib_name} debug 
-  "${THRD_LIB_PATH}/protobuf/lib/debug_mt/libprotocd.lib")
-
-target_link_libraries(${_lib_name} optimized 
-  "${THRD_LIB_PATH}/protobuf/lib/release_mt/libprotobuf.lib")
-target_link_libraries(${_lib_name} optimized 
-  "${THRD_LIB_PATH}/protobuf/lib/release_mt/libprotobuf-lite.lib")
-target_link_libraries(${_lib_name} optimized 
-  "${THRD_LIB_PATH}/protobuf/lib/release_mt/libprotoc.lib")
-
 # 项目依赖
-target_link_libraries(${_lib_name} log)
-target_link_libraries(${_lib_name}_test ${_lib_name})
+target_link_libraries(${_lib_name} log mqtt msg_proto)
+target_link_libraries(${_test_name} ${_lib_name})
 
-cotire(${_lib_name} ${_lib_name}_test)
+cotire(${_lib_name} ${_test_name})

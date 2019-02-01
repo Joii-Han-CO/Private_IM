@@ -47,13 +47,12 @@ bool MsgBase_Login::_ParseEnd() {
 #pragma region Msg_UserLogin
 
 bool Msg_UserLogin::_Parse(const MsgBuf &buf) {
-  if (buf.size() - MsgBase_Header::GetSize() == 0)
-    return false;
-
   Proto_UserLogin proto;
   if (proto.ParseFromArray(&buf[MsgBase_Header::GetSize()],
-                           buf.size() - MsgBase_Header::GetSize()) == false)
+                           buf.size() - MsgBase_Header::GetSize()) == false) {
+    PrintLogErro("Child parse msg failed, protobuf return false");
     return false;
+  }
 
   user_name = base::Utf8ToUtf16(proto.user_name());
   login_channel = base::Utf8ToUtf16(proto.user_pwd());
@@ -71,8 +70,10 @@ MsgBuf Msg_UserLogin::_Serializate() {
   proto.set_client_id(client_id);
 
   auto size = proto.ByteSizeLong();
-  if (size <= 0)
+  if (size <= 0) {
+    PrintLogErro("Chaild serializate msg failed, protobuf refsize :%d", size);
     return MsgBuf();
+  }
   MsgBuf buf;
   buf.resize(size + MsgBase_Header::GetSize());
   proto.SerializeToArray((void*)&buf[MsgBase_Header::GetSize()], size);
@@ -81,16 +82,13 @@ MsgBuf Msg_UserLogin::_Serializate() {
 
 #pragma endregion
 
-
 #pragma region UserLoginSRes
 
 bool Msg_UserLoginSRes::_Parse(const MsgBuf &buf) {
-  if (buf.size() - MsgBase_Header::GetSize() == 0) {
-    return false;
-  }
   Proto_UserLoginRes proto;
   if (proto.ParseFromArray(&buf[MsgBase_Header::GetSize()],
                            buf.size() - MsgBase_Header::GetSize()) == false) {
+    PrintLogErro("Child parse msg failed, protobuf return false");
     return false;
   }
 
@@ -105,7 +103,8 @@ MsgBuf Msg_UserLoginSRes::_Serializate() {
 
   auto size = proto.ByteSizeLong();
   if (size <= 0) {
-    return buf;
+    PrintLogErro("Chaild serializate msg failed, protobuf refsize :%d", size);
+    return MsgBuf();
   }
 
   buf.resize(size + MsgBase_Header::GetSize());
@@ -119,12 +118,10 @@ MsgBuf Msg_UserLoginSRes::_Serializate() {
 #pragma region UserLoginCRes
 
 bool Msg_UserLoginClientRes::_Parse(const MsgBuf &buf) {
-  if (buf.size() - MsgBase_Header::GetSize() == 0) {
-    return false;
-  }
   Proto_UserLoginRes proto;
   if (proto.ParseFromArray(&buf[MsgBase_Header::GetSize()],
                            buf.size() - MsgBase_Header::GetSize()) == false) {
+    PrintLogErro("Child parse msg failed, protobuf return false");
     return false;
   }
 
@@ -139,7 +136,8 @@ MsgBuf Msg_UserLoginClientRes::_Serializate() {
 
   auto size = proto.ByteSizeLong();
   if (size <= 0) {
-    return buf;
+    PrintLogErro("Chaild serializate msg failed, protobuf refsize :%d", size);
+    return MsgBuf();
   }
 
   buf.resize(size + MsgBase_Header::GetSize());
@@ -153,12 +151,10 @@ MsgBuf Msg_UserLoginClientRes::_Serializate() {
 #pragma region UserLogout
 
 bool Msg_UserLogout::_Parse(const MsgBuf &buf) {
-  if (buf.size() - MsgBase_Header::GetSize() == 0) {
-    return false;
-  }
   Proto_UserLoginRes proto;
   if (proto.ParseFromArray(&buf[MsgBase_Header::GetSize()],
                            buf.size() - MsgBase_Header::GetSize()) == false) {
+    PrintLogErro("Child parse msg failed, protobuf return false");
     return false;
   }
 
@@ -174,7 +170,8 @@ MsgBuf Msg_UserLogout::_Serializate() {
 
   auto size = proto.ByteSizeLong();
   if (size <= 0) {
-    return buf;
+    PrintLogErro("Chaild serializate msg failed, protobuf refsize :%d", size);
+    return MsgBuf();
   }
 
   buf.resize(size + MsgBase_Header::GetSize());

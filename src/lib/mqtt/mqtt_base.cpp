@@ -217,6 +217,7 @@ void CMqttClient::Mqtt_Connect(const SMqttConnectInfo &info) {
   if (ref != MOSQ_ERR_SUCCESS) {
     SetLastErrAndLog(L"Connect failed, code: %d",
                      base::log::GetMqttErrorDesW().c_str());
+    StopTask();
     Mqtt_StatusChange(EMqttOnlineStatus::error);
     return;
   }

@@ -57,6 +57,29 @@ public:
 
 };
 
+enum class EPubMsgType {
+  none = 0,
+  test_channel,
+  end,
+};
+
+class Msg_TestChannel: public MsgBase {
+public:
+  Msg_TestChannel() {
+    header.type = (uint8_t)EPubMsgType::test_channel;
+  }
+
+protected:
+  virtual bool _Parse(const MsgBuf &buf) override;
+  virtual bool _ParseEnd() override;
+  virtual MsgBuf _Serializate() override;
+
+public:
+  int status_;
+
+};
+StdSharedPtr_Typedef(Msg_TestChannel);
+
 #pragma endregion
 
 // 登陆通道
@@ -64,7 +87,7 @@ public:
 
 // 登陆通道消息体类型 uint8_t
 enum class ELoginMsgType {
-  Error = 0,      // 报错...
+  Error = (int)EPubMsgType::end,      // 报错...
   UserLogin,      // C-->S 用户登陆
   UserLoginSRes,  // S-->C server登陆成功后平台返回标志
   UserLoginCRes,  // C-->S client收到了来自平台的登陆标示
@@ -90,7 +113,7 @@ protected:
 };
 
 // 用户登陆消息
-struct Msg_UserLogin: public MsgBase_Login {
+class Msg_UserLogin: public MsgBase_Login {
 public:
   Msg_UserLogin() {
     header.type = (uint8_t)im::msg_proto::ELoginMsgType::UserLogin;
@@ -109,7 +132,7 @@ public:
 StdSharedPtr_Typedef(Msg_UserLogin);
 
 // 服务端返回登陆成功
-struct Msg_UserLoginSRes: public MsgBase_Login {
+class Msg_UserLoginSRes: public MsgBase_Login {
 public:
   Msg_UserLoginSRes() {
     header.type = (uint8_t)im::msg_proto::ELoginMsgType::UserLoginSRes;
@@ -126,7 +149,7 @@ public:
 StdSharedPtr_Typedef(Msg_UserLoginSRes);
 
 // 客户端确认登陆成功
-struct Msg_UserLoginClientRes: public MsgBase_Login {
+class Msg_UserLoginClientRes: public MsgBase_Login {
 public:
   Msg_UserLoginClientRes() {
     header.type = (uint8_t)im::msg_proto::ELoginMsgType::UserLoginCRes;
@@ -142,7 +165,7 @@ public:
 StdSharedPtr_Typedef(Msg_UserLoginClientRes);
 
 // 登出
-struct Msg_UserLogout: public MsgBase_Login {
+class Msg_UserLogout: public MsgBase_Login {
 public:
   Msg_UserLogout() {
     header.type = (uint8_t)im::msg_proto::ELoginMsgType::UserLogout;
