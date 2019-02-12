@@ -50,11 +50,6 @@ void ServerLogin::Uninit() {
   }
 }
 
-void ServerLogin::RegMqttStatusChange(im::FUNC_StatusChange func) {
-  if (func)
-    mqtt_status_func_.push_back(func);
-}
-
 void ServerLogin::Run() {
   // 此处制作一个循环，全部的消息都在此处处理...
   while (!run_break_) {
@@ -90,11 +85,6 @@ void ServerLogin::MqttStatusChange(im::EMqttOnlineStatus status) {
     break;
   default:
     break;
-  }
-
-  for (auto it : mqtt_status_func_) {
-    if (it)
-      it(status);
   }
 }
 

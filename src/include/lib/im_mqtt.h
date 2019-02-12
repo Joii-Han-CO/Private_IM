@@ -86,6 +86,10 @@ public:
 
   static int GetQosVal(EMqttQos q);
 
+  // 注册一个连接状态的回调
+  uint32_t AddConnectStatusFunc(FUNC_StatusChange func);
+  void DelConnectStatusFunc(uint32_t cb_id);
+
 private:
   // mqtt同步连接
   void Mqtt_Connect(const SMqttConnectInfo &info);
@@ -116,9 +120,11 @@ private:
   void OutputLog(const base::log::SBaseLog &l);
 
 private:
-  FUNC_StatusChange cb_status_change_ = nullptr;
+  std::vector<std::pair<uint32_t, FUNC_StatusChange>> cb_status_changs_;
+  uint32_t cb_status_change_count_ = 0;
+  std::mutex cb_status_change_sync_;
 
-  mosquitto * mqtt_;
+  mosquitto *mqtt_;
   bool is_connected = false;
   int loop_timeout_ = 0;
   base::async::SyncVal<bool> sync_disconnect_flag_ = false;

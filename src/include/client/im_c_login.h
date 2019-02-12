@@ -23,10 +23,6 @@ public:
   // 获取mqtt句柄
   im::pCMqttClient GetMqtt();
 
-  // 注册一个mqtt状态变更的回调
-  uint32_t RegMqttConnectedStatusChanged(FUNC_StatusChange func);
-  void UnregMqttConnectedStatusChanged(uint32_t count);
-
 private:
   bool InitMqtt(std::wstring user_name,
                 std::wstring user_pwd);
@@ -64,8 +60,6 @@ private:
   void SendLogoutInfo();
 
   im::pCMqttClient mqtt_;
-  std::map<uint32_t, im::FUNC_StatusChange> mqtt_status_changed_func_;
-  uint32_t mqtt_status_changed_func_count_ = 0;
   std::string channel_name_login_;
 
   bool is_init_ = false;

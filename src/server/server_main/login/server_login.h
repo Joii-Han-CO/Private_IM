@@ -18,8 +18,6 @@ public:
 
   void Uninit();
 
-  void RegMqttStatusChange(im::FUNC_StatusChange func);
-
   void Run();
 
 private:
@@ -57,7 +55,6 @@ private:
   std::mutex run_task_lock_break_;
 
   im::pCMqttClient mqtt_;
-  std::vector<im::FUNC_StatusChange> mqtt_status_func_;
 
   std::map<uint32_t, pServerUserLogin> users_;
   uint32_t user_id_count_ = 0;

@@ -112,7 +112,7 @@ set_target_properties(${_test_name} PROPERTIES
 Add_Definitions(-D_UNICODE)
 
 # 项目依赖
-target_link_libraries(${_lib_name} mqtt msg_proto)
+target_link_libraries(${_lib_name} mqtt msg_proto msg)
 target_link_libraries(${_test_name} ${_lib_name} c_framework)
 target_link_libraries(${_test_name} log)
 

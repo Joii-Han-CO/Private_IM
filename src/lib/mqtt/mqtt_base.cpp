@@ -50,7 +50,7 @@ CMqttClient::~CMqttClient() {
 
 // 连接
 bool CMqttClient::Connect(const SMqttConnectInfo &info) {
-  cb_status_change_ = info.cb_status_change;
+  AddConnectStatusFunc(info.cb_status_change);
 
   StartTask();
   AddTask(
@@ -160,17 +160,32 @@ std::string CMqttClient::FormatOnlineStatusA(EMqttOnlineStatus s) {
 }
 
 int CMqttClient::GetQosVal(EMqttQos q) {
-  switch (q) {
-  case im::EMqttQos::MostOne:
+  return (int)q;
+}
+
+uint32_t CMqttClient::AddConnectStatusFunc(FUNC_StatusChange func) {
+  if (func == nullptr)
     return 0;
-  case im::EMqttQos::LeastOne:
-    return 1;
-  case im::EMqttQos::OnlyOne:
-    return 2;
-  default:
-    break;
+  std::unique_lock<std::mutex> lock(cb_status_change_sync_);
+
+  uint32_t c = ++cb_status_change_count_;
+
+  cb_status_changs_.push_back(
+    std::pair<uint32_t, im::FUNC_StatusChange>(c, func));
+
+  return c;
+}
+
+void CMqttClient::DelConnectStatusFunc(uint32_t cb_id) {
+  std::unique_lock<std::mutex> lock(cb_status_change_sync_);
+
+  for (auto it = cb_status_changs_.begin();
+       it != cb_status_changs_.end(); it++) {
+    if (it->first == cb_id) {
+      cb_status_changs_.erase(it);
+      return;
+    }
   }
-  return 0;
 }
 
 // mqtt同步连接
@@ -295,8 +310,14 @@ void CMqttClient::Mqtt_MsgLoop() {
 
 void CMqttClient::Mqtt_StatusChange(EMqttOnlineStatus status) {
   cur_status_ = status;
-  if (cb_status_change_)
-    cb_status_change_(status);
+
+  std::unique_lock<std::mutex> lock(cb_status_change_sync_);
+  size_t s = cb_status_changs_.size();
+  for (size_t i = 0; i < s; i++) {
+    if (cb_status_changs_[i].second) {
+      cb_status_changs_[i].second(status);
+    }
+  }
 }
 
 #pragma region Callback

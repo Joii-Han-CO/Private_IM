@@ -92,22 +92,6 @@ im::pCMqttClient ClientLogin::GetMqtt() {
   return mqtt_;
 }
 
-// mqtt--注册回调函数
-uint32_t ClientLogin::RegMqttConnectedStatusChanged(
-  FUNC_StatusChange func) {
-  auto count = mqtt_status_changed_func_count_++;
-  mqtt_status_changed_func_.insert(
-    std::pair<uint32_t, im::FUNC_StatusChange>(count, func));
-  return count;
-}
-
-// mqtt--卸载回调函数
-void ClientLogin::UnregMqttConnectedStatusChanged(uint32_t count) {
-  auto it = mqtt_status_changed_func_.find(count);
-  if (it != mqtt_status_changed_func_.end())
-    mqtt_status_changed_func_.erase(it);
-}
-
 // mqtt--日志返回
 void ClientLogin::MqttLog(const base::log::SBaseLog &l) {
   im::log::CLog::Get()->Print(l.type, "mqtt", l.file, l.func, l.line, l.log);
@@ -139,10 +123,6 @@ void ClientLogin::MqttConnectedStatusChanged(
   default:
     break;
   }
-
-  for (auto it : mqtt_status_changed_func_)
-    if (it.second != nullptr)
-      it.second(status);
 }
 
 // mqtt--连接错误
