@@ -10,129 +10,90 @@ namespace msg_proto {
 
 #pragma region Header
 
-int MsgBase_Header::GetSize() {
-  return sizeof(type) + sizeof(int64_t);
+CBaseProtoHeader::CBaseProtoHeader(EChannelType channel_type, uint8_t type) {
+  type_.channel_type = channel_type;
+  type_.msg_type = type;
+  time_ = std::make_shared<base::time::BaseTime>();
+  base::_uuid::GenerateUUID(&msg_id_);
 }
 
-bool MsgBase_Header::Parse(const MsgBuf &buf) {
-  type = (uint8_t)buf[0];
+CBaseProtoHeader::CBaseProtoHeader(EChannelType channel_type, uint8_t type,
+                                   base::_uuid::BaseUUID *msg_id) {
+  type_.channel_type = channel_type;
+  type_.msg_type = type;
+  time_ = std::make_shared<base::time::BaseTime>();
+  memcpy_s(&msg_id_, sizeof(msg_id_), msg_id, sizeof(msg_id_));
+}
+
+CBaseProtoHeader::CBaseProtoHeader(EChannelType channel_type,
+                                   cMsgBuf buf) {
+  auto size = Size();
+  if (buf.size() <= (size_t)size)
+    return;
+
+  int count = 0;
+
+  type_.channel_type = channel_type;
+  memcpy_s(&type_.msg_type, sizeof(type_.msg_type),
+           &buf[count], sizeof(type_.msg_type));
+  count += sizeof(type_.msg_type);
 
   int64_t time_val = 0;
-  memcpy_s(&time_val, sizeof(time_val), &buf[1], sizeof(time_val));
-  time = std::make_shared<base::time::BaseTime>(time_val);
+  memcpy_s(&time_val, sizeof(time_val), &buf[count], sizeof(time_val));
+  time_ = std::make_shared<base::time::BaseTime>(time_val);
+  count += sizeof(time_val);
 
-  return true;
+  memcpy_s(&msg_id_, sizeof(msg_id_), &buf[count], sizeof(msg_id_));
 }
 
-bool MsgBase_Header::Serializate(MsgBuf &buf) {
-  if (buf.size() < (size_t)GetSize()) {
-    PrintLogErro("Serializate msg header failed, buf too small %d",
+int CBaseProtoHeader::Size() {
+  return sizeof(uint8_t) + sizeof(int64_t) + sizeof(base::_uuid::BaseUUID);
+}
+
+bool CBaseProtoHeader::Serializate(MsgBuf &buf) {
+  auto size = Size();
+  if (buf.size() <= (size_t)size) {
+    PrintLogWarn("Can't serializate header, buf size too small size:%d",
                  buf.size());
     return false;
   }
 
-  buf[0] = (char)type;
+  int count = 0;
 
-  time = std::make_shared<base::time::BaseTime>();
-  auto time_val = time->GetVal();
-  memcpy_s(&buf[1], sizeof(time_val), &time_val, sizeof(time_val));
+  memcpy_s(&buf[count], sizeof(type_.msg_type),
+           &type_.msg_type, sizeof(type_.msg_type));
+  count += sizeof(type_.msg_type);
+
+  int64_t time_val = time_->GetVal();
+  memcpy_s(&buf[count], sizeof(time_val), &time_val, sizeof(time_val));
+  count += sizeof(time_val);
+
+  memcpy_s(&buf[count], sizeof(msg_id_), &msg_id_, sizeof(msg_id_));
 
   return true;
+}
+
+bool CBaseProtoHeader::IsBroken() {
+  if (time_ == nullptr)
+    return true;
+  return false;
 }
 
 #pragma endregion
 
-#pragma region MsgBase
+#pragma region pub_test_channel
 
-MsgBase::MsgBase() {
-  // header = std::make_shared<MsgBase_Header>();
-}
-
-MsgBase::~MsgBase() {}
-
-pMsgBase MsgBase::Parse(const MsgBuf &buf, EChannelType t) {
-  auto h = std::make_shared<MsgBase_Header>();
-  if (buf.size() <= (size_t)MsgBase_Header::GetSize()) {
-    PrintLogErro("Parse msg failed, bufsize too small %d", buf.size());
-    return nullptr;
-  }
-  if (h->Parse(buf) == false) {
-    return nullptr;
-  }
-
-  pMsgBase msg = nullptr;
-  if (h->type < (int)EPubMsgType::end) {
-    // 基础消息
-    if (h->type == (int)EPubMsgType::test_channel)
-      msg = std::make_shared<Msg_TestChannel>();
-  }
-  else {
-    if (t == EChannelType::login)
-      msg = MsgBase_Login::Factory(h->type);
-  }
-
-  if (msg == nullptr) {
-    PrintLogErro("Parse msg failed, unable to find type: %d", (int)h->type);
-    return nullptr;
-  }
-
-  msg->header.type = h->type;
-  msg->header.time = h->time;
-
-  if (msg->_Parse(buf) == false) {
-    PrintLogErro("Parse msg failed, chaild class parse faield");
-    return nullptr;
-  }
-
-  if (msg->_ParseEnd() == false) {
-    PrintLogErro("Parse msg failed, chaild class parse end faield");
-    return nullptr;
-  }
-
-  return msg;
-}
-
-MsgBuf MsgBase::Serializate() {
-  header.time = std::make_shared<base::time::BaseTime>();
-
-  auto buf = _Serializate();
-  if (header.Serializate(buf) == false) {
-    PrintLogErro("Serializate msg failed, chaild class serializate failed");
-    return MsgBuf();
-  }
-
-  return buf;
-}
-
-#pragma endregion
-
-#pragma region TestChannel
-
-// TODO 暂时不用proto，因为太麻烦了
-
-bool Msg_TestChannel::_Parse(const MsgBuf &buf) {
-  if (buf.size() < MsgBase_Header::GetSize() + sizeof(int)) {
-    PrintLogErro("Parse msg faield, buf too small %d", buf.size());
-    return false;
-  }
-  status_ = 0;
-  memcpy_s(&status_, sizeof(status_),
-           &buf[MsgBase_Header::GetSize()], sizeof(status_));
+bool Msg_Pub_TestChannel::Parse(cMsgBuf buf) {
+  memcpy_s(&status, sizeof(status), &buf[header_->Size()], sizeof(status));
   return true;
 }
 
-bool Msg_TestChannel::_ParseEnd() {
-  return true;
-}
+MsgBuf Msg_Pub_TestChannel::Serializate() {
+  int buf_size = sizeof(int);
+  MP_SerializateMsg(buf_size);
 
-MsgBuf Msg_TestChannel::_Serializate() {
-  int size = MsgBase_Header::GetSize() + sizeof(status_);
-
-  MsgBuf buf;
-  buf.resize(size);
-  memcpy_s(&buf[MsgBase_Header::GetSize()], sizeof(status_),
-           &status_, sizeof(status_));
-
+  memcpy_s(&buf[CBaseProtoHeader::Size()], sizeof(int),
+           &status, sizeof(int));
   return buf;
 }
 

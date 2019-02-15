@@ -11,11 +11,12 @@ namespace _uuid {
 #pragma endregion
 
 struct BaseUUID {
-  unsigned int d1;
-  unsigned short d2;
-  unsigned short d3;
-  unsigned char d4[8];
+  unsigned int d1 = 0;
+  unsigned short d2 = 0;
+  unsigned short d3 = 0;
+  unsigned char d4[8] = {0};
 };
+StdSharedPtr_Typedef(BaseUUID);
 
 inline std::string GenerateUUID_Str(char t) {
   boost::uuids::uuid u = boost::uuids::random_generator()();
@@ -25,6 +26,14 @@ inline std::string GenerateUUID_Str(char t) {
 inline std::wstring GenerateUUID_Str(wchar_t t) {
   boost::uuids::uuid u = boost::uuids::random_generator()();
   return boost::uuids::to_wstring(u);
+}
+
+inline void GenerateUUID(BaseUUID *uid) {
+  if (uid == nullptr)
+    return;
+  boost::uuids::uuid u = boost::uuids::random_generator()();
+
+  memcpy_s(uid, sizeof(BaseUUID), u.data, sizeof(u.data));
 }
 
 template <typename cus_char>

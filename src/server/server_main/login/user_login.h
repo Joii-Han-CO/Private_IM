@@ -28,10 +28,10 @@ public:
 
   bool Uninit();
 
-  bool SendMsg(const MsgBuf &buf, const Func_AsyncResult func);
+  bool SendMsg(cMsgBuf buf, const Func_AsyncResult func);
 
 private:
-  void RecvMsg(const MsgBuf &buf);
+  void RecvMsg(cMsgBuf buf);
 
 
 private:

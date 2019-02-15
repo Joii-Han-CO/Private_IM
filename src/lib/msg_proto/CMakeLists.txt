@@ -42,13 +42,15 @@ include_directories(${_lib_name}
 set(_inc_file
   ${_pch}.h
   ${_incldue}/${_namepace}_${_lib_name}.h
-  ${_incldue}/base/time.hpp)
+  ${_incldue}/base/time.hpp
+  ${_incldue}/base/uuid.hpp)
 source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
   ${_pch}.cpp
   ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp
-  ${PROJECT_SOURCE_DIR}/login_channel.cpp)
+  ${PROJECT_SOURCE_DIR}/im_msg_proto_manager.cpp
+  ${PROJECT_SOURCE_DIR}/proto_global.cpp)
 source_group("source" FILES ${_cpp_file})
 
 set(_proto_file

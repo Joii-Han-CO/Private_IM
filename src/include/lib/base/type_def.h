@@ -45,6 +45,7 @@ typedef std::function<void(bool)> Func_AsyncResult;
 
 // 消息二进制buf
 typedef std::vector<unsigned char> MsgBuf;
+typedef const MsgBuf &  cMsgBuf;
 
 #define StdSharedPtr_Typedef(PtrName) \
   typedef std::shared_ptr<PtrName> p##PtrName

@@ -78,7 +78,7 @@ public:
 
   // 描述：推送消息
   bool Publish(const std::string &topic,
-               const MsgBuf &data,
+               cMsgBuf data,
                const Func_AsyncResult &func,
                EMqttQos qos = EMqttQos::OnlyOne);
 

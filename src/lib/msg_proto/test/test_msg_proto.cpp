@@ -8,41 +8,19 @@
 namespace test {
 #pragma endregion
 
-void Test_Header() {
-  im::msg_proto::MsgBase_Header h;
-  h.type = 123;
+void Test_MsgManager() {
+  auto msg_manager = std::make_shared<im::msg_proto::CProtoManager>();
+  auto func_base = [](im::msg_proto::pMsg_Pub_TestChannel msg) {
 
-  MsgBuf buf;
-  buf.resize(23);
+  };
+  im::msg_proto::Msg_Pub_TestChannel::RegCallback(msg_manager.get(),
+                                                  func_base);
 
-  h.Serializate(buf);
-
-  im::msg_proto::MsgBase_Header h2;
-  h2.Parse(buf);
-
-  return;
-}
-
-void Test_Login() {
-  im::msg_proto::Msg_UserLogin msg;
-  msg.user_name = L"sod8uf90w8s34f";
-  msg.login_channel = L"osjsidjflsjefl";
-  msg.client_type = im::EClientType::android;
-  msg.client_id = 89123;
-
+  im::msg_proto::Msg_Pub_TestChannel msg;
+  msg.status = 82197342;
   auto buf = msg.Serializate();
 
-  auto base_msg = (im::msg_proto::Msg_UserLogin::Parse(buf));
-  if (base_msg == nullptr) {
-    return;
-  }
-
-  if (base_msg->type_ != im::msg_proto::ELoginMsgType::UserLogin) {
-    return;
-  }
-
-  auto msg2 =
-    std::dynamic_pointer_cast<im::msg_proto::Msg_UserLogin>(base_msg);
+  msg_manager->ParseMsg(im::msg_proto::EChannelType::pub_channel, buf);
 }
 
 #pragma region namespace
@@ -50,8 +28,9 @@ void Test_Login() {
 #pragma endregion
 
 int main() {
-  //test::Test_Header();
-  test::Test_Login();
+  im::msg_proto::CProtoCallbackManager::Get()->Init();
+
+  test::Test_MsgManager();
 
   return 0;
 }

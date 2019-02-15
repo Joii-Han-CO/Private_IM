@@ -114,7 +114,7 @@ bool CMqttClient::Unsubscribe(const std::string & topic) {
 
 // 推送消息
 bool CMqttClient::Publish(const std::string &topic,
-                          const MsgBuf &data,
+                          cMsgBuf data,
                           const Func_AsyncResult &func,
                           EMqttQos qos) {
   int pub_id = -1;

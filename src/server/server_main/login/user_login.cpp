@@ -65,13 +65,13 @@ bool ServerUserLogin::Uninit() {
 }
 
 // 发送消息
-bool ServerUserLogin::SendMsg(const MsgBuf &buf,
+bool ServerUserLogin::SendMsg(cMsgBuf buf,
                               const Func_AsyncResult func) {
   return mqtt_->Publish(base::Utf16ToUtf8(channel_name_), buf, func);
 }
 
 // 当前用户发送的消息
-void ServerUserLogin::RecvMsg(const MsgBuf &buf) {
+void ServerUserLogin::RecvMsg(cMsgBuf buf) {
   auto msg = im::msg_proto::MsgBase_Login::Parse(buf);
   if (msg == nullptr) {
     PrintLogWarn("Receive a unknow msg, msg size:%d", buf.size());

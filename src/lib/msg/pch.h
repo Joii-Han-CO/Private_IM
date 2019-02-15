@@ -2,3 +2,4 @@
 #pragma once
 
 #include "im_log.h"
+#include "im_global_val.h"

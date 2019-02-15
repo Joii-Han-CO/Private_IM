@@ -34,7 +34,7 @@ void MqttLog(const base::log::SBaseLog &l) {
   base::debug::OutputLogInfo(l);
 }
 
-void MqttMsg(const std::string &topic, const MsgBuf &data) {
+void MqttMsg(const std::string &topic, cMsgBuf data) {
   // 处理消息...
   base::debug::OutPut("[Msg]--%s--size:%d", topic.c_str(), data.size());
 }
@@ -108,7 +108,7 @@ bool Test_Sub() {
   auto func_finished = [&wait_sub] (bool suc) {
     wait_sub.Notify();
   };
-  auto func_msg = [] (const MsgBuf &data) {
+  auto func_msg = [] (cMsgBuf data) {
     return MqttMsg(g_topic_, data);
   };
 

@@ -2,6 +2,7 @@
 #include "test_msg.h"
 #include "im_msg.h"
 #include "im_log.h"
+#include "im_global_val.h"
 
 #include "base/debug.hpp"
 
@@ -53,89 +54,82 @@ im::pCMqttClient InitMqtt() {
   return mt;
 }
 
+std::wstring g_channel_name = L"EDB8EE02-6683-436E-8673-700107707AFD";
+std::wstring g_user1 = L"u1";
+std::wstring g_user2 = L"u2";
+
+im::pCMqttClient g_mqt_client, g_mqt_server;
+
+void TestPubMsg() {
+  im::msg::CPriChannel server_pc, client_pc;
+
+  auto func_client_recv = [](cMsgBuf buf) {};
+  auto func_server_recv = [](cMsgBuf buf) {};
+
+  im::msg::CPriChannel::SInitArgs client_args;
+  client_args.client = true;
+  client_args.mqtt = g_mqt_client;
+  client_args.pub_name = L"abcdefgh";
+  client_args.func_recv = func_client_recv;
+
+  im::msg::CPriChannel::SInitArgs server_args;
+  server_args.client = false;
+  server_args.mqtt = g_mqt_client;
+  server_args.pub_name = L"abcdefgh";
+  server_args.func_recv = func_server_recv;
+
+#pragma region Init server pub
+
+  base::async::Event sync_server_init;
+  bool suc_server_init = false;
+  auto func_server_pub_init =
+    [&sync_server_init, &suc_server_init]
+  (bool suc) {
+    suc_server_init = suc;
+    sync_server_init.Notify();
+  };
+  auto func_pub_recv = [](cMsgBuf) {};
+
+  im::msg::CPubChannel_Server server_pub(
+    g_mqt_server, im::gv::g_mqtt_pub_sub_);
+  if (server_pub.Init(func_server_pub_init, func_pub_recv) == false) {
+    base::debug::OutPut("Init global public failed");
+    return;
+  }
+  sync_server_init.Wait();
+  if (suc_server_init == false) {
+    base::debug::OutPut("Init global public failed 2");
+    return;
+  }
+
+#pragma endregion
+
+#pragma region Init client pub
+
+  im::msg::CPubChannel_Client client_pub(
+    g_mqt_client, im::gv::g_mqtt_pub_sub_);
+
+
+
+#pragma endregion
+
+
+  client_pc.Init(&client_args, [](bool suc) {});
+
+}
+
 void TestMsg() {
-  auto mq1 = InitMqtt();
-  auto mq2 = InitMqtt();
+  auto mq_client = InitMqtt();
+  auto mq_server = InitMqtt();
 
-  im::msg::CMsg m1, m2;
-  im::msg::SMsg_InitArgs init1, init2;
+  auto server_manager = im::msg::CServerMsgManager::Get();
 
-  base::async::Event if1, if2;
+  im::msg::CClientMsg msg_client;
 
-  init1.caller = true;
-  init1.user_name = L"u1";
-  init1.channel_name = L"EDB8EE02-6683-436E-8673-700107707AFD";
-  init1.mqtt = mq1;
+  //msg_client.Init();
 
-  // 1 初始化完成
-  init1.init_finished = [&if1](bool suc) {
-    if1.Notify();
-
-    if (suc == false) {
-      base::debug::OutPut("init 1 callback failed");
-      return;
-    }
-  };
-
-  // 1 连接完成
-  init1.connect_finished = [](bool suc) {
-    if (suc) {
-      base::debug::OutPut("Init 1 success!");
-    }
-    else {
-      base::debug::OutPut("connect 1 false");
-    }
-  };
-
-  init2.caller = false;
-  init2.user_name = L"u2";
-  init2.channel_name = L"EDB8EE02-6683-436E-8673-700107707AFD";
-  init2.mqtt = mq2;
-
-  // 2 初始化完成
-  init2.init_finished = [&if2](bool suc) {
-    if2.Notify();
-
-    if (suc == false) {
-      base::debug::OutPut("init 2 callback failed");
-      return;
-    }
-  };
-
-  // 2 连接完成
-  init2.connect_finished = [](bool suc) {
-    if (suc) {
-      base::debug::OutPut("Init 2 success!");
-    }
-    else {
-      base::debug::OutPut("connect 2 false");
-    }
-  };
-
-  if (m1.Init(&init1) == false) {
-    base::debug::OutPut("msg 1 init failed");
-    return;
-  }
-  base::debug::OutPut("msg 1 init ok");
-
-  if (m2.Init(&init2) == false) {
-    base::debug::OutPut("msg 2 init failed");
-    return;
-  }
-  base::debug::OutPut("msg 2 init ok");
-
-  if1.Wait();
-  if2.Wait();
-
-  if (m1.SendTestMsg() == false) {
-    base::debug::OutPut("1 send test msg failed");
-  }
-
-  auto ss = _getch();
-  m1.Uninit();
-  m2.Uninit();
-  mq1->Disconnect();
-  mq2->Disconnect();
+  mq_client->Disconnect();
+  mq_server->Disconnect();
   return;
 }
 
@@ -146,7 +140,11 @@ void TestMsg() {
 int main() {
   im::log::InitTestLog();
 
-  test::TestMsg();
+  test::g_mqt_client = test::InitMqtt();
+  test::g_mqt_server = test::InitMqtt();
+
+  test::TestPubMsg();
+  //test::TestMsg();
 
   base::debug::OutPut("Will Exit");
   auto ss = _getch();
