@@ -99,14 +99,6 @@ void ClientLogin::MqttConnectStatus(EMqttOnlineStatus status) {
 
 // mqtt 连接成功之后..
 void ClientLogin::MqttConnected() {
-  msg_ = std::make_shared<im::msg::CMsg>();
-
-  im::msg::SMsg_InitArgs args;
-  args.client = true;
-  args.channel_name = channel_name_ =
-    base::Utf8ToUtf16(im::gv::g_mqtt_login_sub_) +
-    base::_uuid::GenerateUUID<wchar_t>();
-  args.mqtt = mqtt_;
 /*
 
   args.init_finished = [this](bool suc) {
@@ -129,7 +121,6 @@ void ClientLogin::MqttConnected() {
     }
   };*/
 
-  msg_->Init(&args);
 }
 
 void ClientLogin::MqttConnectError() {

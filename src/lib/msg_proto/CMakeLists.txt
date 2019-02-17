@@ -49,14 +49,18 @@ source_group("include" FILES ${_inc_file})
 set(_cpp_file
   ${_pch}.cpp
   ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp
-  ${PROJECT_SOURCE_DIR}/im_msg_proto_manager.cpp
-  ${PROJECT_SOURCE_DIR}/proto_global.cpp)
+  ${PROJECT_SOURCE_DIR}/im_msg_proto_manager.cpp)
 source_group("source" FILES ${_cpp_file})
+
+set(_proto
+  ${PROJECT_SOURCE_DIR}/proto/proto_global.cpp)
+source_group("proto" FILES ${_proto})
+set(_cpp_file ${_cpp_file} ${_proto})
 
 set(_proto_file
   ${PROJECT_SOURCE_DIR}/proto_class/msg.pb.h
   ${PROJECT_SOURCE_DIR}/proto_class/msg.pb.cc)
-source_group("proto" FILES ${_proto_file})
+source_group("protobuf" FILES ${_proto_file})
 
 add_library(${_lib_name} ${_prj_lib_type}
             ${_inc_file} ${_cpp_file} ${_proto_file})

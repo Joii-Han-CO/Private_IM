@@ -34,13 +34,19 @@ public:
   };
   virtual ~CBaseMsgRecv() {};
 
-  bool Sub(Func_AsyncResult func, std::function<void(cMsgBuf)> recv_func) {
+  bool Sub(Func_AsyncResult func,
+           im::msg_proto::EChannelType type,
+           im::msg_proto::pCProtoManager manager) {
 #ifdef _DEBUG
-    assert(!recv_name_.empty());
-    assert(recv_mqtt_ != nullptr);
+    assert(manager != nullptr);
 #endif // _DEBUG
+
+    auto recv_func = [type, manager](cMsgBuf buf) {
+      manager->ParseMsg(type, buf);
+    };
     return recv_mqtt_->Subscribe(recv_name_, func, recv_func);
   };
+
 private:
   std::string recv_name_;
   im::pCMqttClient recv_mqtt_;
@@ -82,7 +88,8 @@ public:
 
   bool Init(im::pCMqttClient mqtt,
             std::string recv_name, std::string send_name,
-            std::function<void(cMsgBuf)> recv_func,
+            im::msg_proto::EChannelType type,
+            im::msg_proto::pCProtoManager manager,
             Func_AsyncResult func) {
     assert(func != nullptr);
     init_finished_ = func;
@@ -90,12 +97,12 @@ public:
     recv_msg_ = std::make_shared<CBaseMsgRecv>(mqtt, recv_name);
     send_msg_ = std::make_shared<CBaseMsgSend>(mqtt, send_name);
 
-    return recv_msg_->Sub(func, recv_func);
+    return recv_msg_->Sub(func, type, manager);
   }
 
-  bool Send(cMsgBuf buf) {
+  bool Send(cMsgBuf buf, Func_AsyncResult func) {
     assert(send_msg_ != nullptr);
-    return send_msg_->Send(buf);
+    return send_msg_->Send(buf, func);
   }
 
 private:
@@ -108,77 +115,7 @@ StdSharedPtr_Typedef(CBaseMsg);
 
 #pragma endregion
 
-// 用户-服务 私有通道
-class CPriChannel {
-public:
-  CPriChannel();
-  ~CPriChannel();
-
-  struct SInitArgs {
-    bool client;
-    im::pCMqttClient mqtt;
-    std::wstring pub_name;
-
-    std::function<void(cMsgBuf)> func_recv;
-  };
-
-  bool Init(SInitArgs *args, Func_AsyncResult func);
-
-private:
-  Func_AsyncResult init_finished_;
-  void InitFinished(bool suc) {
-    if (init_finished_)
-      init_finished_(suc);
-  }
-
-  bool SendTestMsg();
-
-  bool client_;
-};
-StdSharedPtr_Typedef(CPriChannel);
-
 #pragma region def
-class TestCls;
-StdSharedPtr_Typedef(TestCls);
-class TestCls: public im::msg::CServerMsg {
-public:
-  bool Initialization(std::wstring channel_name) {
-    msg_manager = std::make_shared<im::msg_proto::CProtoManager>();
-    return true;
-  };
-  bool Uninitialization() {
-    return true;
-  };
-  bool RecvMsg(cMsgBuf buf) {
-    msg_manager->ParseMsg(im::msg_proto::EChannelType::login, buf);
-  }
-  void RegCallback() {
-    im::msg_proto::Msg_Pub_TestChannel::RegCallback(
-      msg_manager.get(),
-      std::bind(&TestCls::OnMsg_TestChannel, this, std::placeholders::_1));
-  }
-
-  void OnMsg_TestChannel(im::msg_proto::pMsg_Pub_TestChannel msg) {
-
-  }
-
-  im::msg_proto::pCProtoManager msg_manager;
-};
-
-/*
-#define M_BeginDefineServerMsgClass(class_name, channel_type) \
-class class_name; \
-StdSharedPtr_Typedef(class_name); \
-class class_name: public im::msg::CServerMsg { \
-public: \
-  bool Initialization(std::wstring channel_name); \
-  bool Uninitialization(); \
-  bool RecvMsg(const im::msg_proto::pBaseMsg &); \
-  void RegCallback() { \
-  }
-
-#define M_EndDefineServerMsgClass() \
-};*/
 
 #pragma endregion
 

@@ -40,7 +40,6 @@ private:
 
 private:
   im::pCMqttClient mqtt_;
-  im::msg::pCMsg msg_;
   std::wstring user_name_;
   std::wstring channel_name_;
 

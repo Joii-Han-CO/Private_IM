@@ -18,7 +18,8 @@ CProtoCallbackManager *CProtoCallbackManager::Get() {
 
 void CProtoCallbackManager::Init() {
   Msg_Pub_TestChannel::RegGlobalCallback();
-  Proto_G_PrivateInfo::RegGlobalCallback();
+
+  PP_CreatePrivateChannel::RegGlobalCallback();
 }
 
 void CProtoCallbackManager::RegFunc(EChannelType ct, uint8_t mt,

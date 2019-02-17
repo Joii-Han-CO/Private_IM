@@ -36,9 +36,6 @@ source_group("include" FILES ${_inc_file})
 set(_cpp_file
   ${_pch}.cpp
   ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp
-  ${PROJECT_SOURCE_DIR}/im_msg_client.cpp
-  ${PROJECT_SOURCE_DIR}/im_msg_server.cpp
-  ${PROJECT_SOURCE_DIR}/im_msg_server_manager.cpp
   ${PROJECT_SOURCE_DIR}/im_pub_msg.cpp)
 source_group("source" FILES ${_cpp_file})
 

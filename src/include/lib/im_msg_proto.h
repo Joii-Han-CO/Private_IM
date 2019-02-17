@@ -100,7 +100,7 @@ enum class EPubMsgType {
 
 enum class EGlobalType {
   begin = (int)EPubMsgType::end,
-  private_info,
+  create_private_channel,
 };
 
 // 消息类型
@@ -237,15 +237,19 @@ protected:
 //    同时注意 ParseMsg 没有做线程安全相关处理
 //////////////////////////////////////////////////////////////////////////
 
-// 全局通道的消息
-MP_BeginDefMsgClass(Proto_G_PrivateInfo,
-                    EChannelType::golbal_channel, EGlobalType::private_info);
-MP_EndDefMsgClass();
-
 MP_BeginDefMsgClass(Msg_Pub_TestChannel,
                     EChannelType::pub_channel, EPubMsgType::test_channel);
 int status = 0;
 MP_EndDefMsgClass();
+
+#pragma region public channel
+
+MP_BeginDefMsgClass(PP_CreatePrivateChannel,
+                    EChannelType::golbal_channel,
+                    EGlobalType::create_private_channel);
+MP_EndDefMsgClass();
+
+#pragma endregion
 
 #pragma region
 }

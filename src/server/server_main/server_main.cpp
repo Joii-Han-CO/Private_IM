@@ -11,16 +11,6 @@ int Init() {
     return -1;
   }
 
-  std::condition_variable wait_init_finished;
-  std::mutex wait_init_finished_async;
-  bool is_init = false;
-  bool is_success = false;
-  auto func_init_res = [&wait_init_finished, &is_init, &is_success]
-  (bool suc) {
-    is_success = suc;
-    is_init = true;
-    wait_init_finished.notify_all();
-  };
 
   return 0;
 }

@@ -61,60 +61,6 @@ std::wstring g_user2 = L"u2";
 im::pCMqttClient g_mqt_client, g_mqt_server;
 
 void TestPubMsg() {
-  im::msg::CPriChannel server_pc, client_pc;
-
-  auto func_client_recv = [](cMsgBuf buf) {};
-  auto func_server_recv = [](cMsgBuf buf) {};
-
-  im::msg::CPriChannel::SInitArgs client_args;
-  client_args.client = true;
-  client_args.mqtt = g_mqt_client;
-  client_args.pub_name = L"abcdefgh";
-  client_args.func_recv = func_client_recv;
-
-  im::msg::CPriChannel::SInitArgs server_args;
-  server_args.client = false;
-  server_args.mqtt = g_mqt_client;
-  server_args.pub_name = L"abcdefgh";
-  server_args.func_recv = func_server_recv;
-
-#pragma region Init server pub
-
-  base::async::Event sync_server_init;
-  bool suc_server_init = false;
-  auto func_server_pub_init =
-    [&sync_server_init, &suc_server_init]
-  (bool suc) {
-    suc_server_init = suc;
-    sync_server_init.Notify();
-  };
-  auto func_pub_recv = [](cMsgBuf) {};
-
-  im::msg::CPubChannel_Server server_pub(
-    g_mqt_server, im::gv::g_mqtt_pub_sub_);
-  if (server_pub.Init(func_server_pub_init, func_pub_recv) == false) {
-    base::debug::OutPut("Init global public failed");
-    return;
-  }
-  sync_server_init.Wait();
-  if (suc_server_init == false) {
-    base::debug::OutPut("Init global public failed 2");
-    return;
-  }
-
-#pragma endregion
-
-#pragma region Init client pub
-
-  im::msg::CPubChannel_Client client_pub(
-    g_mqt_client, im::gv::g_mqtt_pub_sub_);
-
-  // client send login msg
-
-#pragma endregion
-
-
-  client_pc.Init(&client_args, [](bool suc) {});
 
 }
 
@@ -122,9 +68,6 @@ void TestMsg() {
   auto mq_client = InitMqtt();
   auto mq_server = InitMqtt();
 
-  auto server_manager = im::msg::CServerMsgManager::Get();
-
-  im::msg::CClientMsg msg_client;
 
   //msg_client.Init();
 

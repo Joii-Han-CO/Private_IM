@@ -40,7 +40,9 @@ source_group("source" FILES ${_cpp_file})
 
 set(_framework_file
   ${PROJECT_SOURCE_DIR}/frame/server_frame_work.h
-  ${PROJECT_SOURCE_DIR}/frame/server_frame_work.cpp)
+  ${PROJECT_SOURCE_DIR}/frame/server_frame_work.cpp
+  ${PROJECT_SOURCE_DIR}/frame/publish_channel.h
+  ${PROJECT_SOURCE_DIR}/frame/publish_channel.cpp)
 source_group("frame" FILES ${_framework_file})
 set(_cpp_file ${_cpp_file} ${_framework_file})
 
