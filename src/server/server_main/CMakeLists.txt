@@ -35,17 +35,17 @@ source_group("include" FILES ${_inc_file})
 
 set(_cpp_file
   ${_pch}.cpp
-  ${PROJECT_SOURCE_DIR}/${_lib_name}.cpp
-  ${PROJECT_SOURCE_DIR}/management.h
-  ${PROJECT_SOURCE_DIR}/management.cpp)
+  ${PROJECT_SOURCE_DIR}/${_lib_name}.cpp)
 source_group("source" FILES ${_cpp_file})
 
+set(_framework_file
+  ${PROJECT_SOURCE_DIR}/frame/server_frame_work.h
+  ${PROJECT_SOURCE_DIR}/frame/server_frame_work.cpp)
+source_group("frame" FILES ${_framework_file})
+set(_cpp_file ${_cpp_file} ${_framework_file})
+
 # 登陆模块
-set(_login_files
-  ${PROJECT_SOURCE_DIR}/login/server_login.h
-  ${PROJECT_SOURCE_DIR}/login/server_login.cpp
-  ${PROJECT_SOURCE_DIR}/login/user_login.h
-  ${PROJECT_SOURCE_DIR}/login/user_login.cpp)
+set(_login_files )
 source_group("login" FILES ${_login_files})
 set(_cpp_file ${_cpp_file} ${_login_files})
 

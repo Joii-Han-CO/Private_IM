@@ -1,15 +1,12 @@
 ﻿#include "pch.h"
 #include "server_main.h"
-#include "management.h"
-#include "login/server_login.h"
+#include "frame/server_frame_work.h"
 
 // TODO 第一个版本全部的模块都在同一个进程中执行，以后考虑做成多进程的
 
-server::pServerLogin g_li;
-
 // 初始化，等待MQTT连接成功之后才可以开始业务
 int Init() {
-  if (server::CManagement::Get()->Init() == false) {
+  if (server::CSFarmeWork::Get()->Init() == false) {
     std::cout << "init failed" << std::endl;
     return -1;
   }
@@ -25,19 +22,6 @@ int Init() {
     wait_init_finished.notify_all();
   };
 
-  g_li = std::make_shared<server::ServerLogin>();
-  if (g_li->Init(func_init_res) == false) {
-    std::cout << "Init login module failed, will exit" << std::endl;
-    return -1;
-  }
-  std::unique_lock<std::mutex> lock(wait_init_finished_async);
-  wait_init_finished.wait(lock, [&is_init]() { return is_init; });
-
-  if (is_success == false) {
-    PrintLogErro("Server init failed and exit.");
-    return 1;
-  }
-
   return 0;
 }
 
@@ -47,7 +31,6 @@ int Run() {
     return exit_code;
   }
 
-  g_li->Run();
   return 0;
 }
 
@@ -55,8 +38,6 @@ int main() {
   base::log::PrintModleHeader();
 
   auto exit_code = Run();
-  if (g_li)
-    g_li->Uninit();
 
   _getch();
   return exit_code;

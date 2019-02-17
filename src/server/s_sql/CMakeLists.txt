@@ -14,7 +14,10 @@ set(_lib_folder "server")
 set(_incldue ${PROJECT_SOURCE_DIR}/../../include/server)
 
 # C\C++ 包含源码路径
-set(_include_dirs ${_incldue} "${mysql_dir}/include")
+set(_include_dirs
+  ${_incldue}
+  "${mysql_dir}/include")
+message(${mysql_dir})
 
 # C\C++ 包含库路径
 set(_lib_dirs )
