@@ -6,3 +6,5 @@
 
 #include <map>
 #include <assert.h>
+
+#include "proto_class/msg.pb.h"

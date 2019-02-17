@@ -125,6 +125,8 @@ struct SMsgType {
 
 #pragma endregion
 
+#pragma region base proto
+
 // 管理消息函数的注册及获取，同一个消息只允许注册一个函数
 typedef std::function<void(pCBaseProto)> Func_MsgCb;
 typedef std::function<pCBaseProto(cMsgBuf, pCBaseProtoHeader)> Func_MsgParse;
@@ -210,6 +212,8 @@ protected:
   pCBaseProtoHeader header_;
 };
 
+#pragma endregion
+
 //////////////////////////////////////////////////////////////////////////
 // 介绍
 //  1. 通道。在 EChannelType 中定义了mqtt的各种通道
@@ -237,16 +241,24 @@ protected:
 //    同时注意 ParseMsg 没有做线程安全相关处理
 //////////////////////////////////////////////////////////////////////////
 
+#pragma region pub channel
+
 MP_BeginDefMsgClass(Msg_Pub_TestChannel,
                     EChannelType::pub_channel, EPubMsgType::test_channel);
 int status = 0;
 MP_EndDefMsgClass();
+
+#pragma endregion
 
 #pragma region public channel
 
 MP_BeginDefMsgClass(PP_CreatePrivateChannel,
                     EChannelType::golbal_channel,
                     EGlobalType::create_private_channel);
+std::wstring user_name_;
+base::_uuid::BaseUUID channel_name_;
+EClientType client_type_;
+base::_uuid::BaseUUID client_id_;
 MP_EndDefMsgClass();
 
 #pragma endregion

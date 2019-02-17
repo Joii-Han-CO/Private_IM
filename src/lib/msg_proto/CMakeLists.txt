@@ -42,6 +42,7 @@ include_directories(${_lib_name}
 set(_inc_file
   ${_pch}.h
   ${_incldue}/${_namepace}_${_lib_name}.h
+  ${_incldue}/im_type_def.h
   ${_incldue}/base/time.hpp
   ${_incldue}/base/uuid.hpp)
 source_group("include" FILES ${_inc_file})

@@ -38,7 +38,9 @@ void CSPubChannel::RegMsgCallback() {
 // 创建server与client的私有通道
 void CSPubChannel::OnMsg_CreatePriChannel(
   im::msg_proto::pPP_CreatePrivateChannel msg
-) {}
+) {
+
+}
 
 #pragma region
 }
