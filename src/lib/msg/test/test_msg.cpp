@@ -109,7 +109,7 @@ void TestPubMsg() {
   im::msg::CPubChannel_Client client_pub(
     g_mqt_client, im::gv::g_mqtt_pub_sub_);
 
-
+  // client send login msg
 
 #pragma endregion
 

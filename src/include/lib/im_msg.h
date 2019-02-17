@@ -74,31 +74,37 @@ private:
 };
 StdSharedPtr_Typedef(CBaseMsgSend);
 
-#pragma endregion
-
-#pragma region pubchannel
-
-// 用户->服务器 单向服务
-class CPubChannel_Server: private CBaseMsgRecv {
+// 基础消息双向通道
+class CBaseMsg {
 public:
-  CPubChannel_Server(im::pCMqttClient mqtt, std::string pub_name);
-  ~CPubChannel_Server();
-  bool Init(Func_AsyncResult func,
-            std::function<void(cMsgBuf)> recv_func);
+  CBaseMsg() {};
+  virtual ~CBaseMsg() {};
+
+  bool Init(im::pCMqttClient mqtt,
+            std::string recv_name, std::string send_name,
+            std::function<void(cMsgBuf)> recv_func,
+            Func_AsyncResult func) {
+    assert(func != nullptr);
+    init_finished_ = func;
+
+    recv_msg_ = std::make_shared<CBaseMsgRecv>(mqtt, recv_name);
+    send_msg_ = std::make_shared<CBaseMsgSend>(mqtt, send_name);
+
+    return recv_msg_->Sub(func, recv_func);
+  }
+
+  bool Send(cMsgBuf buf) {
+    assert(send_msg_ != nullptr);
+    return send_msg_->Send(buf);
+  }
+
+private:
+  pCBaseMsgRecv recv_msg_;
+  pCBaseMsgSend send_msg_;
+
+  Func_AsyncResult init_finished_;
 };
-
-class CPubChannel_Client: public CBaseMsgSend {
-public:
-  CPubChannel_Client(im::pCMqttClient mqtt, std::string pub_name);
-  ~CPubChannel_Client();
-
-  // 发送私有通道信息
-  struct PriInfo {
-    std::string pri_name;
-  };
-  void Send_PrivateInfo(PriInfo *args);
-
-};
+StdSharedPtr_Typedef(CBaseMsg);
 
 #pragma endregion
 
@@ -130,85 +136,6 @@ private:
   bool client_;
 };
 StdSharedPtr_Typedef(CPriChannel);
-
-
-class CMsg {
-public:
-  CMsg();
-  virtual ~CMsg();
-
-  struct SInitArgs {
-    std::wstring user_name;
-    std::wstring channel_name;
-    im::pCMqttClient mqtt;
-    MsgBuf send_test_buf;   // 发送测试数据时带的buf
-    Func_AsyncResult func_connected;  // 连接流程走完后的回调
-    std::function<MsgBuf(MsgBuf)> func_recv_testbuf; // server接到客户端的buf
-  };
-
-  bool Init(SInitArgs *info);
-  bool Uninit();
-
-  // 通过该接口发送数据
-  bool SendMsg(cMsgBuf buf, Func_AsyncResult func);
-
-protected:
-  virtual bool _Init() = 0;
-
-protected:
-  void Connected(bool suc);
-private:
-  Func_AsyncResult func_connected_;
-
-protected:
-  bool is_client_;
-
-  std::string send_channel_name_, recv_channel_name_;
-  im::pCMqttClient mqtt_;
-};
-StdSharedPtr_Typedef(CMsg);
-
-class CClientMsg: public CMsg {
-public:
-  CClientMsg();
-
-protected:
-  virtual bool _Init() override;
-};
-StdSharedPtr_Typedef(CClientMsg);
-
-class CServerMsg: public CMsg {
-public:
-  CServerMsg();
-
-protected:
-  virtual bool _Init() override;
-};
-StdSharedPtr_Typedef(CServerMsg);
-
-// 消息管理类，可以根据不同的类型自动生成消息通道
-class CServerMsgManager {
-private:
-  CServerMsgManager();
-public:
-  static CServerMsgManager *Get();
-  ~CServerMsgManager();
-
-  struct SInitArgs {
-    im::pCMqttClient mqtt;
-  };
-
-  struct SCallbackFunc {
-    std::function<bool(std::wstring channel_name)> func_init;
-    std::function<bool()> func_uninit;
-    std::function<void(cMsgBuf) > func_recv;
-  };
-
-private:
-  im::pCMqttClient mqtt_;
-
-};
-StdSharedPtr_Typedef(CServerMsgManager);
 
 #pragma region def
 class TestCls;
