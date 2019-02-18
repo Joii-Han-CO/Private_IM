@@ -9,7 +9,22 @@ namespace msg_proto {
 // 公共通道的消息体
 
 bool PP_CreatePrivateChannel::Parse(cMsgBuf buf) {
+  Proto_CreatePriChannel proto;
+  if (proto.ParseFromArray(&buf[header_->Size()],
+                           buf.size() - header_->Size()) == false) {
+    PrintLogWarn("Parse buf failed in protobuf");
+    return false;
+  }
 
+  user_name_ = base::Utf8ToUtf16(proto.user_name().Get(0));
+  auto ud = proto.channel_name().Get(0);
+  memcpy_s(&channel_name_, sizeof(channel_name_), &ud[0], ud.size());
+
+  ud = proto.client_type().Get(0);
+  client_type_ = (EClientType)ud[0];
+
+  ud = proto.client_id().Get(0);
+  memcpy_s(&client_id_, sizeof(client_id_), &ud[0], ud.size());
 
   return true;
 }
@@ -29,9 +44,14 @@ MsgBuf PP_CreatePrivateChannel::Serializate() {
   ref_client_id_->resize(sizeof(client_id_));
   memcpy_s(&(*ref_client_id_)[0], ref_client_id_->size(),
            &client_id_, sizeof(client_id_));
-
-  proto.ByteSize();
-  return MsgBuf();
+  int size = proto.ByteSize();
+  MP_SerializateMsg(size);
+  if (proto.SerializeToArray(&buf[header_->Size()],
+                             buf.size() - header_->Size()) == false) {
+    PrintLogWarn("Serializate msg failed in proto buf");
+    return MsgBuf();
+  }
+  return buf;
 }
 
 #pragma region

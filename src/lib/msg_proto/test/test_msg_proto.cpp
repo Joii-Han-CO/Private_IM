@@ -23,6 +23,18 @@ void Test_MsgManager() {
   msg_manager->ParseMsg(im::msg_proto::EChannelType::pub_channel, buf);
 }
 
+void Test_GolbalChannel() {
+  im::msg_proto::PP_CreatePrivateChannel p;
+  p.user_name_ = L"sdkjfjseo";
+  base::_uuid::GenerateUUID(&p.channel_name_);
+  p.client_type_ = im::EClientType::win;
+  base::_uuid::GenerateUUID(&p.client_id_);
+  auto buf = p.Serializate();
+
+  im::msg_proto::PP_CreatePrivateChannel p2;
+  p2.Parse(buf);
+}
+
 #pragma region namespace
 }
 #pragma endregion
@@ -30,7 +42,8 @@ void Test_MsgManager() {
 int main() {
   im::msg_proto::CProtoCallbackManager::Get()->Init();
 
-  test::Test_MsgManager();
+  //test::Test_MsgManager();
+  test::Test_GolbalChannel();
 
   return 0;
 }
