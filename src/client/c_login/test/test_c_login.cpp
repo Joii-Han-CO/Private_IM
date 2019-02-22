@@ -3,6 +3,7 @@
 #include "im_c_login.h"
 
 #include "lib/im_log.h"
+#include "lib/base/debug.hpp"
 #include "im_c_framework.h"
 
 #include <vector>
@@ -28,20 +29,16 @@ void TestLogin() {
 
   // 初始化登陆
   {
-    std::condition_variable wait_init;
-    std::mutex wait_init_lock;
-    bool wait_init_flag = false;
-    auto func_init = [&wait_init, &wait_init_flag](bool suc) {
-      wait_init_flag = true;
-      wait_init.notify_all();
+    base::async::Event wait_init;
+    auto func_init = [&wait_init](bool suc) {
+      wait_init.Notify();
     };
 
     if (cl->Init(g_users[0].first, g_users[0].second, func_init) == false) {
-      std::cout << "Init failed" << std::endl;
+      base::debug::OutPut(L"Init failed");
       return;
     }
-    std::unique_lock<std::mutex> lock(wait_init_lock);
-    wait_init.wait(lock, [&wait_init_flag]() {return wait_init_flag; });
+    wait_init.Wait();
   }
 
   _getch();

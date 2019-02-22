@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <condition_variable>
 #include <mutex>
+#include "type_def.h"
 
 #pragma region
 namespace base {
@@ -16,7 +17,7 @@ public:
 
   void Wait() {
     std::unique_lock<std::mutex> lock(sync_);
-    cv_.wait(lock, [this] () {
+    cv_.wait(lock, [this]() {
       return flag_;
     });
   }
@@ -27,23 +28,18 @@ private:
   bool flag_ = false;
 };
 
-template <typename T>
-class SyncVal {
+// 异步初始化
+class AsyncInit {
 public:
-  SyncVal(T t):t_(t) {};
-  SyncVal() {};
+  AsyncInit() {};
+  virtual ~AsyncInit() {};
 
-  void Set(T t) {
-    std::unique_lock<std::mutex> lock(lock_);
-    t_ = t;
+protected:
+  Func_AsyncResult init_finished_;
+  void InitFinished(bool suc) {
+    if (init_finished_)
+      init_finished_(suc);
   };
-  T Get() {
-    std::unique_lock<std::mutex> lock(lock_);
-    return t_;
-  }
-private:
-  T t_;
-  std::mutex lock_;
 };
 
 #pragma region

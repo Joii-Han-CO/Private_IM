@@ -32,7 +32,7 @@ protected:
       thread_->join();
   }
 
-  void AddTask(std::function<void(void)>&& task) {
+  void AddTask(Func_Result &&task) {
     std::unique_lock<std::mutex> lock_break(lock_break_);
     if (break_)
       return;
@@ -45,7 +45,7 @@ private:
 
   void TaskRun() {
     while (!break_) {
-      std::function<void(void)> func;
+      Func_Result func;
       {
         std::unique_lock<std::mutex> lock(lock_);
         while (task_list_.empty()) {
@@ -64,7 +64,7 @@ private:
   std::unique_ptr<std::thread> thread_;
 
   //消息队列
-  std::list<std::function<void(void)>> task_list_;
+  std::list<Func_Result> task_list_;
   std::mutex lock_;
   std::condition_variable con_v_;
 

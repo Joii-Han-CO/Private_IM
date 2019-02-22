@@ -14,16 +14,21 @@ public:
 
   bool Init();
 
+  void Uninit();
+
   im::config::pCConfig GetGlobalConfig();
 
   base::pCThreadPool GetPool();
 
+  base::time::pTimer GetTimer();
 private:
 
   bool InitSql();
 
   base::pCThreadPool pool_;
   im::config::pCConfig global_config_;
+  std::weak_ptr<im::CMqttClient> wp_mqtt_;
+  base::time::pTimer timer_;
 };
 
 #pragma region

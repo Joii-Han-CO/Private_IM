@@ -42,6 +42,7 @@ typedef unsigned char UCHAR;
 
 // 异步函数的完成回调
 typedef std::function<void(bool)> Func_AsyncResult;
+typedef std::function<void()> Func_Result;
 
 // 消息二进制buf
 typedef std::vector<unsigned char> MsgBuf;

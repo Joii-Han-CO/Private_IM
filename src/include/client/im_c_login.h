@@ -1,17 +1,14 @@
 ﻿#pragma once
-#include "base/type_def.h"
+#include "lib/base/async.hpp"
 #include "lib/im_mqtt.h"
-#include "lib/im_log.h"
 #include "lib/im_msg.h"
-#include "lib/im_msg_proto.h"
-
 
 #pragma region namespace
 namespace im {
 namespace c_login {
 #pragma endregion
 
-class ClientLogin {
+class ClientLogin: protected base::async::AsyncInit {
 public:
   ClientLogin();
   ~ClientLogin();
@@ -25,9 +22,6 @@ public:
   im::pCMqttClient GetMqtt();
 
 private:
-  void InitFinished(bool suc);
-  Func_AsyncResult func_init_finished_;
-
   void UninitFinished(bool suc);
   Func_AsyncResult func_uninit_finished_;
 
@@ -38,11 +32,24 @@ private:
 
   void MqttConnectError();
 
+  // 创建私有通道
+  void CreatePriChannel();
+
+  // 创建私有通道成功之后
+  void CreatePriChannelFinished(base::_uuid::BUID channel_id);
+
+  // 登陆超时
+  void LoginTimeOut();
+
+  void OnMsg_ResLoginStatus(im::msg_proto::pPR_ResLoginStatus msg);
+
 private:
   im::pCMqttClient mqtt_;
   std::wstring user_name_;
-  std::wstring channel_name_;
 
+  im::msg::pCBaseMsgSend pub_channel_;
+  im::msg::pCPriChannel pri_channel_;
+  im::msg_proto::pCProtoManager pri_manager_;
 };
 StdSharedPtr_Typedef(ClientLogin);
 

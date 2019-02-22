@@ -14,11 +14,11 @@ CBaseProtoHeader::CBaseProtoHeader(EChannelType channel_type, uint8_t type) {
   type_.channel_type = channel_type;
   type_.msg_type = type;
   time_ = std::make_shared<base::time::BaseTime>();
-  base::_uuid::GenerateUUID(&msg_id_);
+  base::_uuid::Generate(&msg_id_);
 }
 
 CBaseProtoHeader::CBaseProtoHeader(EChannelType channel_type, uint8_t type,
-                                   base::_uuid::BaseUUID *msg_id) {
+                                   base::_uuid::BUID *msg_id) {
   type_.channel_type = channel_type;
   type_.msg_type = type;
   time_ = std::make_shared<base::time::BaseTime>();
@@ -47,7 +47,7 @@ CBaseProtoHeader::CBaseProtoHeader(EChannelType channel_type,
 }
 
 int CBaseProtoHeader::Size() {
-  return sizeof(uint8_t) + sizeof(int64_t) + sizeof(base::_uuid::BaseUUID);
+  return sizeof(uint8_t) + sizeof(int64_t) + sizeof(base::_uuid::BUID);
 }
 
 bool CBaseProtoHeader::Serializate(MsgBuf &buf) {

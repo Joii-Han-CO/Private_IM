@@ -46,10 +46,15 @@ set(_framework_file
 source_group("frame" FILES ${_framework_file})
 set(_cpp_file ${_cpp_file} ${_framework_file})
 
-# 登陆模块
-set(_login_files )
-source_group("login" FILES ${_login_files})
-set(_cpp_file ${_cpp_file} ${_login_files})
+set(_user_file
+  ${PROJECT_SOURCE_DIR}/users/server_user.h
+  ${PROJECT_SOURCE_DIR}/users/server_user.cpp
+  ${PROJECT_SOURCE_DIR}/users/server_user_manager.h
+  ${PROJECT_SOURCE_DIR}/users/server_user_manager.cpp
+  ${PROJECT_SOURCE_DIR}/users/pri_channel.h
+  ${PROJECT_SOURCE_DIR}/users/pri_channel.cpp)
+source_group("users" FILES ${_user_file})
+set(_cpp_file ${_cpp_file} ${_user_file})
 
 add_executable(${_lib_name}
                ${_inc_file} ${_cpp_file})
@@ -76,4 +81,4 @@ Add_Definitions(-D_UNICODE)
 cotire(${_lib_name})
 
 # 相关依赖
-target_link_libraries(${_lib_name} mqtt config msg_proto s_sql)
+target_link_libraries(${_lib_name} mqtt config msg msg_proto s_sql)

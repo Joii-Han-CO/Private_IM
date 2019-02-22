@@ -37,13 +37,48 @@ void TestTime() {
   return;
 }
 
+void TestTimer() {
+  base::time::Timer tr;
+
+  {
+    base::time::BaseTime ta;
+    tr.AddTimer(100, [&ta]() {
+      std::cout << ta.End() << std::endl;
+    });
+  }
+
+  {
+    base::time::BaseTime ta;
+    tr.AddTimer(2000, [&ta]() {
+      std::cout << ta.End() << std::endl;
+    });
+  }
+
+  {
+    base::time::BaseTime ta;
+    tr.AddTimer(2000, [&ta]() {
+      std::cout << ta.End() << std::endl;
+    });
+  }
+
+  {
+    base::time::BaseTime ta;
+    tr.AddTimer(2000, [&ta]() {
+      std::cout << ta.End() << std::endl;
+    });
+  }
+
+  tr.WaitExit();
+}
+
 #pragma region namespace
 }
 #pragma endregion
 
 
 int main() {
-  test::TestTime();
+  //test::TestTime();
+  test::TestTimer();
   return 0;
 
   im::log::SLog_InitArgs log_args;

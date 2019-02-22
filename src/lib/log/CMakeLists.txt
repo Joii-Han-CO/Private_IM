@@ -30,6 +30,9 @@ include_directories(${_lib_name}
 # 创建目录
 set(_inc_file
   ${_pch}.h
+  ${_incldue}/base/task.hpp
+  ${_incldue}/base/async.hpp
+  ${_incldue}/base/container.hpp
   ${_incldue}/${_namepace}_${_lib_name}.h)
 source_group("include" FILES ${_inc_file})
 

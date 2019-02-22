@@ -27,19 +27,15 @@ public:
   CBaseMsgRecv(im::pCMqttClient mqtt, std::string recv_name):
     recv_mqtt_(mqtt),
     recv_name_(recv_name) {
-#ifdef _DEBUG
-    assert(mqtt == nullptr);
+    assert(mqtt != nullptr);
     assert(!recv_name.empty());
-#endif // _DEBUG
   };
   virtual ~CBaseMsgRecv() {};
 
   bool Sub(Func_AsyncResult func,
            im::msg_proto::EChannelType type,
            im::msg_proto::pCProtoManager manager) {
-#ifdef _DEBUG
     assert(manager != nullptr);
-#endif // _DEBUG
 
     auto recv_func = [type, manager](cMsgBuf buf) {
       manager->ParseMsg(type, buf);
@@ -59,18 +55,15 @@ public:
   CBaseMsgSend(im::pCMqttClient mqtt, std::string send_name):
     send_mqtt_(mqtt),
     send_name_(send_name) {
-#ifdef _DEBUG
-    assert(mqtt == nullptr);
+    assert(mqtt != nullptr);
     assert(!send_name.empty());
-#endif // _DEBUG
   };
   virtual ~CBaseMsgSend() {};
 
   bool Send(cMsgBuf buf, Func_AsyncResult func) {
-#ifdef _DEBUG
     assert(!send_name_.empty());
     assert(send_mqtt_ != nullptr);
-#endif // _DEBUG
+
     return send_mqtt_->Publish(send_name_, buf, func);
   }
 
@@ -114,6 +107,27 @@ private:
 StdSharedPtr_Typedef(CBaseMsg);
 
 #pragma endregion
+
+#pragma region PrivateChannel
+
+class CPriChannel: public CBaseMsg {
+public:
+  CPriChannel();
+  virtual ~CPriChannel();
+
+  struct SInitAgrs {
+    base::_uuid::BUID *channel_id;
+    bool caller;
+    im::pCMqttClient mqtt;
+    im::msg_proto::pCProtoManager manager;
+  };
+
+  bool Init(SInitAgrs *args, Func_AsyncResult func);
+};
+StdSharedPtr_Typedef(CPriChannel);
+
+#pragma endregion
+
 
 #pragma region def
 

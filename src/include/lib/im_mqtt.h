@@ -4,6 +4,7 @@
 #include "base/error.hpp"
 #include "base/task.hpp"
 #include "base/async.hpp"
+#include "base/container.hpp"
 
 #pragma region define
 
@@ -127,7 +128,7 @@ private:
   mosquitto *mqtt_;
   bool is_connected = false;
   int loop_timeout_ = 0;
-  base::async::SyncVal<bool> sync_disconnect_flag_ = false;
+  base::SyncVal<bool> sync_disconnect_flag_ = false;
   EMqttOnlineStatus cur_status_ = EMqttOnlineStatus::none;
 
   // 订阅成功的列表，用于回调

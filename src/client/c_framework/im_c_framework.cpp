@@ -53,7 +53,18 @@ bool ClientFramework::Init() {
     return false;
   }
 
+  ptr_timer = std::make_shared<base::time::Timer>();
+
+  im::msg_proto::CProtoCallbackManager::Get()->Init();
+
   return true;
+}
+
+void ClientFramework::Uninit() {
+  ptr_timer->Stop();
+  ptr_timer = nullptr;
+
+  ptr_global_config_ = nullptr;
 }
 
 im::config::pCConfig ClientFramework::GetGlobalConfigPtr() {
@@ -66,6 +77,10 @@ im::c_login::pClientLogin ClientFramework::GetLoginPtr() {
   if (!ptr_login_)
     ptr_login_ = std::make_shared<im::c_login::ClientLogin>();
   return ptr_login_;
+}
+
+base::time::pTimer ClientFramework::GetTimerPtr() {
+  return ptr_timer;
 }
 
 #pragma region namespace

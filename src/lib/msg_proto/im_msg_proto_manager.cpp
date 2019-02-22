@@ -20,6 +20,8 @@ void CProtoCallbackManager::Init() {
   Msg_Pub_TestChannel::RegGlobalCallback();
 
   PP_CreatePrivateChannel::RegGlobalCallback();
+
+  PR_ResLoginStatus::RegGlobalCallback();
 }
 
 void CProtoCallbackManager::RegFunc(EChannelType ct, uint8_t mt,
@@ -28,10 +30,9 @@ void CProtoCallbackManager::RegFunc(EChannelType ct, uint8_t mt,
   msg.channel_type = ct;
   msg.msg_type = mt;
   auto msg_val = msg.GetVal();
-#ifdef _DEBUG
+
   // 断言，重复注册
   assert(msg_func_.find(msg_val) == msg_func_.end());
-#endif
 
   msg_func_[msg_val] = callback;
 }
@@ -89,9 +90,9 @@ void CProtoManager::RegFunc(EChannelType ct, uint8_t mt,
   auto msg_val = msg_type.GetVal();
 
   auto msg_cb = CProtoCallbackManager::Get()->GetMsgCBInfo(msg_val);
-#ifdef _DEBUG
+
   assert(msg_cb.msg_parse != nullptr);
-#endif // _DEBUG
+
   msg_cb.msg_cb = callback;
   msg_func_[msg_val] = msg_cb;
 }

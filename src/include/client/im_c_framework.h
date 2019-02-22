@@ -17,15 +17,16 @@ public:
 
   // 客户端全局的初始化
   bool Init();
+  void Uninit();
 
   im::config::pCConfig GetGlobalConfigPtr();
   im::c_login::pClientLogin GetLoginPtr();
+  base::time::pTimer GetTimerPtr();
 
 private:
   im::config::pCConfig ptr_global_config_;
   im::c_login::pClientLogin ptr_login_;
-
-
+  base::time::pTimer ptr_timer;
 };
 
 #define ClientInitGlobal \

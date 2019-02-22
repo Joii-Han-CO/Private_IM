@@ -47,12 +47,23 @@ bool CSFarmeWork::Init() {
     return false;
   }
 
+  // 初始化mqtt回调
+  im::msg_proto::CProtoCallbackManager::Get()->Init();
+
   if (InitSql() == false) {
     return false;
   }
 
+  timer_ = std::make_shared<base::time::Timer>();
   PrintLogInfo("Server management init success!");
   return true;
+}
+
+void CSFarmeWork::Uninit() {
+  global_config_ = nullptr;
+  im::s_sql::CSqlManager::Get()->Uninit();
+  timer_->Stop();
+
 }
 
 im::config::pCConfig CSFarmeWork::GetGlobalConfig() {
@@ -61,6 +72,10 @@ im::config::pCConfig CSFarmeWork::GetGlobalConfig() {
 
 base::pCThreadPool CSFarmeWork::GetPool() {
   return pool_;
+}
+
+base::time::pTimer CSFarmeWork::GetTimer() {
+  return timer_;
 }
 
 bool CSFarmeWork::InitSql() {

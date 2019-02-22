@@ -88,7 +88,7 @@ public:
 enum class EChannelType {
   pub_channel = 0,  // 公共通道（Server监听）
   golbal_channel,   // server的全局通道
-  login,            // 登陆通道
+  private_channel,  // 私有通道
 };
 
 // 公共消息
@@ -101,6 +101,11 @@ enum class EPubMsgType {
 enum class EGlobalType {
   begin = (int)EPubMsgType::end,
   create_private_channel,
+};
+
+enum class EPrivateType {
+  begin = (int)EPubMsgType::end,
+  res_login_status,
 };
 
 // 消息类型
@@ -135,7 +140,6 @@ struct SMsgParseCB {
   Func_MsgParse msg_parse;
 
   SMsgParseCB& operator=(const SMsgParseCB &t1) {
-    SMsgParseCB t2;
     this->msg_cb = t1.msg_cb;
     this->msg_parse = t1.msg_parse;
     return *this;
@@ -182,7 +186,7 @@ class CBaseProtoHeader {
 public:
   CBaseProtoHeader(EChannelType channel_type, uint8_t type);
   CBaseProtoHeader(EChannelType channel_type, uint8_t type,
-                   base::_uuid::BaseUUID *msg_id);
+                   base::_uuid::BUID *msg_id);
   CBaseProtoHeader(EChannelType channel_type, cMsgBuf buf);
 
   // header消息中占用的尺寸
@@ -196,7 +200,7 @@ public:
 
   SMsgType type_;
   base::time::pBaseTime time_;
-  base::_uuid::BaseUUID msg_id_;
+  base::_uuid::BUID msg_id_;
 };
 
 // 消息基类
@@ -250,18 +254,29 @@ MP_EndDefMsgClass();
 
 #pragma endregion
 
-#pragma region public channel
+#pragma region global channel
 
 MP_BeginDefMsgClass(PP_CreatePrivateChannel,
                     EChannelType::golbal_channel,
                     EGlobalType::create_private_channel);
 std::wstring user_name_;
-base::_uuid::BaseUUID channel_name_;
+base::_uuid::BUID channel_name_;
 EClientType client_type_;
-base::_uuid::BaseUUID client_id_;
+base::_uuid::BUID client_id_;
 MP_EndDefMsgClass();
 
 #pragma endregion
+
+#pragma region prvate channel
+
+MP_BeginDefMsgClass(PR_ResLoginStatus,
+                    EChannelType::private_channel,
+                    EPrivateType::res_login_status);
+int status;
+MP_EndDefMsgClass();
+
+#pragma endregion
+
 
 #pragma region
 }

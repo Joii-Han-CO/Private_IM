@@ -54,7 +54,8 @@ set(_cpp_file
 source_group("source" FILES ${_cpp_file})
 
 set(_proto
-  ${PROJECT_SOURCE_DIR}/proto/proto_global.cpp)
+  ${PROJECT_SOURCE_DIR}/proto/proto_global.cpp
+  ${PROJECT_SOURCE_DIR}/proto/proto_private.cpp)
 source_group("proto" FILES ${_proto})
 set(_cpp_file ${_cpp_file} ${_proto})
 
