@@ -1,4 +1,4 @@
-﻿// 预编译头
+// 预编译头
 #pragma once
 
 // STL
@@ -9,7 +9,10 @@
 // Mqtt
 #include <mosquitto.h>
 
+#ifdef _WIN32
 #include <windows.h>
+#else
+#endif
 
 
 #include "base/type_def.h"

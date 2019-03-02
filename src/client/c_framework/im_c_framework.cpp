@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "im_c_framework.h"
 #include "im_log.h"
 #include "base/path.hpp"
@@ -34,7 +34,7 @@ bool ClientFramework::Init() {
     std::to_wstring(GetCurrentProcessId()) + L".log";
 #else
   auto log_file_name =
-    base::GB2312ToUtf16(base::time::PrintTime()) + L"_" +
+    base::time::BaseTime::PrintTimeW() + L"_" +
     std::to_wstring(getpid()) + L".log";
 #endif
   log_args.log_path = base::_path::GetExeDir<wchar_t>() + L"/" + log_file_name;

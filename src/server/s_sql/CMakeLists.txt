@@ -17,7 +17,6 @@ set(_incldue ${PROJECT_SOURCE_DIR}/../../include/server)
 set(_include_dirs
   ${_incldue}
   "${mysql_dir}/include")
-message(${mysql_dir})
 
 # C\C++ 包含库路径
 set(_lib_dirs )
@@ -116,9 +115,18 @@ Add_Definitions(-D_UNICODE)
 
 # 项目依赖
 target_link_libraries(${_lib_name} log)
-target_link_libraries(${_lib_name}
-	"${mysql_dir}/lib/vs14/mysqlcppconn.lib"
-	"${mysql_dir}/lib/vs14/mysqlcppconn8.lib")
-target_link_libraries(${_test_name} ${_lib_name})
+if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+  target_link_libraries(${_lib_name}
+    "${mysql_dir}/lib/vs14/mysqlcppconn.lib"
+    "${mysql_dir}/lib/vs14/mysqlcppconn8.lib")
+  target_link_libraries(${_test_name} ${_lib_name})
+else()
+  target_link_libraries(${_lib_name}
+    "${mysql_dir}/lib64/libmysqlcppconn-static.a"
+    "${mysql_dir}/lib64/libmysqlcppconn8-static.a"
+    "${mysql_dir}/lib64/libcrypto.dylib"
+    "${mysql_dir}/lib64/libssl.dylib")
+    target_link_libraries(${_test_name} ${_lib_name})
+endif()
 
 cotire(${_lib_name} ${_test_name})

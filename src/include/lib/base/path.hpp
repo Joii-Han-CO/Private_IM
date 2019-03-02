@@ -4,6 +4,7 @@
 #ifdef WIN32
 #include <Windows.h>
 #else
+#include <mach-o/dyld.h>
 #endif
 
 
@@ -25,20 +26,17 @@ bool GetCurExePath(std::string &ref_str) {
 }
 #else
 bool GetCurExePath(std::string &ref_str) {
-  char name[100];
-  int rval = readlink("/proc/self/exe", name, sizeof(name) - 1);
-  if (rval == -1) {
-    //cout << "readlink error" << endl;
-    return false;
-  }
-  name[rval] = '\0';
-  ref_str = "./" + string(strrchr(name, '/') + 1);
+  char name[512];
+  uint32_t size = 512;
+  _NSGetExecutablePath(name, &size);
+  
+  ref_str = name;
   return true;
 }
 
 #endif
 
-bool GetCurExePath(std::wstring &ref_str) {
+inline bool GetCurExePath(std::wstring &ref_str) {
   std::string u;
   auto ref = GetCurExePath(u);
   if (ref == false)

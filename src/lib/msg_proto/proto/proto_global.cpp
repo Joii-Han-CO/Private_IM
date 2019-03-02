@@ -1,5 +1,6 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "im_msg_proto.h"
+#include "base/cross_system.hpp"
 
 #pragma region
 namespace im {

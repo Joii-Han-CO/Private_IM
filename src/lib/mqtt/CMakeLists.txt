@@ -137,7 +137,8 @@ if (WIN32)
     "${THRD_LIB_PATH}/openssl/v1_1_0j/libssl.lib")
   target_link_libraries(${_lib_name} Crypt32.lib ws2_32.lib)
 else()
-
+  target_link_libraries(${_lib_name}
+    "${mos_lib_dir}libmosquitto.dylib")
 endif()
 target_link_libraries(${_lib_name} log)
 

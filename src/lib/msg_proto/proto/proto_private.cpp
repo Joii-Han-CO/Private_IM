@@ -1,4 +1,3 @@
-#pragma once
 #include "pch.h"
 #include "im_msg_proto.h"
 

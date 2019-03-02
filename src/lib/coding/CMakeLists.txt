@@ -39,13 +39,8 @@ set(_cpp_file
   ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp)
 source_group("source" FILES ${_cpp_file})
 
-set(_libiconv
-  libiconv/lib/iconv.c
-  libiconv/lib/localcharset.c)
-source_group("libiconv" FILES ${_libiconv})
-
 add_library(${_lib_name} ${_prj_lib_type}
-            ${_inc_file} ${_cpp_file} ${_libiconv})
+            ${_inc_file} ${_cpp_file})
 target_link_libraries(${_lib_name} LINK_PUBLIC ${_lib_dirs})
 
 # 设置环境变量

@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "im_coding.h"
 #include "base/character_conversion.hpp"
 #include "iconv.h"
@@ -39,10 +39,7 @@ public:
     char *in_buf = (char*)(sdfsdfsfbuf);
     size_t in_size = (size_t)4;
 
-    char *out_buf = nullptr;
-    size_t out_size = 0;
-
-    auto refx = iconv(iconv_h_, nullptr, nullptr, &in_buf, &in_size);
+    iconv(iconv_h_, nullptr, nullptr, &in_buf, &in_size);
 
     return true;
   }
@@ -50,7 +47,7 @@ public:
   bool GetCodingList() {
     std::vector<std::string> coding_list;
     iconvlist(CCoding::GetCodingList_DoOne, &coding_list);
-
+    return false;
   }
 
 private:
@@ -59,7 +56,8 @@ private:
                                  void* data) {
     if (names == nullptr || data == nullptr)
       return 0;
-    std::vector<std::string> *coding_list = (std::vector<std::string>*)data;
+    //std::vector<std::string> *coding_list = (std::vector<std::string>*)data;
+    return 0;
   };
 
   iconv_t iconv_h_ = nullptr;
@@ -103,46 +101,7 @@ ECodingFileType GetCoding_U8(const char *path) {
 }
 
 ECodingFileType GetCoding(const wchar_t *path) {
-  if (path == nullptr || path[0] == '\0')
-    return ECodingFileType::None;
-  std::ifstream f(path, std::ios_base::binary);
-  if (!f)
-    return ECodingFileType::None;
-
-  auto func_re = [&f](ECodingFileType ref = ECodingFileType::None) {
-    f.close();
-    return ref;
-  };
-
-  // size
-  f.seekg(0, std::ios_base::end);
-  int size = (int)f.tellg();
-  bool not_utf8 = false, not_utf16 = false, not_gbk = false;
-  if (size == 0)
-    return func_re();
-  if (size % 2 != 0)
-    not_utf16 = true;
-  f.seekg(0, std::ios_base::beg);
-
-  // bom
-  auto bom_coding = CheckBomCoding(f);
-  if (bom_coding != ECodingFileType::None)
-    return func_re(bom_coding);
-
-  // 读取文件，判断...
-  f.seekg(0, std::ios_base::beg);
-  std::vector<char> buf;
-  const int block_size = 1024 * 4;
-  buf.resize(block_size + 8); // + 8 作为缓冲
-
-  while (size > 0) {
-    memset(buf.data(), 0, buf.size());
-    int read_size = size > block_size ? block_size : size;
-    f.read(buf.data(), read_size);
-
-    size -= read_size;
-  }
-
+  
   return ECodingFileType::None;
 }
 

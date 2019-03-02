@@ -1,11 +1,15 @@
-﻿// 预编译头
+// 预编译头
 #pragma once
 #include <iostream>
 #include <vector>
 #include <condition_variable>
 #include <list>
 #include <memory>
+
+#ifdef _WIN32
 #include <conio.h>
+#else
+#endif
 
 #include "im_global_val.h"
 #include "lib/base/log.hpp"

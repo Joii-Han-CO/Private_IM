@@ -4,12 +4,15 @@ cmake_minimum_required (VERSION 3.0)
 ################################################################
 #编译Proto
 if (CMAKE_SYSTEM_NAME MATCHES "Windows")
-  execute_process(COMMAND
-    "${THRD_LIB_PATH}/protobuf/lib/release_mt/protoc"
-    "-I=${PROJECT_SOURCE_DIR}/lib/msg_proto/protobuf"
-    "--cpp_out=${PROJECT_SOURCE_DIR}/lib/msg_proto/proto_class"
-    "${PROJECT_SOURCE_DIR}/lib/msg_proto/protobuf/msg.proto")
+  set(_protoc_path "${THRD_LIB_PATH}/protobuf/lib/release_mt/protoc")
+else()
+  set(_protoc_path "${protobuf_dir}/o_mac/protoc")
 endif()
+execute_process(COMMAND
+  ${_protoc_path}
+  "-I=${PROJECT_SOURCE_DIR}/lib/msg_proto/protobuf"
+  "--cpp_out=${PROJECT_SOURCE_DIR}/lib/msg_proto/proto_class"
+  "${PROJECT_SOURCE_DIR}/lib/msg_proto/protobuf/msg.proto")
 
 ################################################################
 # Lib
@@ -31,12 +34,19 @@ set(_incldue ${PROJECT_SOURCE_DIR}/../../include/lib/)
 
 set(_pch ${PROJECT_SOURCE_DIR}/pch)
 
+if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+  set(_include_dirs ${_include_dirs}
+    ${THRD_LIB_PATH}/protobuf/include)
+else()
+  set(_include_dirs ${_include_dirs}
+    ${protobuf_dir}/src)
+endif()
+
 # 源码包含目录
 include_directories(${_lib_name}
-                    ${_prj_include_dir}
-                    ${PROJECT_SOURCE_DIR}
-                    ${_include_dirs}
-                    ${THRD_LIB_PATH}/protobuf/include)
+  ${_prj_include_dir}
+  ${PROJECT_SOURCE_DIR}
+  ${_include_dirs})
 
 # 创建目录
 set(_inc_file
@@ -137,20 +147,25 @@ set_target_properties(${_test_name} PROPERTIES
 # 使用 unicode 编码
 Add_Definitions(-D_UNICODE)
 
-# D|R下不同的库
-target_link_libraries(${_lib_name} debug 
-  "${THRD_LIB_PATH}/protobuf/lib/debug_mt/libprotobufd.lib")
-target_link_libraries(${_lib_name} debug 
-  "${THRD_LIB_PATH}/protobuf/lib/debug_mt/libprotobuf-lited.lib")
-target_link_libraries(${_lib_name} debug 
-  "${THRD_LIB_PATH}/protobuf/lib/debug_mt/libprotocd.lib")
+if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+  # D|R下不同的库
+  target_link_libraries(${_lib_name} debug
+    "${THRD_LIB_PATH}/protobuf/lib/debug_mt/libprotobufd.lib")
+  target_link_libraries(${_lib_name} debug
+    "${THRD_LIB_PATH}/protobuf/lib/debug_mt/libprotobuf-lited.lib")
+  target_link_libraries(${_lib_name} debug
+    "${THRD_LIB_PATH}/protobuf/lib/debug_mt/libprotocd.lib")
 
-target_link_libraries(${_lib_name} optimized 
-  "${THRD_LIB_PATH}/protobuf/lib/release_mt/libprotobuf.lib")
-target_link_libraries(${_lib_name} optimized 
-  "${THRD_LIB_PATH}/protobuf/lib/release_mt/libprotobuf-lite.lib")
-target_link_libraries(${_lib_name} optimized 
-  "${THRD_LIB_PATH}/protobuf/lib/release_mt/libprotoc.lib")
+  target_link_libraries(${_lib_name} optimized
+    "${THRD_LIB_PATH}/protobuf/lib/release_mt/libprotobuf.lib")
+  target_link_libraries(${_lib_name} optimized
+    "${THRD_LIB_PATH}/protobuf/lib/release_mt/libprotobuf-lite.lib")
+  target_link_libraries(${_lib_name} optimized
+    "${THRD_LIB_PATH}/protobuf/lib/release_mt/libprotoc.lib")
+else()
+  target_link_libraries(${_lib_name}
+    ${protobuf_dir}/o_mac/libprotobuf.a)
+endif()
 
 # 项目依赖
 target_link_libraries(${_lib_name} log)

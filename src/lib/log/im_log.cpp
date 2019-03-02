@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "im_log.h"
 #include "base/time.hpp"
 #include "base/character_conversion.hpp"
@@ -64,8 +64,7 @@ bool CLog::Init(SLog_InitArgs *args) {
 
   if (save_file_) {
   // 打开文件
-    file_ = std::make_shared<std::ofstream>(args->log_path);
-
+    file_ = std::make_shared<std::ofstream>(base::Utf16ToUtf8(args->log_path));    
     // 写入第一条日志
     PrintHeader();
   }

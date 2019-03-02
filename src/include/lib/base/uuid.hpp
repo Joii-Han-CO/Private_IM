@@ -1,5 +1,7 @@
-﻿#pragma once
+#pragma once
 #include "type_def.h"
+#include "base/cross_system.hpp"
+
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>

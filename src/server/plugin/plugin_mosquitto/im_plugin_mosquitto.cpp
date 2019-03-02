@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "im_plugin_mosquitto.h"
 #include "plugin_mosq.h"
 
@@ -95,7 +95,7 @@ int mosquitto_auth_psk_key_get(void *user_data,
                                const char *identity,
                                char *key,
                                int max_key_len) {
-  auto ptr = (im::plugin::pCPluginMosq)user_data;
+  //auto puser_data = (im::plugin::pCPluginMosq)user_data;
 
   return 0;
 }

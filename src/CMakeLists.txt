@@ -27,7 +27,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
   add_compile_options("$<$<CONFIG:RELEASE>:/MT>")
   add_compile_options("$<$<CONFIG:DEBUG>:/MTd>")
 else()
-  add_compile_options(-std=c++11)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
 option(WITH_STATIC "" ON)
@@ -44,7 +44,7 @@ set(_prj_include_dir ${Boost_INCLUDE_DIRS}
                      ${PROJECT_SOURCE_DIR}
                      ${PROJECT_SOURCE_DIR}/include/
                      ${PROJECT_SOURCE_DIR}/include/lib)
-
+set(_include ${PROJECT_SOURCE_DIR}/include/lib)
 # Link时候的各种库
 set(_sys_lib )
 if (CMAKE_SYSTEM_NAME MATCHES "Darwin")

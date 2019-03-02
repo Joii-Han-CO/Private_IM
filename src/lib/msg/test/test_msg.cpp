@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "test_msg.h"
 #include "im_msg.h"
 #include "im_log.h"
@@ -7,7 +7,11 @@
 #include "base/debug.hpp"
 
 #include <condition_variable>
+
+#ifdef _WIN32
 #include <conio.h>
+#else
+#endif
 
 #pragma region namespace
 namespace test {
@@ -90,6 +94,6 @@ int main() {
   //test::TestMsg();
 
   base::debug::OutPut("Will Exit");
-  auto ss = _getch();
+  //auto ss = _getch();
   return 0;
 }

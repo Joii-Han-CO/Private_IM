@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "im_config.h"
 #include <SimpleIni.h>
 
@@ -44,7 +44,13 @@ bool CConfig::Init(const std::wstring &path) {
   config_ = std::make_shared<SConfigData>();
 
   config_->ini.SetUnicode(true);
+  
+#ifdef _WIN32
   auto err = config_->ini.LoadFile(path.c_str());
+#else
+  auto lpath = base::Utf16ToUtf8(path);
+  auto err = config_->ini.LoadFile(lpath.c_str());
+#endif
   if (err != 0) {
     SetLastErr(L"load %s file failed, des:%s",
                path.c_str(), GetSIErrorDes(err));
@@ -58,7 +64,7 @@ std::wstring CConfig::GetVal(const std::wstring &tag,
                              const std::wstring &key) {
   if (config_ == nullptr) {
     SetLastErr("init failed");
-    return false;
+    return std::wstring();
   }
   return config_->ini.GetValue(tag.c_str(), key.c_str(), L"");
 }
@@ -73,7 +79,11 @@ int CConfig::GetVal_Int(const std::wstring & tag,
   auto v = GetVal(tag, key);
   if (v.empty())
     return 0;
+#ifdef _WIN32
   return _wtoi(v.c_str());
+#else
+  return (int)wcstol(v.c_str(), 0, 10);
+#endif
 }
 
 bool CConfig::SetVal(const std::wstring &tag, const std::wstring &key,

@@ -5,19 +5,19 @@
 namespace base {
 #pragma endregion
 
-// 同步值，在获取和设置的时候都有锁
+// 鍚屾鍊硷紝鍦ㄨ幏鍙栧拰璁剧疆鐨勬椂鍊欓兘鏈夐攣
 template <typename T>
 class SyncVal {
 public:
   SyncVal(T t):t_(t) {};
   SyncVal() {};
 
-  SyncVal& operator=(const SyncVal &t1) {
+  inline SyncVal& operator=(const SyncVal &t1) {
     this->t_ = t1.t_;
     return *this;
   }
 
-  SyncVal& operator=(const T &t1) {
+  inline SyncVal& operator=(const T &t1) {
     this->t_ = t1;
     return *this;
   }

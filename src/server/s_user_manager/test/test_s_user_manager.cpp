@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "test_s_user_manager.h"
 #include "im_s_user_manager.h"
 
@@ -12,7 +12,7 @@ void Test() {
     return;
   }
 
-  _getch();
+  //_getch();
 
   if (im::s_user_manager::WaitAndExit() == false) {
     cout << "exit or wait exit faield" << endl;

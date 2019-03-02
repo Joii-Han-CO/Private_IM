@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "base/type_def.h"
 #include <string>
 #include <memory>
@@ -9,6 +9,7 @@
 #include "base/task.hpp"
 #include "base/log.hpp"
 #include "base/format_str.hpp"
+#include "base/cross_system.hpp"
 
 // 同步写标示
 //  1 异步写
@@ -115,7 +116,6 @@ private:
 
   void PrintHeader();
 
-  bool is_init_ = false;
   std::shared_ptr<std::ofstream> file_;
 
   bool print_dbg_ = false;

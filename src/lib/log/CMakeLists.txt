@@ -33,6 +33,8 @@ set(_inc_file
   ${_incldue}/base/task.hpp
   ${_incldue}/base/async.hpp
   ${_incldue}/base/container.hpp
+  ${_incldue}/base/time.hpp
+  ${_include}/base/cross_system.hpp
   ${_incldue}/${_namepace}_${_lib_name}.h)
 source_group("include" FILES ${_inc_file})
 

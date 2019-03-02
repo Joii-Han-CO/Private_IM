@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <string>
 #include <functional>
 #include "character_conversion.hpp"
@@ -141,6 +141,7 @@ inline void PrintModleHeader() {
   printf("--------%s--------\n", PRJ_NAME);
 }
 
+#ifdef _WIN32
 inline std::wstring GetMqttErrorDesW() {
   const int err_max_size = 1024;
   std::wstring err;
@@ -151,6 +152,11 @@ inline std::wstring GetMqttErrorDesW() {
 
   return err.c_str();
 }
+#else
+inline std::wstring GetMqttErrorDesW() {
+  return std::wstring();
+}
+#endif
 
 #pragma region namespace
 }

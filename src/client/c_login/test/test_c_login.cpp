@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "test_c_login.h"
 #include "im_c_login.h"
 
@@ -8,7 +8,7 @@
 
 #include <vector>
 #include <condition_variable>
-#include <conio.h>
+//#include <conio.h>
 
 #pragma region namespace
 namespace test {
@@ -41,7 +41,7 @@ void TestLogin() {
     wait_init.Wait();
   }
 
-  _getch();
+  //_getch();
 
   // 登出
   {

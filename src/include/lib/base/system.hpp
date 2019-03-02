@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifdef WIN32
 #include <process.h>
@@ -13,7 +13,11 @@ namespace sys {
 #pragma endregion
 
 int GetPID() {
+#ifdef _WIN32
   return _getpid();
+#else
+  return getpid();
+#endif
 }
 
 #pragma region

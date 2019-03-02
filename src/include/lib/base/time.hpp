@@ -27,22 +27,19 @@ namespace time {
 #pragma endregion
 
 typedef std::chrono::system_clock local_time;
+typedef std::chrono::microseconds local_ms;
 
-// TODO ¶¨ÒåÊ±¼ä
+// TODO å®šä¹‰æ—¶é—´
 class BaseTime {
 public:
-  // Ä¬ÈÏ¹¹Ôìº¯Êı£¬³õÊ¼»¯Îªµ±Ç°Ê±¼ä
+  // é»˜è®¤æ„é€ å‡½æ•°ï¼Œåˆå§‹åŒ–ä¸ºå½“å‰æ—¶é—´
   BaseTime() {
     val_ = local_time::now();
   };
 
   BaseTime(int64_t v) {
-    TIME_ZONE_INFORMATION tmp;
-    GetTimeZoneInformation(&tmp);
-    auto mTime = std::chrono::microseconds(v +
-      (int64_t)(tmp.Bias * tmp.DaylightBias * 1000));
-    val_ = std::chrono::time_point<std::chrono::system_clock,
-      std::chrono::microseconds>(mTime);
+    std::chrono::duration<long long> dur(v);
+    val_ = local_time::time_point(dur);
   }
 
   BaseTime(local_time::time_point t) {
@@ -53,15 +50,14 @@ public:
     val_ = local_time::now();
   }
 
-  // »ñÈ¡Ê±¼äµÄÖµ£¬¾«¶È Î¢Ãë
+  // è·å–æ—¶é—´çš„å€¼ï¼Œç²¾åº¦ å¾®ç§’
   int64_t GetVal() {
     auto d =
-      std::chrono::duration_cast<std::chrono::microseconds>(
-        val_ - local_time::time_point());
+      std::chrono::duration_cast<local_ms>(val_.time_since_epoch());
     return d.count();
   }
 
-  // ¼ÆÊ±£¬·µ»Øms
+  // è®¡æ—¶ï¼Œè¿”å›ms
   int64_t End() {
     auto end = local_time::now();
     auto duration =
@@ -69,7 +65,7 @@ public:
     return duration.count();
   }
 
-  // ¸ñÊ½»¯Ê±¼ä "%Y_%m_%d-%H_%M_%S"
+  // æ ¼å¼åŒ–æ—¶é—´ "%Y_%m_%d-%H_%M_%S"
   template <typename cus_char>
   cus_string PrintTime(const cus_char *fmt) {
     auto n = local_time::now();
@@ -119,7 +115,7 @@ public:
     WaitExit();
   };
 
-  // valµÈ´ıÊ±¼ä
+  // valç­‰å¾…æ—¶é—´
   void AddTimer(uint32_t val, Func_Result func) {
     std::unique_lock<std::mutex> lock(sync_add_);
 
@@ -135,17 +131,17 @@ public:
       timer_[tp].push_back(func);
     }
 
-    // ½âËø
+    // è§£é”
     add_timer_.Notify();
     cv_.notify_one();
   };
 
-  // ½áÊø
+  // ç»“æŸ
   void Stop() {
     stop_flag_ = true;
   };
 
-  // µÈ´ıÍË³ö
+  // ç­‰å¾…é€€å‡º
   void WaitExit() {
     if (t_.joinable())
       t_.join();
@@ -174,7 +170,7 @@ private:
     }
   };
 
-  // ÄÃµ½Ê±¼ä£¨ºÁÃë£©£¬Èç¹û·¢ÏÖÄÃµ½µÄÊ±¼ä±Èµ±Ç°Ê±¼ä¶Ì£¬Ôò»áÖ´ĞĞµô
+  // æ‹¿åˆ°æ—¶é—´ï¼ˆæ¯«ç§’ï¼‰ï¼Œå¦‚æœå‘ç°æ‹¿åˆ°çš„æ—¶é—´æ¯”å½“å‰æ—¶é—´çŸ­ï¼Œåˆ™ä¼šæ‰§è¡Œæ‰
   int64_t GetMinTimerVal(const local_time::time_point &now,
                          TimerMap::iterator &it) {
     std::unique_lock<std::mutex> lock(sync_add_);
@@ -218,7 +214,7 @@ private:
     }
   }
 
-  // Ö´ĞĞÁĞ±íÖĞµÄÈ«²¿º¯Êı
+  // æ‰§è¡Œåˆ—è¡¨ä¸­çš„å…¨éƒ¨å‡½æ•°
   void RunTimerFunc(const std::list<Func_Result> &lt) {
     if (lt.empty())
       return;
@@ -240,11 +236,11 @@ private:
   }
 
   std::thread t_;
-  base::SyncVal<bool> stop_flag_ = false;
+  base::SyncVal<bool> stop_flag_ = {false};
 
   std::condition_variable cv_;
   std::mutex cv_lock_;
-  base::SyncVal<bool> cv_flag_ = false;
+  base::SyncVal<bool> cv_flag_ = {false};
 
   base::async::Event add_timer_;
 

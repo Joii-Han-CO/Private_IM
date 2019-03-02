@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <memory>
 #include "base/log.hpp"
 #include "base/error.hpp"
@@ -128,7 +128,7 @@ private:
   mosquitto *mqtt_;
   bool is_connected = false;
   int loop_timeout_ = 0;
-  base::SyncVal<bool> sync_disconnect_flag_ = false;
+  base::SyncVal<bool> sync_disconnect_flag_ = {false};
   EMqttOnlineStatus cur_status_ = EMqttOnlineStatus::none;
 
   // 订阅成功的列表，用于回调

@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "server_main.h"
 #include "frame/server_frame_work.h"
 #include "frame/publish_channel.h"
@@ -42,7 +42,7 @@ int Run() {
     return exit_code;
   }
 
-  _getch();
+  //_getch();
 
   Uninit();
   return 0;
@@ -53,6 +53,6 @@ int main() {
 
   auto exit_code = Run();
 
-  _getch();
+  //_getch();
   return exit_code;
 }

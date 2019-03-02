@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "base/type_def.h"
 #include "im_mqtt.h"
 #include "im_msg_proto.h"
@@ -25,8 +25,8 @@ namespace msg {
 class CBaseMsgRecv {
 public:
   CBaseMsgRecv(im::pCMqttClient mqtt, std::string recv_name):
-    recv_mqtt_(mqtt),
-    recv_name_(recv_name) {
+    recv_name_(recv_name),
+    recv_mqtt_(mqtt) {
     assert(mqtt != nullptr);
     assert(!recv_name.empty());
   };
@@ -53,8 +53,8 @@ StdSharedPtr_Typedef(CBaseMsgRecv);
 class CBaseMsgSend {
 public:
   CBaseMsgSend(im::pCMqttClient mqtt, std::string send_name):
-    send_mqtt_(mqtt),
-    send_name_(send_name) {
+    send_name_(send_name),
+    send_mqtt_(mqtt) {
     assert(mqtt != nullptr);
     assert(!send_name.empty());
   };

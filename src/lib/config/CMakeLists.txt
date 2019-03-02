@@ -35,13 +35,19 @@ set(_inc_file
   ${_incldue}/im_global_val.h)
 source_group("include" FILES ${_inc_file})
 
+set(_simple_ini
+  ${PROJECT_SOURCE_DIR}/SimpleIni/SimpleIni.h
+  ${PROJECT_SOURCE_DIR}/SimpleIni/ConvertUTF.h
+  ${PROJECT_SOURCE_DIR}/SimpleIni/ConvertUTF.c)
+source_group("SimpleIni" FILES ${_simple_ini})
+
 set(_cpp_file
   ${_pch}.cpp
   ${PROJECT_SOURCE_DIR}/${_namepace}_${_lib_name}.cpp)
 source_group("source" FILES ${_cpp_file})
 
 add_library(${_lib_name} ${_prj_lib_type}
-            ${_inc_file} ${_cpp_file})
+  ${_inc_file} ${_cpp_file} ${_simple_ini})
 target_link_libraries(${_lib_name} LINK_PUBLIC ${_lib_dirs})
 
 # 设置环境变量
