@@ -1,9 +1,7 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "server_user.h"
 
-#pragma region
 namespace server {
-#pragma endregion
 
 CSUser::CSUser() {}
 
@@ -62,6 +60,4 @@ bool CSUser::ResLoginStatus(Func_AsyncResult func) {
   return true;
 }
 
-#pragma region
 }
-#pragma endregion

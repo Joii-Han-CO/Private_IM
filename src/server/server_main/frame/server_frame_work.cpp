@@ -1,9 +1,7 @@
 #include "pch.h"
 #include "server_frame_work.h"
 
-#pragma region
 namespace server {
-#pragma endregion
 
 CSFarmeWork::CSFarmeWork() {}
 
@@ -91,6 +89,4 @@ bool CSFarmeWork::InitSql() {
   return true;
 }
 
-#pragma region
 }
-#pragma endregion

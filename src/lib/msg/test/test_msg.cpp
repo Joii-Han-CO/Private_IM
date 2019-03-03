@@ -13,9 +13,7 @@
 #else
 #endif
 
-#pragma region namespace
 namespace test {
-#pragma endregion
 
 im::pCMqttClient InitMqtt() {
   auto mt = std::make_shared<im::CMqttClient>();
@@ -80,9 +78,7 @@ void TestMsg() {
   return;
 }
 
-#pragma region namespace
 }
-#pragma endregion
 
 int main() {
   im::log::InitTestLog();

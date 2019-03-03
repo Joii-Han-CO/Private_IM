@@ -1,12 +1,10 @@
-﻿#pragma once
+#pragma once
 #include <string>
 #include "character_conversion.hpp"
 #include "log.hpp"
 
-#pragma region namespace
 namespace base {
 namespace error {
-#pragma endregion
 
 // 用于继承
 class LastError {
@@ -34,7 +32,5 @@ protected:
   std::wstring last_error_;
 };
 
-#pragma region namespace
 }
 }
-#pragma endregion

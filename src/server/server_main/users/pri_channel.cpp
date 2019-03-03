@@ -1,11 +1,9 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "pri_channel.h"
 #include "frame/server_frame_work.h"
 #include "frame/publish_channel.h"
 
-#pragma region
 namespace server {
-#pragma endregion
 
 bool UserPriChannel::Init(base::_uuid::BUID *channel_id,
                           Func_AsyncResult func) {
@@ -20,6 +18,4 @@ bool UserPriChannel::Init(base::_uuid::BUID *channel_id,
   return im::msg::CPriChannel::Init(&args, func);
 }
 
-#pragma region
 }
-#pragma endregion

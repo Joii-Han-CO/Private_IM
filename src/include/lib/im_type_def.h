@@ -1,12 +1,10 @@
 #pragma once
 
-// ÒµÎñÏà¹ØµÄÒ»Ğ©ÀàĞÍ¶¨Òå
+// ä¸šåŠ¡ç›¸å…³çš„ä¸€äº›ç±»å‹å®šä¹‰
 
-#pragma region namespace
 namespace im {
-#pragma endregion
 
-// µ±Ç°¿Í»§¶ËËùÊ¹ÓÃµÄ¿Í»§¶ËÀàĞÍ
+// å½“å‰å®¢æˆ·ç«¯æ‰€ä½¿ç”¨çš„å®¢æˆ·ç«¯ç±»å‹
 enum class EClientType {
   win = 0,
   mac,
@@ -15,13 +13,10 @@ enum class EClientType {
   ios
 };
 
-// ¶¨ÒåclientÀàĞÍ
+// å®šä¹‰clientç±»å‹
 #ifdef _WIN32
 const EClientType g_client_type_ = EClientType::win;
 #else
 #endif
 
-#pragma region namespace
 }
-#pragma endregion
-

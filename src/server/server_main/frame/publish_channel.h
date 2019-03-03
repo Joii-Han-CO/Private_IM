@@ -1,9 +1,7 @@
-﻿#pragma once
+#pragma once
 #include "lib/im_msg.h"
 
-#pragma region
 namespace server {
-#pragma endregion
 
 class CSPubChannel: private base::async::AsyncInit {
 private:
@@ -32,6 +30,4 @@ private:
   im::pCMqttClient mqtt_;
 };
 
-#pragma region
 }
-#pragma endregion

@@ -1,12 +1,10 @@
-﻿#pragma once
+#pragma once
 #include "lib/base/async.hpp"
 #include "lib/im_mqtt.h"
 #include "lib/im_msg.h"
 
-#pragma region namespace
 namespace im {
 namespace c_login {
-#pragma endregion
 
 class ClientLogin: protected base::async::AsyncInit {
 public:
@@ -53,7 +51,5 @@ private:
 };
 StdSharedPtr_Typedef(ClientLogin);
 
-#pragma region namespace
 }
 }
-#pragma endregion

@@ -1,8 +1,6 @@
-﻿#pragma once
+#pragma once
 
-#pragma region
 namespace server {
-#pragma endregion
 
 // 每个用户的私有通道，可以双向连接
 class UserPriChannel: public im::msg::CPriChannel {
@@ -15,6 +13,4 @@ private:
 };
 StdSharedPtr_Typedef(UserPriChannel);
 
-#pragma region
 }
-#pragma endregion

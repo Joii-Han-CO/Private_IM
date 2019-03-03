@@ -1,12 +1,9 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "test_s_sql.h"
 #include "im_s_sql.h"
 
 
-
-#pragma region namespace
 namespace test {
-#pragma endregion
 
 void Test() {
   im::s_sql::CSqlManager::Get()->Init(L"tcp://127.0.0.1:3306",
@@ -18,9 +15,7 @@ void Test() {
   im::s_sql::CSqlManager::Get()->Uninit();
 }
 
-#pragma region namespace
 }
-#pragma endregion
 
 int main() {
 

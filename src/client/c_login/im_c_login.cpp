@@ -1,12 +1,9 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "im_c_login.h"
 
-#pragma region namespace
 namespace im {
 namespace c_login {
-#pragma endregion
 
-#pragma region Interface
 
 ClientLogin::ClientLogin() {}
 
@@ -60,9 +57,6 @@ im::pCMqttClient ClientLogin::GetMqtt() {
   return mqtt_;
 }
 
-#pragma endregion
-
-#pragma region init
 
 void ClientLogin::UninitFinished(bool suc) {
   if (func_uninit_finished_) {
@@ -71,9 +65,6 @@ void ClientLogin::UninitFinished(bool suc) {
   }
 };
 
-#pragma endregion
-
-#pragma region mqtt
 
 void ClientLogin::MqttConnectStatus(EMqttOnlineStatus status) {
   switch (status) {
@@ -106,9 +97,6 @@ void ClientLogin::MqttConnectError() {
   UninitFinished(false);
 }
 
-#pragma endregion
-
-#pragma region
 
 // 创建私有通道
 void ClientLogin::CreatePriChannel() {
@@ -191,9 +179,5 @@ void ClientLogin::OnMsg_ResLoginStatus(im::msg_proto::pPR_ResLoginStatus msg) {
   PrintLogInfo("Recv login resust status");
 }
 
-#pragma endregion
-
-#pragma region namespace
 }
 }
-#pragma endregion

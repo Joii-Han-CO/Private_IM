@@ -1,14 +1,12 @@
-﻿#pragma once
+#pragma once
 #include <list>
 #include <thread>
 #include <memory>
 #include <mutex>
 #include <condition_variable>
 
-#pragma region namespace
 namespace base {
 namespace b_async {
-#pragma endregion
 
 class Task {
 public:
@@ -87,7 +85,5 @@ private:
   bool f_ = false;
 };
 
-#pragma region namespace
 }
 }
-#pragma endregion

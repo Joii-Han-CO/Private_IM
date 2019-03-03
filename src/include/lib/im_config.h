@@ -1,14 +1,11 @@
-﻿#pragma once
+#pragma once
 #include "base/type_def.h"
 #include <string>
 #include <map>
 #include "base/error.hpp"
 
-
-#pragma region
 namespace im {
 namespace config {
-#pragma endregion
 
 struct SConfigData;
 typedef std::shared_ptr<SConfigData> pSConfigData;
@@ -30,7 +27,5 @@ private:
 };
 typedef std::shared_ptr<CConfig> pCConfig;
 
-#pragma region
 }
 }
-#pragma endregion

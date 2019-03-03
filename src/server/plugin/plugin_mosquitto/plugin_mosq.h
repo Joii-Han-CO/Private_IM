@@ -1,14 +1,12 @@
-﻿#pragma once
+#pragma once
 #include <mosquitto_plugin.h>
 #include <memory>
 
 #include "base/log.hpp"
 
 
-#pragma region
 namespace im {
 namespace plugin {
-#pragma endregion
 
 class CPluginMosq {
 public:
@@ -40,7 +38,5 @@ private:
 };
 typedef CPluginMosq* pCPluginMosq;
 
-#pragma region
 }
 }
-#pragma endregion

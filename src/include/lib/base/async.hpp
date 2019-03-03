@@ -1,12 +1,10 @@
-﻿#pragma once
+#pragma once
 #include <condition_variable>
 #include <mutex>
 #include "type_def.h"
 
-#pragma region
 namespace base {
 namespace async {
-#pragma endregion
 
 class Event {
 public:
@@ -42,8 +40,5 @@ protected:
   };
 };
 
-#pragma region
 }
 }
-#pragma endregion
-

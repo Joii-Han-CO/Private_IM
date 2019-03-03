@@ -10,9 +10,7 @@
 #include <condition_variable>
 //#include <conio.h>
 
-#pragma region namespace
 namespace test {
-#pragma endregion
 
 const std::vector<std::pair<std::wstring, std::wstring>> g_users =
 {{L"user1", L"11111111"},
@@ -55,9 +53,7 @@ void TestLogin() {
   }
 }
 
-#pragma region namespace
 }
-#pragma endregion
 
 int main() {
   base::log::PrintModleHeader();

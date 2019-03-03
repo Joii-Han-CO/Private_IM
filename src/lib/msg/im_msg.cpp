@@ -1,10 +1,8 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "im_msg.h"
 
-#pragma region namespace
 namespace im {
 namespace msg {
-#pragma endregion
 
 CPriChannel::CPriChannel() {}
 
@@ -41,7 +39,5 @@ bool CPriChannel::Init(CPriChannel::SInitAgrs *args,
   return true;
 }
 
-#pragma region namespace
 }
 }
-#pragma endregion

@@ -1,8 +1,6 @@
-﻿#pragma once
+#pragma once
 
-#pragma region
 namespace server {
-#pragma endregion
 
 // 单例
 class CSFarmeWork {
@@ -31,6 +29,4 @@ private:
   base::time::pTimer timer_;
 };
 
-#pragma region
 }
-#pragma endregion

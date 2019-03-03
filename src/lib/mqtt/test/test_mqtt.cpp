@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "test_mqtt.h"
 #include "base/character_conversion.hpp"
 #include "base/string_operation.hpp"
@@ -13,23 +13,14 @@
 #include <Windows.h>
 #endif
 
-#pragma region namespace
 namespace test {
-#pragma endregion
-
-#pragma region Dev
-
-#pragma region global val
 
 im::pCMqttClient gmsg_;
 std::map<std::string, std::string> g_args_;
 std::string g_topic_ = "t1";
 bool g_is_init_ = false, g_is_sub_ = false;
 
-#pragma endregion
-
-#pragma region Callback
-
+  
 void MqttLog(const base::log::SBaseLog &l) {
   base::debug::OutputLogInfo(l);
 }
@@ -39,9 +30,6 @@ void MqttMsg(const std::string &topic, cMsgBuf data) {
   base::debug::OutPut("[Msg]--%s--size:%d", topic.c_str(), data.size());
 }
 
-#pragma endregion
-
-#pragma region I/R
 
 // sync connect
 bool Test_Init() {
@@ -136,7 +124,6 @@ bool Test_UnSub() {
   return true;
 }
 
-#pragma endregion
 
 void Test_SendMsg() {
   base::debug::OutPut("Loop");
@@ -177,9 +164,6 @@ DEV_MQTT_END:
   base::debug::WaitEnterGoon("End, wait press enter to exit...");
 }
 
-#pragma endregion
-
-#pragma region Cmd
 
 typedef std::function<bool(const std::string&, const std::string&)> FUNC_Cmd;
 std::map < std::string, FUNC_Cmd>  g_cmd_func;
@@ -275,11 +259,8 @@ void RunCmd() {
   }
 }
 
-#pragma endregion
 
-#pragma region namespace
 }
-#pragma endregion
 
 int main(int argc, char* argv[]) {
   if (argc == 1) {

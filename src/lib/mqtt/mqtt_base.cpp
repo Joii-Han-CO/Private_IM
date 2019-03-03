@@ -1,10 +1,8 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "im_mqtt.h"
 #include "im_log.h"
 
-#pragma region
 namespace im {
-#pragma endregion
 
 // base
 namespace {
@@ -320,7 +318,6 @@ void CMqttClient::Mqtt_StatusChange(EMqttOnlineStatus status) {
   }
 }
 
-#pragma region Callback
 
 // 订阅成功的回调
 void CMqttClient::SSub_Cb(mosquitto *mosq, void * obj, int mid,
@@ -410,8 +407,4 @@ void CMqttClient::OutputLog(const base::log::SBaseLog & l) {
   im::log::CLog::Get()->Print(l.type, PRJ_NAME, l.file, l.func, l.line, l.log);
 }
 
-#pragma endregion
-
-#pragma region
 }
-#pragma endregion

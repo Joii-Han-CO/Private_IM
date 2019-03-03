@@ -1,9 +1,7 @@
 #pragma once
 
-#pragma region namespace
 namespace im {
 namespace s_user_manager {
-#pragma endregion
 
 class CServerUserManager {
 public:
@@ -20,7 +18,5 @@ public:
 
 };
 
-#pragma region namespace
 }
 }
-#pragma endregion

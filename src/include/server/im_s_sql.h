@@ -1,8 +1,7 @@
-﻿#pragma once
+#pragma once
 #include "base/type_def.h"
 
 
-#pragma region Def
 // mysql的预定义
 
 namespace sql {
@@ -10,12 +9,8 @@ class Connection;
 class Statement;
 }
 
-#pragma endregion
-
-#pragma region namespace
 namespace im {
 namespace s_sql {
-#pragma endregion
 
 struct SSqlUserInfo {
   int64_t id;
@@ -49,7 +44,5 @@ private:
 
 };
 
-#pragma region namespace
 }
 }
-#pragma endregion

@@ -1,10 +1,8 @@
 #include "pch.h"
 #include "s_user_manager.h"
 
-#pragma region namespace
 namespace im {
 namespace s_user_manager {
-#pragma endregion
 
 CServerUserManager* CServerUserManager::Get() {
   static CServerUserManager cs;
@@ -27,8 +25,5 @@ bool CServerUserManager::WaitExit() {
   return true;
 }
 
-#pragma region namespace
-
 }
 }
-#pragma endregion

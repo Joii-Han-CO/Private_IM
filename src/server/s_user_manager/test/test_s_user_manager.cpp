@@ -2,9 +2,7 @@
 #include "test_s_user_manager.h"
 #include "im_s_user_manager.h"
 
-#pragma region namespace
 namespace test {
-#pragma endregion
 
 void Test() {
   if (im::s_user_manager::InitServerUserManager() == false) {
@@ -20,9 +18,7 @@ void Test() {
   }
 }
 
-#pragma region namespace
 }
-#pragma endregion
 
 int main() {
 

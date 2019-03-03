@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "base/type_def.h"
 #include "im_type_def.h"
 #include "base/time.hpp"
@@ -10,13 +10,10 @@
 #include <memory>
 
 
-#pragma region
 namespace im {
 namespace msg_proto {
-#pragma endregion
 
 // 预定义
-#pragma region def
 
 class CProtoCallbackManager;
 StdSharedPtr_Typedef(CProtoCallbackManager);
@@ -80,9 +77,6 @@ public:
       return MsgBuf(); \
   }
 
-#pragma endregion
-
-#pragma region type_def
 
 // 枚举消息通道
 enum class EChannelType {
@@ -128,9 +122,6 @@ struct SMsgType {
   }
 };
 
-#pragma endregion
-
-#pragma region base proto
 
 // 管理消息函数的注册及获取，同一个消息只允许注册一个函数
 typedef std::function<void(pCBaseProto)> Func_MsgCb;
@@ -216,7 +207,6 @@ protected:
   pCBaseProtoHeader header_;
 };
 
-#pragma endregion
 
 //////////////////////////////////////////////////////////////////////////
 // 介绍
@@ -245,16 +235,11 @@ protected:
 //    同时注意 ParseMsg 没有做线程安全相关处理
 //////////////////////////////////////////////////////////////////////////
 
-#pragma region pub channel
-
 MP_BeginDefMsgClass(Msg_Pub_TestChannel,
                     EChannelType::pub_channel, EPubMsgType::test_channel);
 int status = 0;
 MP_EndDefMsgClass();
 
-#pragma endregion
-
-#pragma region global channel
 
 MP_BeginDefMsgClass(PP_CreatePrivateChannel,
                     EChannelType::golbal_channel,
@@ -265,9 +250,6 @@ EClientType client_type_;
 base::_uuid::BUID client_id_;
 MP_EndDefMsgClass();
 
-#pragma endregion
-
-#pragma region prvate channel
 
 MP_BeginDefMsgClass(PR_ResLoginStatus,
                     EChannelType::private_channel,
@@ -275,10 +257,5 @@ MP_BeginDefMsgClass(PR_ResLoginStatus,
 int status;
 MP_EndDefMsgClass();
 
-#pragma endregion
-
-
-#pragma region
 }
 }
-#pragma endregion

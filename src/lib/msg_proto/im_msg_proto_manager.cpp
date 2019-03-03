@@ -1,13 +1,10 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "im_msg_proto.h"
 #include "proto_class/msg.pb.h"
 #include "base/character_conversion.hpp"
 
-#pragma region namespace
 namespace im {
 namespace msg_proto {
-#pragma endregion
-
 
 CProtoCallbackManager::CProtoCallbackManager() {};
 
@@ -97,7 +94,5 @@ void CProtoManager::RegFunc(EChannelType ct, uint8_t mt,
   msg_func_[msg_val] = msg_cb;
 }
 
-#pragma region namespace
 }
 }
-#pragma endregion

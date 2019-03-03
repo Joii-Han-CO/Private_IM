@@ -1,16 +1,12 @@
-﻿#pragma once
+#pragma once
 #include <string>
 #include <mutex>
 #include <iostream>
 #include "log.hpp"
 #include "character_conversion.hpp"
 
-#pragma region namespace
 namespace base {
 namespace debug {
-#pragma endregion
-
-#pragma region OutputInfo
 
 inline std::mutex &GetGlobalOutputSync() {
   static std::mutex output_sync;
@@ -47,9 +43,5 @@ inline void WaitEnterGoon(const char *d) {
   getchar();
 }
 
-#pragma endregion
-
-#pragma region namespace
 }
 }
-#pragma endregion

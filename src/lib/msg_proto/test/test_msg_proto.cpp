@@ -1,12 +1,10 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "test_msg_proto.h"
 #include "im_msg_proto.h"
 #include "base/time.hpp"
 #include <iostream>
 
-#pragma region namespace
 namespace test {
-#pragma endregion
 
 void Test_MsgManager() {
   auto msg_manager = std::make_shared<im::msg_proto::CProtoManager>();
@@ -35,9 +33,7 @@ void Test_GolbalChannel() {
   p2.Parse(buf);
 }
 
-#pragma region namespace
 }
-#pragma endregion
 
 int main() {
   im::msg_proto::CProtoCallbackManager::Get()->Init();

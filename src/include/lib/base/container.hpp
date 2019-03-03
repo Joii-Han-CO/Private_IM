@@ -1,9 +1,7 @@
 #pragma once
 #include <mutex>
 
-#pragma region namespace
 namespace base {
-#pragma endregion
 
 // 同步值，在获取和设置的时候都有锁
 template <typename T>
@@ -35,6 +33,4 @@ private:
   std::mutex lock_;
 };
 
-#pragma region namespace
 }
-#pragma endregion

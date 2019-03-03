@@ -21,10 +21,8 @@
 #else
 #endif
 
-#pragma region
 namespace base {
 namespace time {
-#pragma endregion
 
 typedef std::chrono::system_clock local_time;
 typedef std::chrono::microseconds local_ms;
@@ -249,8 +247,5 @@ private:
 };
 StdSharedPtr_Typedef(Timer);
 
-#pragma region
 }
 }
-#pragma endregion
-

@@ -1,10 +1,8 @@
-﻿#include "publish_channel.h"
+#include "publish_channel.h"
 #include "frame/server_frame_work.h"
 #include "users/server_user_manager.h"
 
-#pragma region
 namespace server {
-#pragma endregion
 
 CSPubChannel::CSPubChannel() {}
 
@@ -89,6 +87,4 @@ void CSPubChannel::OnMsg_CreatePriChannel(
   }
 }
 
-#pragma region
 }
-#pragma endregion

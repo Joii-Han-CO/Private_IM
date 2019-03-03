@@ -7,9 +7,7 @@
 #include <map>
 
 
-#pragma region namespace
 namespace test {
-#pragma endregion
 
 using base::coding::ECodingFileType;
 
@@ -19,9 +17,7 @@ void TestCoding() {
 void TestFormat() {
 }
 
-#pragma region namespace
 }
-#pragma endregion
 
 int main() {
   //test::TestCoding();

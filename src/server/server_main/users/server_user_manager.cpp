@@ -1,9 +1,7 @@
 #include "pch.h"
 #include "server_user_manager.h"
 
-#pragma region
 namespace server {
-#pragma endregion
 
 CSUserManager::CSUserManager() {}
 
@@ -36,6 +34,4 @@ void CSUserManager::CleanUser() {
   users_.clear();
 }
 
-#pragma region
 }
-#pragma endregion

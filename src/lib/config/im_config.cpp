@@ -2,11 +2,8 @@
 #include "im_config.h"
 #include <SimpleIni.h>
 
-
-#pragma region namespace
 namespace im {
 namespace config {
-#pragma endregion
 
 struct SConfigData {
   CSimpleIniW ini;
@@ -102,7 +99,5 @@ bool CConfig::SetVal(const std::wstring &tag, const std::wstring &key,
   return true;
 }
 
-#pragma region namespace
 }
 }
-#pragma endregion

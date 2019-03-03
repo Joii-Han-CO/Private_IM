@@ -1,9 +1,7 @@
 #pragma once
 #include "server_user.h"
 
-#pragma region
 namespace server {
-#pragma endregion
 
 class CSUserManager {
 private:
@@ -21,7 +19,4 @@ private:
   std::list<pCSUser> users_;
 };
 
-#pragma region
 }
-#pragma endregion
-

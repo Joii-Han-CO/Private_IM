@@ -1,13 +1,10 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "test_log.h"
 #include "im_log.h"
 #include "base/time.hpp"
 #include "base/debug.hpp"
 
-
-#pragma region namespace
 namespace test {
-#pragma endregion
 
 void TestPerformance() {
   base::time::BaseTime ms;
@@ -71,15 +68,13 @@ void TestTimer() {
   tr.WaitExit();
 }
 
-#pragma region namespace
 }
-#pragma endregion
 
 
 int main() {
   //test::TestTime();
-  test::TestTimer();
-  return 0;
+  //test::TestTimer();
+  //return 0;
 
   im::log::SLog_InitArgs log_args;
   log_args.print_dbg = true;
@@ -91,6 +86,6 @@ int main() {
 
   test::TestPerformance();
 
-  system("pause");
+  //system("pause");
   return 0;
 }

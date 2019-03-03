@@ -2,10 +2,8 @@
 #include "im_msg_proto.h"
 #include "base/cross_system.hpp"
 
-#pragma region
 namespace im {
 namespace msg_proto {
-#pragma endregion
 
 // 公共通道的消息体
 
@@ -55,7 +53,5 @@ MsgBuf PP_CreatePrivateChannel::Serializate() {
   return buf;
 }
 
-#pragma region
 }
 }
-#pragma endregion

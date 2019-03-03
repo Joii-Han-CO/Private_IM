@@ -9,10 +9,8 @@
 #include <map>
 
 
-#pragma region namespace
 namespace base {
 namespace coding {
-#pragma endregion
 
 enum class ECodingType {
   GBK,
@@ -105,7 +103,5 @@ ECodingFileType GetCoding(const wchar_t *path) {
   return ECodingFileType::None;
 }
 
-#pragma region namespace
 }
 }
-#pragma endregion

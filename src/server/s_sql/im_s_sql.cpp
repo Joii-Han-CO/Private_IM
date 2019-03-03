@@ -1,13 +1,9 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "im_s_sql.h"
 
 
-#pragma region namespace
 namespace im {
 namespace s_sql {
-#pragma endregion
-
-#pragma region Init
 
 CSqlManager::CSqlManager() {}
 
@@ -60,7 +56,6 @@ bool CSqlManager::Uninit() {
   return true;
 }
 
-#pragma endregion
 
 // 获取用户信息
 pSSqlUserInfo CSqlManager::GetUserInfo(std::wstring name,
@@ -94,13 +89,13 @@ pSSqlUserInfo CSqlManager::GetUserInfo(std::wstring name,
   return info;
 }
 
-#pragma region namespace
 bool InitSql() {
   return false;
 }
+
 bool UninitSql() {
   return false;
 }
+
 }
 }
-#pragma endregion

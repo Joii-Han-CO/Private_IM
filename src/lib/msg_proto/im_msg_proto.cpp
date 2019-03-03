@@ -1,14 +1,10 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "im_msg_proto.h"
 #include "proto_class/msg.pb.h"
 #include "base/character_conversion.hpp"
 
-#pragma region namespace
 namespace im {
 namespace msg_proto {
-#pragma endregion
-
-#pragma region Header
 
 CBaseProtoHeader::CBaseProtoHeader(EChannelType channel_type, uint8_t type) {
   type_.channel_type = channel_type;
@@ -79,9 +75,6 @@ bool CBaseProtoHeader::IsBroken() {
   return false;
 }
 
-#pragma endregion
-
-#pragma region pub_test_channel
 
 bool Msg_Pub_TestChannel::Parse(cMsgBuf buf) {
   memcpy_s(&status, sizeof(status), &buf[header_->Size()], sizeof(status));
@@ -97,9 +90,5 @@ MsgBuf Msg_Pub_TestChannel::Serializate() {
   return buf;
 }
 
-#pragma endregion
-
-#pragma region namespace
 }
 }
-#pragma endregion

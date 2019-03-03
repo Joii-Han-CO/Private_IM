@@ -6,17 +6,10 @@
 #include "base/async.hpp"
 #include "base/container.hpp"
 
-#pragma region define
-
 struct mosquitto;
 struct mosquitto_message;
 
-#pragma endregion
-
-
-#pragma region
 namespace im {
-#pragma endregion
 
 // mqtt 各种连接状态...
 enum class EMqttOnlineStatus {
@@ -144,6 +137,4 @@ private:
 };
 typedef std::shared_ptr<CMqttClient> pCMqttClient;
 
-#pragma region
 }
-#pragma endregion

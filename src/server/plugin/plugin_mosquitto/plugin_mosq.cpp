@@ -1,22 +1,16 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "plugin_mosq.h"
 #include <map>
 
 
-#pragma region
 namespace im {
 namespace plugin {
-#pragma endregion
 
-#pragma region Global
 
 int CPluginMosq::GetVersion() {
   return MOSQ_AUTH_PLUGIN_VERSION;
 }
 
-#pragma endregion
-
-#pragma region I/R
 
 CPluginMosq::CPluginMosq() {}
 
@@ -52,9 +46,5 @@ void CPluginMosq::OnLog(const base::log::SBaseLog & func) {
 
 }
 
-#pragma endregion
-
-#pragma region
 }
 }
-#pragma endregion

@@ -6,10 +6,8 @@
 
 // 封装mqtt和proto，用于消息传输的基础通道
 
-#pragma region namespace
 namespace im {
 namespace msg {
-#pragma endregion
 
 //////////////////////////////////////////////////////////////////////////
 // client与server建立的时序
@@ -18,8 +16,6 @@ namespace msg {
 //  server 监听 c_pub_uuid
 //  client 监听 s_pub_uuid
 //////////////////////////////////////////////////////////////////////////
-
-#pragma region Base
 
 // 基础接收类
 class CBaseMsgRecv {
@@ -106,9 +102,6 @@ private:
 };
 StdSharedPtr_Typedef(CBaseMsg);
 
-#pragma endregion
-
-#pragma region PrivateChannel
 
 class CPriChannel: public CBaseMsg {
 public:
@@ -126,14 +119,6 @@ public:
 };
 StdSharedPtr_Typedef(CPriChannel);
 
-#pragma endregion
 
-
-#pragma region def
-
-#pragma endregion
-
-#pragma region namespace
 }
 }
-#pragma endregion

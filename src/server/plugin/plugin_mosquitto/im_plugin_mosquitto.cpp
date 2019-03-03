@@ -3,7 +3,6 @@
 #include "plugin_mosq.h"
 
 // 定义 mosquitto 的各个接口, 调试直接挂载 mosquitto 进程
-#pragma region Init/R
 
 int mosquitto_auth_plugin_version(void) {
   return im::plugin::CPluginMosq::GetVersion();
@@ -57,7 +56,6 @@ int mosquitto_auth_security_cleanup(void *user_data,
   return 0;
 }
 
-#pragma endregion
 
 int mosquitto_auth_acl_check(void *user_data,
                              int access,

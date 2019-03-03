@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <map>
 #include <locale>
 #include <string>
@@ -8,11 +8,7 @@
 
 #include "type_def.h"
 
-#pragma region namespace
 namespace base {
-#pragma endregion
-
-#pragma region 字符集转换
 
 // TODO 执行错误，这里需要判断...
 inline void Exception_Throw() {
@@ -185,8 +181,5 @@ inline std::string Utf16ToGB2312(const std::wstring& unicodeText) {
   return std::string();
 };
 
-#pragma endregion
 
-#pragma region namespace
 }
-#pragma endregion

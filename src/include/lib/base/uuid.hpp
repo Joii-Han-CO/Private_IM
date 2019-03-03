@@ -7,10 +7,8 @@
 #include <boost/uuid/uuid_io.hpp>
 
 
-#pragma region
 namespace base {
 namespace _uuid {
-#pragma endregion
 
 // BaseUUID
 struct BUID {
@@ -75,7 +73,5 @@ inline cus_string Generate() {
   return Generate_Str(t);
 };
 
-#pragma region
 }
 }
-#pragma endregion

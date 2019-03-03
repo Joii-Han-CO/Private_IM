@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "base/type_def.h"
 
 #include <string>
@@ -7,10 +7,8 @@
 
 // 处理文本\数据编码的库...
 
-#pragma region
 namespace base {
 namespace coding {
-#pragma endregion
 
 enum class ECodingFileType {
   None,
@@ -30,7 +28,5 @@ ECodingFileType GetCoding_U8(const char *path);
 
 ECodingFileType GetCoding(const wchar_t *path);
 
-#pragma region
 }
 }
-#pragma endregion

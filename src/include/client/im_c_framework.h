@@ -1,12 +1,10 @@
-﻿#pragma once
+#pragma once
 #include "base/type_def.h"
 #include "im_c_login.h"
 #include "im_config.h"
 
-#pragma region namespace
 namespace im {
 namespace c_framework {
-#pragma endregion
 
 class ClientFramework {
 private:
@@ -35,7 +33,5 @@ private:
 #define ClientFW \
   im::c_framework::ClientFramework::Get()
 
-#pragma region namespace
 }
 }
-#pragma endregion

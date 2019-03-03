@@ -9,20 +9,15 @@
 #endif // _WIN32
 
 
-#pragma region namespace
 namespace base {
 namespace log {
-#pragma endregion
 
-#pragma region Format
 
 #define LOG_BASE_IS_SAME(T) std::is_same<T1, T>::value
 
 inline void CountAgrsSizeC(int &size, std::string arg) {
   size += arg.size();
 };
-
-#pragma endregion
 
 enum class EBaseLogType {
   dbg,
@@ -84,7 +79,7 @@ public:
       return L"";
   }
 
-#pragma region
+
 #define VirtualPrintLogFunc(FuncName) \
 protected: \
   void VPrintLogFunc(const base::log::SBaseLog &func) { return FuncName(func); };
@@ -92,10 +87,7 @@ protected: \
 #define BindVirtualLog(class_name) \
   std::bind(&class_name::VPrintLogFunc, this, std::placeholders::_1)
 
-#pragma endregion
-
 protected:
-#pragma region PrintLog
 
   void LogPrintLog(EBaseLogType type,
                    const char *func, const char *file, int line,
@@ -131,8 +123,6 @@ protected:
 #define MPrintErro(log_str, ...) \
   PrintLog(base::log::EBaseLogType::erro, log_str, ##__VA_ARGS__)
 
-#pragma endregion
-
 protected:
   LogCallback func_;
 };
@@ -158,7 +148,5 @@ inline std::wstring GetMqttErrorDesW() {
 }
 #endif
 
-#pragma region namespace
 }
 }
-#pragma endregion

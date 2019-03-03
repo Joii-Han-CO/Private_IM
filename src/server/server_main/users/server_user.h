@@ -1,9 +1,7 @@
-﻿#pragma once
+#pragma once
 #include "pri_channel.h"
 
-#pragma region
 namespace server {
-#pragma endregion
 
 class CSUser {
 public:
@@ -24,6 +22,4 @@ private:
 };
 StdSharedPtr_Typedef(CSUser);
 
-#pragma region
 }
-#pragma endregion

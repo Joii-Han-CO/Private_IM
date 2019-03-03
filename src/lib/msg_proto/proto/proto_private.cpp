@@ -1,11 +1,8 @@
 #include "pch.h"
 #include "im_msg_proto.h"
 
-
-#pragma region
 namespace im {
 namespace msg_proto {
-#pragma endregion
 
 bool PR_ResLoginStatus::Parse(cMsgBuf buf) {
   int size = sizeof(status);
@@ -25,7 +22,5 @@ MsgBuf PR_ResLoginStatus::Serializate() {
   return buf;
 }
 
-#pragma region
 }
 }
-#pragma endregion

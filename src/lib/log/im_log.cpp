@@ -7,10 +7,8 @@
 #include "base/debug.hpp"
 
 
-#pragma region namespace
 namespace im {
 namespace log {
-#pragma endregion
 
 CLog::CLog() {}
 
@@ -148,7 +146,5 @@ void CLog::PrintHeader() {
   OutPutBase(p);
 }
 
-#pragma region namespace
 }
 }
-#pragma endregion

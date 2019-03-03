@@ -16,10 +16,8 @@
 //  0 同步写
 #define LogASyncWrite 1
 
-#pragma region
 namespace im {
 namespace log {
-#pragma endregion
 
 // 初始化参数
 struct SLog_InitArgs {
@@ -158,7 +156,5 @@ inline void InitTestLog() {
   im::log::CLog::Get()->Init(&log_args);
 }
 
-#pragma region
 }
 }
-#pragma endregion

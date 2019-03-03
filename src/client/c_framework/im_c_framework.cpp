@@ -5,10 +5,8 @@
 #include "base/time.hpp"
 #include "im_global_val.h"
 
-#pragma region namespace
 namespace im {
 namespace c_framework {
-#pragma endregion
 
 ClientFramework::ClientFramework() {}
 
@@ -83,7 +81,5 @@ base::time::pTimer ClientFramework::GetTimerPtr() {
   return ptr_timer;
 }
 
-#pragma region namespace
 }
 }
-#pragma endregion
