@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "im_ssl_base.h"
 #include "..\include\im_ssl_base.h"
+#include <openssl/lhash.h>
+#include <openssl/aes.h>
 
 #pragma region namespace
 namespace im {

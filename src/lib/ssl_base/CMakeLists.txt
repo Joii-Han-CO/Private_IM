@@ -21,11 +21,14 @@ set(_incldue ${PROJECT_SOURCE_DIR}/../include/)
 
 set(_stdafx ${PROJECT_SOURCE_DIR}/stdafx)
 
+set(_openssl_dir ${THRD_LIB_PATH}/openssl/)
+
 # 源码包含目录
 include_directories(${_lib_name}
                     ${_incldue}
                     ${PROJECT_SOURCE_DIR}
-                    ${_include_dirs})
+                    ${_include_dirs}
+                    ${_openssl_dir}/include)
 
 # 创建目录
 set(_inc_file
@@ -86,6 +89,15 @@ source_group("source" FILES ${_cpp_file})
 # add src files
 add_executable(${_test_name}
                ${_inc_file} ${_cpp_file})
+target_link_libraries(${_test_name} debug
+  "${THRD_LIB_PATH}/openssl/d/libeay32.lib")
+target_link_libraries(${_test_name} debug
+  "${THRD_LIB_PATH}/openssl/d/ssleay32.lib")
+
+target_link_libraries(${_test_name} optimized
+  "${THRD_LIB_PATH}/openssl/s/libeay32.lib")
+target_link_libraries(${_test_name} optimized
+  "${THRD_LIB_PATH}/openssl/s/ssleay32.lib")
 
 # 设置环境变量
 if (${_prj_lib_type} STREQUAL "STATIC")
