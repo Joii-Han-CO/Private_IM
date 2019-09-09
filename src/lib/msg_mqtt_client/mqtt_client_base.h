@@ -38,7 +38,7 @@ struct SMqttConnectInfo {
 class CMqttClientBase:
   public base::error::LastError,
   public base::log::Log,
-  public virtual base::task::Task {
+  public virtual base::b_async::Task {
 
 public:
   CMqttClientBase(base::log::LogCallback func);

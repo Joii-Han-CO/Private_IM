@@ -7,7 +7,7 @@
 
 #pragma region namespace
 namespace base {
-namespace task {
+namespace b_async {
 #pragma endregion
 
 class Task {
@@ -61,6 +61,22 @@ private:
   std::list<std::function<void(void)>> task_list_;
   std::mutex lock_;
   std::condition_variable con_v_;
+};
+
+class Condition {
+public:
+  void NotifyOne() {
+    f_ = true;
+    c_.notify_one();
+  };
+  void Wait() {
+    std::unique_lock<std::mutex> lock(m_);
+    c_.wait(lock, [this] () {return f_; });
+  };
+private:
+  std::condition_variable c_;
+  std::mutex m_;
+  bool f_ = false;
 };
 
 #pragma region namespace

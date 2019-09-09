@@ -65,3 +65,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/plugin/plugin_mosquitto/)
 
 # sql_base
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/sql_base/)
+
+# server_sql
+add_subdirectory(${PROJECT_SOURCE_DIR}/server/server_sql/)

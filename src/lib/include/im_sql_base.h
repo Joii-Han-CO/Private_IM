@@ -3,6 +3,7 @@
 #include "base/error.hpp"
 #include "base/log.hpp"
 #include "base/task.hpp"
+#include <3rd_lib/sqlite3/sqlite3.h>
 
 
 #pragma region
@@ -17,11 +18,14 @@ namespace sql_base {
 class CSqlBase:
   public base::error::LastError,
   public base::log::Log,
-  public base::task::Task {
+  public base::b_async::Task {
 
 public:
   CSqlBase(base::log::LogCallback log_func);
-  ~CSqlBase();
+  virtual ~CSqlBase();
+
+  bool SqlExec(sqlite3 *ptr, const std::string &sql,
+               int *rc_code, std::string &err_msg);
 
 };
 
