@@ -1,15 +1,18 @@
 ﻿#include "stdafx.h"
 #include "im_ssl_base.h"
+#include "..\include\im_ssl_base.h"
 
 #pragma region namespace
 namespace im {
 namespace ssl_base {
 #pragma endregion
 
-  bool Test_ssl_base_C(IN int test_args) {
-    return true;
-  }
-  
+std::vector<char> GetHash(const std::vector<char> &data) {
+  std::vector<char> ref_val;
+
+  return ref_val;
+}
+
 #pragma region namespace
 }
 }

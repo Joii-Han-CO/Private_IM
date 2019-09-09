@@ -1,18 +1,16 @@
 ﻿#pragma once
 #include "base/type_def.h"
+#include <vector>
 
 
-#ifdef __cplusplus
-extern "C" {
-  namespace im {
-  namespace ssl_base {
-#endif
+#pragma region
+namespace im {
+namespace ssl_base {
+#pragma endregion
 
-  // 测试接口
-  IM_LIB_EXP bool Test_ssl_base_C(IN int test_args);
+std::vector<char> GetHash(const std::vector<char> &data);
 
-#ifdef __cplusplus
-  }
-  }
+#pragma region
 }
-#endif
+}
+#pragma endregion
