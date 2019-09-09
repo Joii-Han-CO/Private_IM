@@ -68,3 +68,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib/sql_base/)
 
 # server_sql
 add_subdirectory(${PROJECT_SOURCE_DIR}/server/server_sql/)
+
+# ssl_base
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/ssl_base/)
